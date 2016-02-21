@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+  <bean class="com.gdn.x.config.SpringDataJpaAuditingConfig" />
+  <bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource">
+    <property name="driverClassName" value="${dataSource.driverClassName}" />
+    <property name="username" value="${dataSource.username}" />
+    <property name="password" value="${dataSource.password}" />
+    <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer;org.apache.tomcat.jdbc.pool.interceptor.ResetAbandonedTimer" />
+    <property name="defaultAutoCommit" value="${dataSource.defaultAutoCommit}" />
+    <property name="testWhileIdle" value="${dataSource.testWhileIdle}" />
+    <property name="testOnReturn" value="${dataSource.testOnReturn}" />
+    <property name="testOnBorrow" value="${dataSource.testOnBorrow}" />
+    <property name="validationQuery" value="${dataSource.connectionTestStatement}" />
+    <property name="validationQueryTimeout" value="${dataSource.validationQueryTimeout}" />
+    <property name="removeAbandoned" value="${dataSource.removeAbandoned}" />
+    <property name="logAbandoned" value="${dataSource.logAbandoned}" />
+    <property name="rollbackOnReturn" value="${dataSource.rollbackOnReturn}" />
+    <property name="logValidationErrors" value="${dataSource.logValidationErrors}" />
+    <property name="url" value="${dataSource.url}" />
+    <property name="maxActive" value="${dataSource.maxActive}" />
+    <property name="maxIdle" value="${dataSource.maxIdle}" />
+    <property name="maxWait" value="${dataSource.maxWait}" />
+    <property name="removeAbandonedTimeout" value="${dataSource.removeAbandonedTimeout}" />
+  </bean>
+  <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <property name="jpaDialect">
+      <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+    </property>
+    <property name="jpaVendorAdapter">
+      <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="showSql" value="${hibernate.show_sql}" />
+      </bean>
+    </property>
+    <property name="packagesToScan" value="${persistenceUnit.packagesToScan}" />
+    <property name="jpaProperties" ref="jpaProperties" />
+    <property name="dataSource" ref="dataSource" />
+    <property name="persistenceProvider">
+      <bean class="org.hibernate.jpa.HibernatePersistenceProvider" />
+    </property>
+  </bean>
+  <util:map id="resthubCoreJpaProperties">
+    <entry key="hibernate.dialect" value="${hibernate.dialect}" />
+    <entry key="hibernate.format_sql" value="${hibernate.format_sql}" />
+    <entry key="hibernate.hbm2ddl.auto" value="${hibernate.hbm2ddl.auto}" />
+    <entry key="hibernate.cache.use_second_level_cache" value="${hibernate.cache.use_second_level_cache}" />
+    <entry key="hibernate.cache.provider_class" value="${hibernate.cache.provider_class}" />
+    <entry key="hibernate.id.new_generator_mappings" value="${hibernate.id.new_generator_mappings}" />
+    
+    <!-- 
+    <entry key="hibernate.cache.region.factory_class" value="${hibernate.cache.region.factory_class}" />
+    <entry key="hibernate.cache.hazelcast.use_native_client" value="${hibernate.cache.hazelcast.use_native_client}" />
+    <entry key="hibernate.cache.hazelcast.native_client_hosts" value="${hibernate.cache.hazelcast.native_client_hosts}"/>
+    <entry key="hibernate.cache.hazelcast.native_client_group" value="${hibernate.cache.hazelcast.native_client_group}"/>
+    <entry key="hibernate.cache.hazelcast.native_client_password" value="${hibernate.cache.hazelcast.native_client_password}"/> 
+    -->
+    <entry key="hibernate.generate_statistics" value="${hibernate.generate_statistics}" />
+    <!-- 
+     <entry key="hibernate.cache.hazelcast.instance_name" value="second_level_cache"/>
+    <entry key="hibernate.cache.use_structured_entries" value="${hibernate.cache.use_structured_entries}" />
+    <entry key="javax.persistence.sharedCache.mode" value="${javax.persistence.sharedCache.mode}" /> 
+     -->
+  </util:map>
+  <bean id="jpaProperties" parent="resthubCoreJpaProperties">
+    <property name="sourceMap">
+      <map merge="true" />
+    </property>
+  </bean>
+  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="entityManagerFactory" />
+  </bean>
+</beans>
