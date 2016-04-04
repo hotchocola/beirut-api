@@ -10,6 +10,7 @@ public interface SimpleCRUD {
   Mahasiswa findMahasiswaById(int id);
   Mahasiswa findMahasiswaDetail(int id);
   void saveMahasiswa(Mahasiswa mahasiswa);
+  void deleteMahasiswa(Mahasiswa mahasiswa);
   List<Mahasiswa> getAll();
 
 }

@@ -57,4 +57,9 @@ public class SimpleCRUDService implements SimpleCRUD {
   public List<Mahasiswa> getAll() {
 	return getMahasiswaDao().findAll();
   }
+
+@Override
+public void deleteMahasiswa(Mahasiswa mahasiswa) {
+	getMahasiswaDao().delete(mahasiswa);
+  }
 }

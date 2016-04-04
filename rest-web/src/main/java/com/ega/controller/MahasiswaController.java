@@ -73,6 +73,38 @@ public class MahasiswaController {
 		
 	}
 	
+	@RequestMapping(value = "/api/mahasiswa/deleteMahasiswa", method= RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+	@ApiOperation(value = "delete mahasiswa",notes="membuang mahasiswa dengan nama ini.")
+	@ResponseBody
+	public GdnBaseRestResponse deleteMahasiswa(@RequestParam String clientId, @RequestParam String storeId, 
+			@RequestParam String requestId, @RequestParam String channelId, @RequestParam(required=true)String username, @RequestParam(required=true)String npm){
+		
+		Mahasiswa temp = new Mahasiswa();
+		Mahasiswa x = simpleCRUD.findByNama(username);
+		if(!x.equals("")){
+			temp.setId(23);
+			temp.setNama(username);
+			temp.setNpm(npm);
+			simpleCRUD.deleteMahasiswa(temp);
+			return new GdnBaseRestResponse(true);
+		}
+		return new GdnBaseRestResponse(false);
+		//belum bisa gatau kenapa ga bisa kehapus. 
+		// udah nyoba langsung delete ga pake check ada atau engga juga ga bisa.	
+	}
+	
+	@RequestMapping(value = "/api/mahasiswa/findMahasiswaById", method= RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+	@ApiOperation(value = "find mahasiswa by ID",notes="cari nama mahasiswa berdasarkan ID")
+	@ResponseBody
+	public GdnRestSingleResponse<MahasiswaDTO> findMahasiswaById(@RequestParam String clientId, @RequestParam String storeId, 
+		@RequestParam String requestId, @RequestParam String channelId, @RequestParam(required=true) int id) {
+		
+	    Mahasiswa temp=simpleCRUD.findMahasiswaById(id);
+	    MahasiswaDTO mahas = new MahasiswaDTO(String.valueOf(temp.getId()), temp.getNama(), temp.getNpm());
+	    
+	    return new GdnRestSingleResponse<MahasiswaDTO>(mahas, requestId);
+	}
+	
 }
 
 

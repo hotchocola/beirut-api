@@ -40,7 +40,7 @@ public class Mahasiswa implements Serializable {
   private String npm;
 
   @Column(name = "MataKuliah_Mahasiswa")
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="mahasiswa")
   private Set<MataKuliah> mataKuliah = new HashSet<MataKuliah>();
 
   public Mahasiswa() {
