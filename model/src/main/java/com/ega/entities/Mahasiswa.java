@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties. To change this
+ * template file, choose Tools | Templates and open the template in the editor.
  */
 package com.ega.entities;
 
@@ -40,7 +39,7 @@ public class Mahasiswa implements Serializable {
   private String npm;
 
   @Column(name = "MataKuliah_Mahasiswa")
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "mahasiswa")
   private Set<MataKuliah> mataKuliah = new HashSet<MataKuliah>();
 
   public Mahasiswa() {

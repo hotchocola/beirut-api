@@ -35,15 +35,45 @@ public class MahasiswaController {
   @ApiOperation(value = "cari nama mahasiwa", notes = " blablablablalasjadksahjdhj")
   public GdnRestSingleResponse<MahasiswaDTO> findByNama(@RequestParam String storeId,
       @RequestParam String channelId, @RequestParam String clientId, @RequestParam String requestId,
-      @RequestParam String nama) {
-    Mahasiswa m = simpleCRUD.findByNama(nama);
+      @RequestParam String username) {
+    Mahasiswa m = simpleCRUD.findByNama(username);
     MahasiswaDTO md = new MahasiswaDTO(m.getId() + "", m.getNama(), m.getNpm());
     GdnRestSingleResponse<MahasiswaDTO> obj =
         new GdnRestSingleResponse<MahasiswaDTO>(md, requestId);
     return obj;
   }
 
-  @RequestMapping(value = "", method = RequestMethod.GET,
+  @RequestMapping(value = "/findMahasiswaById", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_XML_VALUE})
+
+  @ResponseBody
+  @ApiOperation(value = "cari mahasiswa berdasarkan id", notes = "asasadasdasdsad")
+  public GdnRestSingleResponse<MahasiswaDTO> findMahasiswaById(@RequestParam String storeId,
+      @RequestParam String channelId, @RequestParam String clientId, @RequestParam String requestId,
+      @RequestParam String mahId) {
+    Mahasiswa m = simpleCRUD.findMahasiswaById(Integer.parseInt(mahId));
+    MahasiswaDTO md = new MahasiswaDTO(m.getId() + "", m.getNama(), m.getNpm());
+    GdnRestSingleResponse<MahasiswaDTO> obj =
+        new GdnRestSingleResponse<MahasiswaDTO>(md, requestId);
+    return obj;
+  }
+
+  @RequestMapping(value = "/findMahasiswaDetail", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_XML_VALUE})
+
+  @ResponseBody
+  @ApiOperation(value = "cari mahasiswa berdasarkan id yang detail", notes = "asasadasdasdsad")
+  public GdnRestSingleResponse<MahasiswaDTO> findMahasiswaDetail(@RequestParam String storeId,
+      @RequestParam String channelId, @RequestParam String clientId, @RequestParam String requestId,
+      @RequestParam String mahId) {
+    Mahasiswa m = simpleCRUD.findMahasiswaById(Integer.parseInt(mahId));
+    MahasiswaDTO md = new MahasiswaDTO(m.getId() + "", m.getNama(), m.getNpm());
+    GdnRestSingleResponse<MahasiswaDTO> obj =
+        new GdnRestSingleResponse<MahasiswaDTO>(md, requestId);
+    return obj;
+  }
+
+  @RequestMapping(value = "/getAll", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_XML_VALUE})
 
   // buat ubah jadi json/xml
@@ -64,6 +94,18 @@ public class MahasiswaController {
     GdnRestListResponse<MahasiswaDTO> obj =
         new GdnRestListResponse<MahasiswaDTO>(listMah, new PageMetaData(50, 0, 100), requestId);
     return obj;
+  }
+
+  @RequestMapping(value = "/saveMahasiswa", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_XML_VALUE})
+
+  @ResponseBody
+  @ApiOperation(value = "save mahasiswa", notes = "asasadasdasdsad")
+  public void saveMahasiswa(@RequestParam String storeId, @RequestParam String channelId,
+      @RequestParam String clientId, @RequestParam String requestId,
+      @RequestParam String username) {
+    simpleCRUD.;//kayaknya salah disekitar situ. soalnya java mulai itungannya dr satu lagi?
+    simpleCRUD.saveMahasiswa(m);
   }
 
 }
