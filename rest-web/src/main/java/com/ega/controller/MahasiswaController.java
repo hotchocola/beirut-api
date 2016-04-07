@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +22,8 @@ import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponses;
 
 @Controller
 @RequestMapping(value = "/api/mahasiswa/")
@@ -62,35 +65,45 @@ public class MahasiswaController {
 	@ApiOperation(value = "save mahasiswa",notes="menyimpan mahasiswa dengan nama ini.")
 	@ResponseBody
 	public GdnBaseRestResponse saveMahasiswa(@RequestParam String clientId, @RequestParam String storeId, 
-			@RequestParam String requestId, @RequestParam String channelId, @RequestParam(required=true) String username, @RequestParam(required=true)String npm){
+			@RequestParam String requestId, @RequestParam String channelId, @RequestParam(required=true) String name, @RequestParam(required=true)String npm){
 		
 		Mahasiswa temp = new Mahasiswa();
-		temp.setId(23);
-		temp.setNama(username);
+		temp.setNama(name);
 		temp.setNpm(npm);
 		simpleCRUD.saveMahasiswa(temp);
 		return new GdnBaseRestResponse(true);
 		
 	}
 	
-	@RequestMapping(value = "/api/mahasiswa/deleteMahasiswa", method= RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+	@RequestMapping(value = "/api/mahasiswa/deleteMahasiswa", method= RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 	@ApiOperation(value = "delete mahasiswa",notes="membuang mahasiswa dengan nama ini.")
 	@ResponseBody
-	public GdnBaseRestResponse deleteMahasiswa(@RequestParam String clientId, @RequestParam String storeId, 
-			@RequestParam String requestId, @RequestParam String channelId, @RequestParam(required=true)String username, @RequestParam(required=true)String npm){
+	public GdnRestSingleResponse<MahasiswaDTO> deleteMahasiswa(@RequestParam String clientId, @RequestParam String storeId, 
+			@RequestParam String requestId, @RequestParam String channelId, @RequestParam(required=true)int id){
 		
-		Mahasiswa temp = new Mahasiswa();
-		Mahasiswa x = simpleCRUD.findByNama(username);
-		if(!x.equals("")){
-			temp.setId(23);
-			temp.setNama(username);
-			temp.setNpm(npm);
-			simpleCRUD.deleteMahasiswa(temp);
-			return new GdnBaseRestResponse(true);
-		}
-		return new GdnBaseRestResponse(false);
-		//belum bisa gatau kenapa ga bisa kehapus. 
-		// udah nyoba langsung delete ga pake check ada atau engga juga ga bisa.	
+		Mahasiswa temp=new Mahasiswa();
+		temp.setId(id);
+		Mahasiswa sloi = simpleCRUD.findMahasiswaById(id);
+		simpleCRUD.deleteMahasiswa(temp);
+		MahasiswaDTO mahas = new MahasiswaDTO(String.valueOf(sloi.getId()), sloi.getNama(), sloi.getNpm());
+		
+		return new GdnRestSingleResponse<MahasiswaDTO>(mahas, requestId);
+	}
+	
+	@RequestMapping(value = "/api/mahasiswa/updateMahasiswa", method= RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+	@ApiOperation(value = "update mahasiswa",notes="mengganti mahasiswa.")
+	@ResponseBody
+	public GdnRestSingleResponse<MahasiswaDTO> updateMahasiswa(@RequestParam String clientId, @RequestParam String storeId, 
+			@RequestParam String requestId, @RequestParam String channelId, @RequestParam(required=true)int idDiganti, @RequestParam(required=true)String nama, @RequestParam(required=true)String npm){
+		
+		Mahasiswa temp=new Mahasiswa();
+		temp.setId(idDiganti);
+		temp.setNama(nama);
+		temp.setNpm(npm);
+		simpleCRUD.updateMahasiswa(temp);
+		MahasiswaDTO mahas = new MahasiswaDTO(String.valueOf(temp.getId()), temp.getNama(), temp.getNpm());
+		
+		return new GdnRestSingleResponse<MahasiswaDTO>(mahas, requestId);
 	}
 	
 	@RequestMapping(value = "/api/mahasiswa/findMahasiswaById", method= RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
