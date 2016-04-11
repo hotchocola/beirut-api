@@ -20,6 +20,17 @@ public class SimpleCRUDService implements SimpleCRUD {
   public SimpleCRUDService() {}
 
   @Override
+  public void deleteMahasiswa(Mahasiswa mahasiswa) {
+    getMahasiswaDao().delete(mahasiswa);
+  }
+
+  @Override
+  @Transactional(readOnly = false)
+  public void deleteMahasiswaById(int id) {
+    getMahasiswaDao().delete(id);
+  }
+
+  @Override
   public Mahasiswa findByNama(String nama) {
     return getMahasiswaDao().findByNama(nama);
   }
@@ -57,5 +68,4 @@ public class SimpleCRUDService implements SimpleCRUD {
   public void setMahasiswaDao(MahasiswaDao mahasiswaDao) {
     this.mahasiswaDao = mahasiswaDao;
   }
-
 }

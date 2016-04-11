@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +28,39 @@ import com.wordnik.swagger.annotations.ApiOperation;
 public class MahasiswaController {
   @Autowired
   private SimpleCRUD simpleCRUD;
+
+  @RequestMapping(value = "/deleteMahasiswa", method = RequestMethod.POST,
+      produces = {MediaType.APPLICATION_XML_VALUE})
+
+  @ResponseBody
+  @ApiOperation(value = "delete mahasiswa berdasarkan objek yang diberikan",
+      notes = "asasadasdasdsad")
+  public void deleteMahasiswa(@RequestParam String storeId, @RequestParam String channelId,
+      @RequestParam String clientId, @RequestParam String requestId, @RequestParam String username,
+      @RequestBody Mahasiswa mahasiswa) {
+    Mahasiswa ma = new Mahasiswa();
+    ma.setId(mahasiswa.getId());
+    ma.setNama(mahasiswa.getNama());
+    ma.setNpm(mahasiswa.getNpm());
+    if (!(simpleCRUD.findMahasiswaById(ma.getId()).equals(""))) {
+      simpleCRUD.deleteMahasiswa(ma);
+    }
+  }
+
+  @RequestMapping(value = "/deleteMahasiswaById", method = RequestMethod.POST,
+      produces = {MediaType.APPLICATION_XML_VALUE})
+
+  @ResponseBody
+  @ApiOperation(value = "delete mahasiswa berdasarkan id yang diberikan", notes = "asasadasdasdsad")
+  public void deleteMahasiswaById(@RequestParam String storeId, @RequestParam String channelId,
+      @RequestParam String clientId, @RequestParam String requestId, @RequestParam String username,
+      @RequestParam String id) {
+    Mahasiswa ma = new Mahasiswa();
+    ma.setId(Integer.parseInt(id));
+    if (!(simpleCRUD.findMahasiswaById(ma.getId()).equals(""))) {
+      simpleCRUD.deleteMahasiswa(ma);
+    }
+  }
 
   @RequestMapping(value = "/findByNama", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_XML_VALUE})
@@ -101,11 +135,16 @@ public class MahasiswaController {
 
   @ResponseBody
   @ApiOperation(value = "save mahasiswa", notes = "asasadasdasdsad")
-  public void saveMahasiswa(@RequestParam String storeId, @RequestParam String channelId,
-      @RequestParam String clientId, @RequestParam String requestId,
-      @RequestParam String username) {
-    simpleCRUD.;//kayaknya salah disekitar situ. soalnya java mulai itungannya dr satu lagi?
+  public GdnRestSingleResponse<MahasiswaDTO> saveMahasiswa(@RequestParam String storeId,
+      @RequestParam String channelId, @RequestParam String clientId, @RequestParam String requestId,
+      @RequestParam String username, @RequestParam String npm) {
+    Mahasiswa m = new Mahasiswa();
+    m.setNama(username);
+    m.setNpm(npm);
     simpleCRUD.saveMahasiswa(m);
+    MahasiswaDTO md = new MahasiswaDTO(simpleCRUD.findByNama(username).getId() + "", username, npm);
+    GdnRestSingleResponse<MahasiswaDTO> obj =
+        new GdnRestSingleResponse<MahasiswaDTO>(md, requestId);
+    return obj;
   }
-
 }

@@ -6,6 +6,10 @@ import com.ega.entities.Mahasiswa;
 
 public interface SimpleCRUD {
 
+  void deleteMahasiswa(Mahasiswa mahasiswa);
+
+  void deleteMahasiswaById(int id);
+
   Mahasiswa findByNama(String nama);
 
   Mahasiswa findMahasiswaById(int id);
