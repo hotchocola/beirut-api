@@ -11,7 +11,7 @@ public class MahasiswaDTO extends BaseResponse {
 	private String primaryKey;
 	private String nama;
 	private String npm;
-	private ArrayList<String> matkul;
+	private Set<MatakuliahDTO> matkul;
 
 	public MahasiswaDTO(String primaryKey, String nama, String npm) {
 		this.primaryKey = primaryKey;
@@ -19,11 +19,27 @@ public class MahasiswaDTO extends BaseResponse {
 		this.npm = npm;
 	}
 	
-	public MahasiswaDTO(String primaryKey, String nama, String npm, ArrayList<String> matkul) {
+	public MahasiswaDTO(String primaryKey, String nama, String npm, Set<MatakuliahDTO> matkul) {
 		this.primaryKey = primaryKey;
 		this.nama = nama;
 		this.npm = npm;
 		this.matkul=matkul;
+	}
+	
+	public MahasiswaDTO(){
+		this.matkul=new HashSet<MatakuliahDTO>();
+	}
+	
+	public void setMatakuliah(Set<MatakuliahDTO> matakuliah){
+		this.matkul=matakuliah;
+	}
+	
+	public void addMatakuliah(MatakuliahDTO matkuliah){
+		this.matkul.add(matkuliah);	
+	}
+	
+	public Set<MatakuliahDTO> getMataKuliah(){
+		return this.matkul;
 	}
 	
 	public String getPrimaryKey() {

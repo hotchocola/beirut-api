@@ -93,5 +93,9 @@ public class MataKuliah implements Serializable {
   public void setNamaDosen(String namaDosen) {
     this.namaDosen = namaDosen;
   }
+  
+  public String toString(){
+	  return this.getNama() + " " + this.getKode() + " "+ this.getNamaDosen();
+  }
 
 }

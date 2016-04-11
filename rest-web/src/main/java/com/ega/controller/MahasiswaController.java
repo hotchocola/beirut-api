@@ -3,6 +3,7 @@ package com.ega.controller;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -133,26 +134,18 @@ public class MahasiswaController {
 		@RequestParam String requestId, @RequestParam String channelId, @RequestParam(required=true) int id) {
 		
 	    Mahasiswa temp=simpleCRUD.findMahasiswaDetail(id);
-	    //List<MataKuliah> temp2= simpleCRUD.findByMahasiswa(id);
-	    
-	    //for(int i=0; i< temp2.size(); i++){
-	    //	mahas.addMatkul(temp2.get(i).getNama());
-	    //}
-	    //Set<MataKuliah> temp2= temp.getMataKuliah();
-	    //MataKuliah[] arr = (MataKuliah[]) temp2.toArray();
-	    //Set<MatakuliahDTO> matkul = new HashSet<MatakuliahDTO>();
-	    //for(int i=0; i<temp2.size();i++){
-	    //	matkul.add(new MatakuliahDTO(String.valueOf(arr[i].getId()), arr[i].getNama(), arr[i].getKode(), arr[i].getNamaDosen()));
-	    //}
-	    MataKuliah[] arr = (MataKuliah[]) (temp.getMataKuliah()).toArray();
-	    ArrayList<String> namas = new ArrayList<String>();
-	    for(int i=0; i<temp.getMataKuliah().size();i++)
-	    {
-	    	namas.add(arr[i].getNama());
+	    MahasiswaDTO mahas = new MahasiswaDTO();
+	    mahas.setPrimaryKey(String.valueOf(temp.getId()));
+	    mahas.setNama(temp.getNama());
+	    mahas.setNpm(temp.getNpm());
+	    System.out.println(mahas.toString());
+	    Iterator<MataKuliah> iterator = temp.getMataKuliah().iterator();
+	    while(iterator.hasNext()){
+	    	MataKuliah res = iterator.next();
+	    	System.out.println(res.toString());
+	    	MatakuliahDTO result = new MatakuliahDTO(String.valueOf(res.getId()), res.getNama(), res.getKode(), res.getNamaDosen());
+	    	mahas.addMatakuliah(result);
 	    }
-	    MahasiswaDTO mahas = new MahasiswaDTO(String.valueOf(temp.getId()), temp.getNama(), temp.getNpm(), namas);
-	    //mahas.setMataKuliahDTO(matkul);
-	  
 	    return new GdnRestSingleResponse<MahasiswaDTO>(mahas, requestId);
 	}
 }
