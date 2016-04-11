@@ -78,4 +78,13 @@ public class Mahasiswa implements Serializable {
   public void setNpm(String npm) {
     this.npm = npm;
   }
+  
+  public String toString(){
+	  MataKuliah[] arr = (MataKuliah[]) this.mataKuliah.toArray();
+	  String res="";
+	  for(int i=0; i< this.mataKuliah.size(); i++){
+		  res+=arr[i];
+	  }
+	  return this.getId() + this.getNama() + this.getNpm() + res;
+  }
 }

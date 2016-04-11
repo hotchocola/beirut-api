@@ -2,8 +2,11 @@ package com.ega.controller;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -14,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ega.dto.MahasiswaDTO;
+import com.ega.dto.MatakuliahDTO;
 import com.ega.entities.Mahasiswa;
+import com.ega.entities.MataKuliah;
 import com.ega.services.SimpleCRUD;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
@@ -52,13 +57,17 @@ public class MahasiswaController {
 	@RequestMapping(value = "/api/mahasiswa/findByName", method= RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 	@ApiOperation(value = "find mahasiswa by name",notes="cari nama mahasiswa berdasarkan nama")
 	@ResponseBody
-	public GdnRestSingleResponse<MahasiswaDTO> findByName(@RequestParam String clientId, @RequestParam String storeId, 
+	public GdnRestListResponse<MahasiswaDTO> findByName(@RequestParam String clientId, @RequestParam String storeId, 
 		@RequestParam String requestId, @RequestParam String channelId, @RequestParam(required=true) String username) {
 		
-	    Mahasiswa temp=simpleCRUD.findByNama(username);
-	    MahasiswaDTO mahas = new MahasiswaDTO(String.valueOf(temp.getId()), temp.getNama(), temp.getNpm());
+		List<Mahasiswa> temp = simpleCRUD.findByName(username);
+		List<MahasiswaDTO> terserah= new ArrayList<MahasiswaDTO>();
 	    
-	    return new GdnRestSingleResponse<MahasiswaDTO>(mahas, requestId);
+		for(int i=0; i<temp.size(); i++){
+			terserah.add(new MahasiswaDTO(String.valueOf(temp.get(i).getId()), temp.get(i).getNama(), temp.get(i).getNpm()));
+		}
+	    
+	    return new GdnRestListResponse<MahasiswaDTO>(terserah, new PageMetaData(50, 0, temp.size()), requestId);
 	}
 	
 	@RequestMapping(value = "/api/mahasiswa/saveMahasiswa", method= RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -72,7 +81,6 @@ public class MahasiswaController {
 		temp.setNpm(npm);
 		simpleCRUD.saveMahasiswa(temp);
 		return new GdnBaseRestResponse(true);
-		
 	}
 	
 	@RequestMapping(value = "/api/mahasiswa/deleteMahasiswa", method= RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -118,6 +126,35 @@ public class MahasiswaController {
 	    return new GdnRestSingleResponse<MahasiswaDTO>(mahas, requestId);
 	}
 	
+	@RequestMapping(value = "/api/mahasiswa/findMahasiswaDetailById", method= RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+	@ApiOperation(value = "find detail mahasiswa by ID",notes="cari detail mahasiswa berdasarkan ID")
+	@ResponseBody
+	public GdnRestSingleResponse<MahasiswaDTO> findMahasiswaDetailById(@RequestParam String clientId, @RequestParam String storeId, 
+		@RequestParam String requestId, @RequestParam String channelId, @RequestParam(required=true) int id) {
+		
+	    Mahasiswa temp=simpleCRUD.findMahasiswaDetail(id);
+	    //List<MataKuliah> temp2= simpleCRUD.findByMahasiswa(id);
+	    
+	    //for(int i=0; i< temp2.size(); i++){
+	    //	mahas.addMatkul(temp2.get(i).getNama());
+	    //}
+	    //Set<MataKuliah> temp2= temp.getMataKuliah();
+	    //MataKuliah[] arr = (MataKuliah[]) temp2.toArray();
+	    //Set<MatakuliahDTO> matkul = new HashSet<MatakuliahDTO>();
+	    //for(int i=0; i<temp2.size();i++){
+	    //	matkul.add(new MatakuliahDTO(String.valueOf(arr[i].getId()), arr[i].getNama(), arr[i].getKode(), arr[i].getNamaDosen()));
+	    //}
+	    MataKuliah[] arr = (MataKuliah[]) (temp.getMataKuliah()).toArray();
+	    ArrayList<String> namas = new ArrayList<String>();
+	    for(int i=0; i<temp.getMataKuliah().size();i++)
+	    {
+	    	namas.add(arr[i].getNama());
+	    }
+	    MahasiswaDTO mahas = new MahasiswaDTO(String.valueOf(temp.getId()), temp.getNama(), temp.getNpm(), namas);
+	    //mahas.setMataKuliahDTO(matkul);
+	  
+	    return new GdnRestSingleResponse<MahasiswaDTO>(mahas, requestId);
+	}
 }
 
 

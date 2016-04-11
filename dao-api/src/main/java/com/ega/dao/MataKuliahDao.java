@@ -5,6 +5,8 @@
  */
 package com.ega.dao;
 
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 
 import com.ega.entities.MataKuliah;
@@ -14,4 +16,7 @@ import com.ega.entities.MataKuliah;
  * @author Ega Prianto
  */
 public interface MataKuliahDao extends CrudRepository<MataKuliah, Integer>{
+	
+	List<MataKuliah> findByNama(String name);
+	List<MataKuliah> findByMahasiswa(int id);
 }

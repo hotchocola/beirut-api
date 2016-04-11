@@ -41,7 +41,7 @@ public class MataKuliah implements Serializable {
   private String namaDosen;
 
   @ManyToOne
-  @JoinColumn(name = "mahasiswa_id")
+  @JoinColumn(name = "mahasiswa_id", insertable=true, updatable=true)
   private Mahasiswa mahasiswa;
 
   public MataKuliah() {

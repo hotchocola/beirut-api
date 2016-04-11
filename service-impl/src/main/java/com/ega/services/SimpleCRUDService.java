@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ega.dao.MahasiswaDao;
+import com.ega.dao.MataKuliahDao;
 import com.ega.entities.Mahasiswa;
+import com.ega.entities.MataKuliah;
 import com.ega.services.SimpleCRUD;
 
 @Service(value = "simpleCRUD")
@@ -18,10 +20,13 @@ public class SimpleCRUDService implements SimpleCRUD {
 
   @Autowired
   private MahasiswaDao mahasiswaDao;
+  
+  @Autowired
+  private MataKuliahDao matakuliahDao;
 
   @Override
-  public Mahasiswa findByNama(String nama) {
-    return getMahasiswaDao().findByNama(nama);
+  public List<Mahasiswa> findByName(String name) {
+    return getMahasiswaDao().findByNamaContaining(name);
   }
 
   @Override
@@ -42,11 +47,21 @@ public class SimpleCRUDService implements SimpleCRUD {
   public MahasiswaDao getMahasiswaDao() {
     return mahasiswaDao;
   }
+  
+  public MataKuliahDao getMataKuliahDao(){
+	  return matakuliahDao;
+  }
 
   @Override
   @Transactional(readOnly = false)
   public void saveMahasiswa(Mahasiswa mahasiswa) {
     getMahasiswaDao().save(mahasiswa);
+  }
+  
+  @Override
+  @Transactional(readOnly = false)
+  public void saveMatakuliah(MataKuliah matakuliah) {
+    getMataKuliahDao().save(matakuliah);
   }
 
   public void setMahasiswaDao(MahasiswaDao mahasiswaDao) {
@@ -69,4 +84,20 @@ public class SimpleCRUDService implements SimpleCRUD {
   public void updateMahasiswa(Mahasiswa mahasiswa) {
 	getMahasiswaDao().save(mahasiswa);
   }
+
+  @Override
+  public List<MataKuliah> findByNamaMK(String nama) {
+	 return getMataKuliahDao().findByNama(nama);
+  }
+
+  @Override
+  public MataKuliah findMatakuliahById(int id) {
+	return getMataKuliahDao().findOne(id);
+  }
+
+
+  //@Override
+ //public List<MataKuliah> findByMahasiswa(int id) {
+	//return getMataKuliahDao().findByMahasiswa(id);
+  //}
 }

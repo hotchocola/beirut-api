@@ -5,6 +5,8 @@
  */
 package com.ega.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.ega.entities.Mahasiswa;
@@ -16,6 +18,6 @@ import com.ega.entities.Mahasiswa;
  */
 public interface MahasiswaDao extends JpaRepository<Mahasiswa, Integer>  {
 
-  Mahasiswa findByNama(String name);
+  List<Mahasiswa> findByNamaContaining(String name);
 
 }
