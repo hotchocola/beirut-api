@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,17 +31,17 @@ public class SimpleCRUDService implements SimpleCRUD {
   }
 
   @Override
-  public Mahasiswa findMahasiswaById(int id) {
+  public Mahasiswa findMahasiswaById(String id) {
     return getMahasiswaDao().findOne(id);
   }
 
   @Override
   //  @Transactional(readOnly = false)
-  public Mahasiswa findMahasiswaDetail(int id) {
+  public Mahasiswa findMahasiswaDetail(String id) {
     System.out.println("ambil mahasiswa");
     Mahasiswa mahasiswa = mahasiswaDao.findOne(id);
     System.out.println("ambil relasi mahasiswa");
-    Hibernate.initialize(mahasiswa.getMataKuliah());
+    Hibernate.initialize(mahasiswa.getMataKuliahs());
     return mahasiswa;
   }
 
@@ -55,7 +56,10 @@ public class SimpleCRUDService implements SimpleCRUD {
   @Override
   @Transactional(readOnly = false)
   public void saveMahasiswa(Mahasiswa mahasiswa) {
-    getMahasiswaDao().save(mahasiswa);
+	for (MataKuliah iterable_element : mahasiswa.getMataKuliahs()) {
+		iterable_element.setMahasiswa(mahasiswa);
+	}
+	  getMahasiswaDao().save(mahasiswa);
   }
   
   @Override
@@ -75,25 +79,43 @@ public class SimpleCRUDService implements SimpleCRUD {
 
   @Override
   @Transactional(readOnly = false)
-  public void deleteMahasiswa(Mahasiswa mahasiswa) {
-	 getMahasiswaDao().delete(mahasiswa);
+  public void deleteMahasiswa(String id) {
+	 getMahasiswaDao().delete(id);
   }
 
   @Override
+  @Modifying
   @Transactional(readOnly = false)
   public void updateMahasiswa(Mahasiswa mahasiswa) {
-	getMahasiswaDao().save(mahasiswa);
+	  getMahasiswaDao().save(mahasiswa);
   }
 
   @Override
   public List<MataKuliah> findByNamaMK(String nama) {
-	 return getMataKuliahDao().findByNama(nama);
+	 return getMataKuliahDao().findByNamaContaining(nama);
   }
 
   @Override
-  public MataKuliah findMatakuliahById(int id) {
+  public MataKuliah findMatakuliahById(String id) {
 	return getMataKuliahDao().findOne(id);
   }
+
+@Override
+@Transactional(readOnly = false)
+public void deleteMatakuliah(MataKuliah matakuliah) {
+	getMataKuliahDao().delete(matakuliah);
+}
+
+@Override
+@Transactional(readOnly = false)
+public void updateMatakuliah(MataKuliah matakuliah) {
+	getMataKuliahDao().save(matakuliah);
+}
+
+@Override
+public List<MataKuliah> getAllMatakuliah() {
+	return getMataKuliahDao().findAll();
+}
 
 
   //@Override
