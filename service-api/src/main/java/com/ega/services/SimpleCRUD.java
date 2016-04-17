@@ -3,20 +3,29 @@ package com.ega.services;
 import java.util.List;
 
 import com.ega.entities.Mahasiswa;
+import com.ega.entities.MataKuliah;
 
 public interface SimpleCRUD {
 
-  void deleteMahasiswa(Mahasiswa mahasiswa);
+  Mahasiswa deleteMahasiswaById(String id);
 
-  void deleteMahasiswaById(int id);
+  MataKuliah deleteMataKuliahById(String id);
 
-  Mahasiswa findByNama(String nama);
+  Mahasiswa findMahasiswaById(String id);
 
-  Mahasiswa findMahasiswaById(int id);
+  List<Mahasiswa> findMahasiswaByNama(String nama);
 
-  Mahasiswa findMahasiswaDetail(int id);
+  Mahasiswa findMahasiswaDetail(String id);
 
-  List<Mahasiswa> getAll();
+  MataKuliah findMataKuliahById(String id);
+
+  List<MataKuliah> findMataKuliahByNama(String nama);
+
+  List<Mahasiswa> getAllMahasiswa();
+
+  List<MataKuliah> getAllMataKuliah();
 
   void saveMahasiswa(Mahasiswa mahasiswa);
+
+  void saveMataKuliah(MataKuliah mataKuliah);
 }

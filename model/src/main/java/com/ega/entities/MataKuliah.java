@@ -10,11 +10,12 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 /**
  *
@@ -27,9 +28,11 @@ public class MataKuliah implements Serializable {
   private static final long serialVersionUID = -1311121582151898747L;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(generator = "system-uuid")
+  @GenericGenerator(name = "system-uuid", strategy = "uuid2")
+  // @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "ID_MataKuliah")
-  private Integer id;
+  private String id;
 
   @Column(name = "Nama_MataKuliah")
   private String nama;
@@ -54,7 +57,7 @@ public class MataKuliah implements Serializable {
     this.namaDosen = namaDosen;
   }
 
-  public Integer getId() {
+  public String getId() {
     return id;
   }
 
@@ -74,7 +77,7 @@ public class MataKuliah implements Serializable {
     return namaDosen;
   }
 
-  public void setId(Integer id) {
+  public void setId(String id) {
     this.id = id;
   }
 

@@ -1,4 +1,4 @@
-package com.ega.dto;
+package com.ega.dto.response;
 
 import com.gdn.common.web.base.BaseResponse;
 
