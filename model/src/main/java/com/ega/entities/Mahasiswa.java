@@ -5,7 +5,6 @@
  */
 package com.ega.entities;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,13 +12,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
+import com.gdn.common.base.entity.GdnBaseEntity;
 
 /**
  *
@@ -27,14 +23,16 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @Entity
 @Table(name = "Mahasiswa")
-public class Mahasiswa implements Serializable {
+public class Mahasiswa extends GdnBaseEntity {
 
   private static final long serialVersionUID = -8990289988119348524L;
 
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid2")
-  private String id;
+  //@Id
+  //@GeneratedValue(generator = "system-uuid")
+  //@GenericGenerator(name = "system-uuid", strategy = "uuid2")
+  //private String id;
+
+  private static final String STORE_ID = "1";
 
   @Column(name = "Nama_Mahasiswa")
   private String nama;
@@ -50,14 +48,23 @@ public class Mahasiswa implements Serializable {
     // nothing to do here
   }
 
-  public String getId(){
-	  return this.id;
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Mahasiswa other = (Mahasiswa) obj;
+    if (getId() == null) {
+      if (other.getId() != null)
+        return false;
+    } else if (!getId().equals(other.getId()))
+      return false;
+    return true;
   }
-  
-  public void setId(String id){
-	  this.id=id;  
-  }
-  
+
   public Set<MataKuliah> getMataKuliahs() {
     return this.matakuliahs;
   }
@@ -82,12 +89,12 @@ public class Mahasiswa implements Serializable {
     this.npm = npm;
   }
   
-  public String toString(){
-	  //MataKuliah[] arr = (MataKuliah[]) this.mataKuliah.toArray();
-	 // String res="";
-	 // for(int i=0; i< this.mataKuliah.size(); i++){
-		//  res+=arr[i];
-	 // }
-	  return this.getNama() + this.getNpm();
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
+    return result;
   }
+
 }
