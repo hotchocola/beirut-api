@@ -1,4 +1,4 @@
-package com.ega.dao;
+package com.gdn.x.beirut.dao;
 
 import javax.sql.DataSource;
 
