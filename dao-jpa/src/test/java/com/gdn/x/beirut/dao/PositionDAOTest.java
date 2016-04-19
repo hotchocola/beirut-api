@@ -21,14 +21,14 @@ import com.gdn.x.beirut.entities.Position;
 @TestExecutionListeners (listeners= {DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class})
 @Transactional(readOnly = false)
-public class TestPositionDao {
+public class PositionDAOTest {
   //private static final Logger LOG=LoggerFactory.getLogger(TestPositionDao.class);
   private Position position1;
 
   private Position position2;
 
   @Autowired
-  private PositionDao positionDao;
+  private PositionDAO positionDAO;
 
   @Before
   public void initialize(){
@@ -37,19 +37,19 @@ public class TestPositionDao {
     this.position1.setTitle("Nanami");
     this.position2.setTitle("Budi");
     this.position1.setCreatedBy("Aderai");
-    this.positionDao.save(this.position1);
+    this.positionDAO.save(this.position1);
   }
 
   @Test
   public void testFindByTitle(){
-    assertTrue(this.positionDao.findByTitle(this.position2.getTitle()).isEmpty());
+    assertTrue(this.positionDAO.findByTitle(this.position2.getTitle()).isEmpty());
   }
 
   @Test
   public void testSave(){
-    assertTrue(this.positionDao.findByTitleContaining(this.position1.getTitle()).size()==1);
-    assertTrue(this.positionDao.findByTitleContaining("Nana").size()==1);
-    assertTrue(this.positionDao.findByTitleContaining(this.position2.getTitle()).isEmpty());
+    assertTrue(this.positionDAO.findByTitleContaining(this.position1.getTitle()).size()==1);
+    assertTrue(this.positionDAO.findByTitleContaining("Nana").size()==1);
+    assertTrue(this.positionDAO.findByTitleContaining(this.position2.getTitle()).isEmpty());
     //LOG.info("position list = {}", this.positionDao.findOne(this.position1.getId()));
   }
 

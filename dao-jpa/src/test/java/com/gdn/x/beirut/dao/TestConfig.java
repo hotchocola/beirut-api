@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(basePackages = {"com.gdn.x.beirut.entities"})
 public class TestConfig {
 
+
     @Bean
     public DataSource dataSource(){
         return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
@@ -61,5 +62,4 @@ public class TestConfig {
         return jpaTransactionManager;
     }
 }
-
 
