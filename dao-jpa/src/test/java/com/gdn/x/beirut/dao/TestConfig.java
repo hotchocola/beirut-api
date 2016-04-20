@@ -17,46 +17,49 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@EnableJpaRepositories(basePackages = {"com.gdn.x.beirut.dao"})
+@EnableJpaRepositories("com.gdn.x.beirut.dao")
 @EnableJpaAuditing
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"com.gdn.x.beirut.entities"})
 public class TestConfig {
-  @Bean
-  DataSource dataSource() {
-    return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
-  }
 
-  @Bean
-  LocalContainerEntityManagerFactoryBean entityManagerFactory() throws Exception {
-    LocalContainerEntityManagerFactoryBean entityManagerFactory =
-        new LocalContainerEntityManagerFactoryBean();
-    entityManagerFactory.setDataSource(this.dataSource());
-    entityManagerFactory.setJpaVendorAdapter(this.jpaVendorAdapter());
-    entityManagerFactory.setPackagesToScan(new String[] {"com.gdn.x.beirut.entities"});
-    return entityManagerFactory;
-  }
 
-  @Bean
-  HibernateJpaDialect jpaDialect() {
-    HibernateJpaDialect jpaDialect = new HibernateJpaDialect();
-    return jpaDialect;
-  }
+    @Bean
+    public DataSource dataSource(){
+        return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
+    }
 
-  @Bean
-  HibernateJpaVendorAdapter jpaVendorAdapter() {
-    HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
-    jpaVendorAdapter.setDatabase(Database.MYSQL);
-    jpaVendorAdapter.setGenerateDdl(true);
-    jpaVendorAdapter.setShowSql(true);
-    return jpaVendorAdapter;
-  }
+    @Bean
+    LocalContainerEntityManagerFactoryBean entityManagerFactory() throws Exception{
+        LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
+        entityManagerFactory.setDataSource(this.dataSource());
+        entityManagerFactory.setJpaVendorAdapter(this.jpaVendorAdapter());
+        entityManagerFactory.setPackagesToScan(new String[] {"com.gdn.x.beirut.entities"});
+        return entityManagerFactory;
+    }
 
-  @Bean
-  JpaTransactionManager transactionManager() throws Exception {
-    JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
-    jpaTransactionManager.setDataSource(this.dataSource());
-    jpaTransactionManager.setJpaDialect(this.jpaDialect());
-    return jpaTransactionManager;
-  }
+    @Bean
+    HibernateJpaDialect jpaDialect(){
+        HibernateJpaDialect jpaDialect = new HibernateJpaDialect();
+        return jpaDialect;
+    }
+
+
+    @Bean
+    HibernateJpaVendorAdapter jpaVendorAdapter() {
+        HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
+        jpaVendorAdapter.setDatabase(Database.H2);
+        jpaVendorAdapter.setGenerateDdl(true);
+        jpaVendorAdapter.setShowSql(true);
+        return jpaVendorAdapter;
+    }
+
+    @Bean
+    JpaTransactionManager transactionManager() throws Exception {
+        JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
+        jpaTransactionManager.setDataSource(this.dataSource());
+        jpaTransactionManager.setJpaDialect(this.jpaDialect());
+        return jpaTransactionManager;
+    }
 }
+
