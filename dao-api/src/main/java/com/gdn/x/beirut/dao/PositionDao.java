@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.gdn.x.beirut.entities.Position;
 
 public interface PositionDAO extends JpaRepository<Position, String>{
-   List<Position> findByTitle(String title);
-   List<Position> findByTitleContaining(String title);
+   List<Position> findByTitleAndMarkForDeleteNot(String title, boolean bool);
+   List<Position> findByTitleContainingAndMarkForDelete(String title, boolean bool);
 }

@@ -42,14 +42,22 @@ public class PositionDAOTest {
 
   @Test
   public void testFindByTitle(){
-    assertTrue(this.positionDAO.findByTitle(this.position2.getTitle()).isEmpty());
+    assertTrue(this.positionDAO.findByTitleContainingAndMarkForDelete(this.position2.getTitle(), false).isEmpty());
+  }
+
+  @Test
+  public void testMarkForDelete(){
+    this.position1.setMarkForDelete(true);
+    assertTrue(this.positionDAO.findByTitleAndMarkForDeleteNot(this.position1.getTitle(), true).isEmpty());
   }
 
   @Test
   public void testSave(){
-    assertTrue(this.positionDAO.findByTitleContaining(this.position1.getTitle()).size()==1);
-    assertTrue(this.positionDAO.findByTitleContaining("Nana").size()==1);
-    assertTrue(this.positionDAO.findByTitleContaining(this.position2.getTitle()).isEmpty());
+    System.out.println("aaaa" + this.position1.isMarkForDelete());
+    System.out.println("bbbb" + this.position2.isMarkForDelete());
+    assertTrue(this.positionDAO.findByTitleContainingAndMarkForDelete(this.position1.getTitle(), false).size()==1);
+    assertTrue(this.positionDAO.findByTitleContainingAndMarkForDelete("Nana", false).size()==1);
+    assertTrue(this.positionDAO.findByTitleContainingAndMarkForDelete(this.position2.getTitle(), false).isEmpty());
     //LOG.info("position list = {}", this.positionDao.findOne(this.position1.getId()));
   }
 

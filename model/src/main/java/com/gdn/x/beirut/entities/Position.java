@@ -17,6 +17,10 @@ public class Position extends GdnBaseEntity {
  // @OneToMany(mappedBy="position")
   //private final Set<CandidatePosition> candidatePosition= new HashSet<CandidatePosition>();
 
+  public Position(){
+    super();
+  }
+
   public String getTitle() {
     return title;
   }
