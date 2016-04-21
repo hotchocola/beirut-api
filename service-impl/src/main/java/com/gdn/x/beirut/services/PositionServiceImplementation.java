@@ -1,5 +1,6 @@
 package com.gdn.x.beirut.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,21 +34,27 @@ public class PositionServiceImplementation implements PositionService {
 
   @Override
   @Transactional(readOnly = false)
-  public void markForDeletePosition(Position position) {
-   List<Position> positionTemp = this.getPositionDao().findByTitleContainingAndMarkForDelete(position.getTitle(), false);
-   for(int i=0; i< positionTemp.size(); i++){
-     positionTemp.get(i).setMarkForDelete(true);
-   }
-   this.getPositionDao().save(positionTemp);
+  public void markForDeletePosition(List<String> ids) {
+    List<Position> positions = new ArrayList<Position>();
+    for(int i=0; i< ids.size(); i++){
+        Position posi = this.getPositionDao().findByIdAndMarkForDelete(ids.get(i), false);
+        if(posi != null){
+          posi.setMarkForDelete(true);
+          positions.add(posi);
+        } else {
+          break;
+        }
+    }
+    this.getPositionDao().save(positions);
   }
 
   @Override
   @Transactional(readOnly = false)
-  public void updatePosition(Position oldPosition, Position newPosition) {
-      List<Position> position= this.getPositionDao().findByTitleContainingAndMarkForDelete(oldPosition.getTitle(), false);
-      for(int i=0; i< position.size(); i++){
-        this.getPositionDao().save(newPosition);
-      }
+  public void updatePositionTitle(String id, String title) {
+    Position posi = this.getPositionDao().findByIdAndMarkForDelete(id, false);
+    if(posi!=null){
+      posi.setTitle(title);
+      this.getPositionDao().save(posi);
+    }
   }
-
 }

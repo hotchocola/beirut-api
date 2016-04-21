@@ -23,14 +23,17 @@ public class PositionServiceTest {
   private PositionServiceImplementation service;
 
   private Position position;
+  private final List<Position> pos = new ArrayList<Position>();
 
   @Test
   public void checkMarkForDelete(){
-    this.service.markForDeletePosition(this.position);
-    Mockito.verify(this.repository, Mockito.times(1)).findByTitleContainingAndMarkForDelete(this.position.getTitle(), false);
-    List<Position> posi = new ArrayList<Position>();
-    posi.add(this.position);
-    Mockito.verify(this.repository, Mockito.times(1)).save(posi);
+    List<String> ids = new ArrayList<String>();
+    for(int i=0; i<pos.size(); i++){
+      ids.add(pos.get(i).getId());
+    }
+    System.out.println("IDs :" + ids.toString());
+    this.service.markForDeletePosition(ids);
+    Mockito.verify(this.repository).findByIdAndMarkForDelete(this.position.getId(), false);
   }
 
   @Test
@@ -40,20 +43,14 @@ public class PositionServiceTest {
   }
 
   @Test
-  public void checkUpdatePosition(){
-    List<Position> position = new ArrayList<Position>();
-    for(int i=0;i<5; i++){
-      Position posi = new Position();
-      posi.setTitle(i+"a");
-      if(i%2 == 0){
-        posi.setMarkForDelete(true);
-      } else {
-        posi.setMarkForDelete(false);
-      }
-      position.add(posi);
-    }
-    this.service.updatePosition(position.get(0), position.get(1));
-    Mockito.verify(this.repository).findByTitleContainingAndMarkForDelete(position.get(0).getTitle(), false);
+  public void checkUpdatePositionTitle(){
+    List<Position> positions = new ArrayList<Position>();
+    Position posi1 = new Position();
+    posi1.setTitle("Kamabaka");
+    posi1.setId("1");
+    positions.add(posi1);
+    this.service.updatePositionTitle(posi1.getId(), "Emporio Ivankov");
+    Mockito.verify(this.repository).findByIdAndMarkForDelete(this.position.getId(), false);
   }
 
   @Before
@@ -62,7 +59,7 @@ public class PositionServiceTest {
 
     this.position=new Position();
     this.position.setTitle("Choa");
-    List<Position> pos = new ArrayList<Position>();
+    this.position.setId("1");
     pos.add(this.position);
     Mockito.when(this.repository.findByTitleContainingAndMarkForDelete(this.position.getTitle(), false)).thenReturn(pos);
   }
