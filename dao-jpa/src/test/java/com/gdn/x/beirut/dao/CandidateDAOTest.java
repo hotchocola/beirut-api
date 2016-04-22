@@ -1,5 +1,6 @@
 package com.gdn.x.beirut.dao;
 
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.junit.Assert;
@@ -51,6 +52,27 @@ public class CandidateDAOTest {
     candDetail.setContent(("ini PDF").getBytes());
     newCandidate.setCandidatedetail(candDetail);
     this.candidateDAO.save(newCandidate);
+  }
+
+  @Test
+  public void testFindByCreatedDateBetween() {
+    GregorianCalendar start = new GregorianCalendar(2016, 1, 1);
+    GregorianCalendar end = new GregorianCalendar(2016, 6, 1);
+    List<Candidate> res =
+        this.candidateDAO.findByCreatedDateBetween(start.getTime(), end.getTime());
+    for (Candidate candidate : res) {
+      Assert.assertTrue(start.getTime().getTime() <= candidate.getCreatedDate().getTime()
+          && end.getTime().getTime() >= candidate.getCreatedDate().getTime());
+    }
+  }
+
+  @Test(expected = IndexOutOfBoundsException.class)
+  public void testFindByCreatedDateBetweenNoResult() {
+    GregorianCalendar start = new GregorianCalendar(1900, 1, 1);
+    GregorianCalendar end = new GregorianCalendar(1900, 6, 1);
+    List<Candidate> res =
+        this.candidateDAO.findByCreatedDateBetween(start.getTime(), end.getTime());
+    res.get(0);
   }
 
   @Test
