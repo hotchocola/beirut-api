@@ -34,7 +34,7 @@ public class PositionServiceImplementation implements PositionService {
 
   @Override
   @Transactional(readOnly = false)
-  public void markForDeletePosition(List<String> ids) {
+  public List<Position> markForDeletePosition(List<String> ids) {
     List<Position> positions = new ArrayList<Position>();
     for(int i=0; i< ids.size(); i++){
         Position posi = this.getPositionDao().findByIdAndMarkForDelete(ids.get(i), false);
@@ -46,6 +46,7 @@ public class PositionServiceImplementation implements PositionService {
         }
     }
     this.getPositionDao().save(positions);
+    return positions;
   }
 
   @Override
