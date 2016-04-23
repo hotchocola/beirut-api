@@ -22,7 +22,7 @@ public class Candidate extends GdnBaseEntity {
 
   public static final String PHONE_NUMBER = "phonenumber";
 
-  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy = "candidate")
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "candidate")
   private CandidateDetail candidatedetail;
 
   @Column(name = Candidate.EMAIL_ADDRESS)
@@ -37,6 +37,9 @@ public class Candidate extends GdnBaseEntity {
   @Column(name = Candidate.PHONE_NUMBER)
   private String phonenumber;
 
+  // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "candidate")
+  // private Set<CandidatePosition> candidatePositions;
+
   public Candidate(String STORE_ID) {
     super();
     this.setStoreId(STORE_ID);
@@ -45,6 +48,10 @@ public class Candidate extends GdnBaseEntity {
   public CandidateDetail getCandidatedetail() {
     return this.candidatedetail;
   }
+
+  // public Set<CandidatePosition> getCandidatePositions() {
+  // return candidatePositions;
+  // }
 
   public String getEmailaddress() {
     return this.emailaddress;
@@ -65,6 +72,10 @@ public class Candidate extends GdnBaseEntity {
   public void setCandidatedetail(CandidateDetail candidatedetail) {
     this.candidatedetail = candidatedetail;
   }
+
+  // public void setCandidatePositions(Set<CandidatePosition> candidatePositions) {
+  // this.candidatePositions = candidatePositions;
+  // }
 
   public void setEmailaddress(String emailaddress) {
     this.emailaddress = emailaddress;
