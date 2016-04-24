@@ -11,24 +11,19 @@ import javax.persistence.Table;
 import com.gdn.common.base.entity.GdnBaseEntity;
 
 @Entity
-@Table
+@Table(name = "StatusLog")
 public class StatusLog extends GdnBaseEntity {
 
   // @Column(name = "newStatus")
   // private enum newStatus {
   // OPEN, ONHOLD, DECLINED, WITHDRAWL, JOIN
   // }
-
-  private enum newStatus {
-    OPEN, ONHOLD, DECLINED, WITHDRAWL, JOIN
-  };
-
-  private enum oldStatus {
-    OPEN, ONHOLD, DECLINED, WITHDRAWL, JOIN
-  };
-
-  private oldStatus oldStatus;
-  private newStatus newStatus;
+	
+  @Column(name = "oldStatus")
+  private Status oldStatus;
+  
+  @Column(name = "newStatus")
+  private Status newStatus;
 
   @ManyToOne
   @JoinColumn(name = "candidatePosition")
@@ -52,13 +47,13 @@ public class StatusLog extends GdnBaseEntity {
 
   @Column(name = "newStatus")
   @Enumerated(EnumType.STRING)
-  private newStatus getNewStatus() {
+  private Status getNewStatus() {
     return newStatus;
   }
 
   @Column(name = "oldStatus")
   @Enumerated(EnumType.STRING)
-  private oldStatus getOldStatus() {
+  private Status getOldStatus() {
     return oldStatus;
   }
 
@@ -71,11 +66,11 @@ public class StatusLog extends GdnBaseEntity {
     return result;
   }
 
-  public void setNewStatus(newStatus newStatus) {
+  public void setNewStatus(Status newStatus) {
     this.newStatus = newStatus;
   }
 
-  public void setOldStatus(oldStatus oldStatus) {
+  public void setOldStatus(Status oldStatus) {
     this.oldStatus = oldStatus;
   }
 }
