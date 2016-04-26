@@ -1,10 +1,13 @@
 
 package com.gdn.x.beirut.entities;
 
+import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -37,8 +40,8 @@ public class Candidate extends GdnBaseEntity {
   @Column(name = Candidate.PHONE_NUMBER)
   private String phonenumber;
 
-  // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "candidate")
-  // private Set<CandidatePosition> candidatePositions;
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "candidate")
+  private Set<CandidatePosition> candidatePositions;
 
   public Candidate(String STORE_ID) {
     super();
@@ -49,9 +52,9 @@ public class Candidate extends GdnBaseEntity {
     return this.candidatedetail;
   }
 
-  // public Set<CandidatePosition> getCandidatePositions() {
-  // return candidatePositions;
-  // }
+  public Set<CandidatePosition> getCandidatePositions() {
+    return candidatePositions;
+  }
 
   public String getEmailaddress() {
     return this.emailaddress;
@@ -73,9 +76,9 @@ public class Candidate extends GdnBaseEntity {
     this.candidatedetail = candidatedetail;
   }
 
-  // public void setCandidatePositions(Set<CandidatePosition> candidatePositions) {
-  // this.candidatePositions = candidatePositions;
-  // }
+  public void setCandidatePositions(Set<CandidatePosition> candidatePositions) {
+    this.candidatePositions = candidatePositions;
+  }
 
   public void setEmailaddress(String emailaddress) {
     this.emailaddress = emailaddress;
