@@ -1,5 +1,6 @@
 package com.gdn.x.beirut.dao;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -29,6 +30,12 @@ public class PositionDAOTest {
 
   @Autowired
   private PositionDAO positionDAO;
+
+  @Test
+  public void findById(){
+    this.position1.setMarkForDelete(true);
+    assertEquals(this.positionDAO.findByIdAndMarkForDelete(this.position1.getId(), false), null);
+  }
 
   @Before
   public void initialize(){
