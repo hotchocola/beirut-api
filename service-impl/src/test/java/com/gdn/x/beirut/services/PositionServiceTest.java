@@ -45,11 +45,7 @@ public class PositionServiceTest {
   @Test
   public void checkUpdatePositionTitle(){
     List<Position> positions = new ArrayList<Position>();
-<<<<<<< HEAD
-    Position posi1 = new Position();
-=======
     Position posi1 = new Position("12");
->>>>>>> refs/remotes/bliblidotcom/develop
     posi1.setTitle("Kamabaka");
     posi1.setId("1");
     positions.add(posi1);
