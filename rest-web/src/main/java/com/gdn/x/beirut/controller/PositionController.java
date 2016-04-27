@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
+import com.gdn.x.beirut.dto.request.CandidatePositionDTORequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
+import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.services.PositionService;
 import com.wordnik.swagger.annotations.Api;
@@ -49,16 +51,38 @@ public class PositionController {
      return new GdnRestListResponse<PositionDTOResponse>(posis, new PageMetaData(50, 0, pos.size()), requestId);
   }
 
+  @RequestMapping(value = "/api/position/insertNewPosition", method= RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "insert new position",notes="memasukan posisi baru.")
+  @ResponseBody
+  public GdnRestSingleResponse<PositionDTOResponse> insertNewPosition(@RequestParam String clientId, @RequestParam String storeId,
+      @RequestParam String requestId, @RequestParam String channelId, @RequestParam String username, @RequestBody PositionDTORequest posreq){
+    Position temp = new Position(storeId);
+    dozerMapper.map(posreq, temp);
+    if(posreq.getCandpos() !=null){
+      for (CandidatePositionDTORequest iterable_element : posreq.getCandpos()){
+        CandidatePosition candidatepos = new CandidatePosition();
+        dozerMapper.map(iterable_element, candidatepos);
+        temp.addCandidatePosition(candidatepos);
+      }
+    }
+    this.positionService.insertNewPosition(temp);
+    PositionDTOResponse result = new PositionDTOResponse();
+    dozerMapper.map(temp, result);
+
+    return new GdnRestSingleResponse(result, requestId);
+  }
+
   @RequestMapping(value = "/api/position/updatePosition", method= RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "update position",notes="mengganti posisi.")
   @ResponseBody
   public GdnRestSingleResponse<PositionDTOResponse> updatePosition(@RequestParam String clientId, @RequestParam String storeId,
       @RequestParam String requestId, @RequestParam String channelId, @RequestParam String username, @RequestParam String id, @RequestBody PositionDTORequest posreq){
-    Position pos = new Position();
+    Position pos = new Position(storeId);
     dozerMapper.map(posreq, pos);
     this.positionService.updatePositionTitle(id, pos.getTitle());
     PositionDTOResponse posres = new PositionDTOResponse();
 
     return new GdnRestSingleResponse(posres, requestId);
   }
+
 }

@@ -8,60 +8,17 @@
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
 		http://www.ryantenney.com/schema/metrics http://www.ryantenney.com/schema/metrics/metrics-3.0.xsd">
   <import resource="classpath:gdn-jpa-configuration.xml" />
-<<<<<<< HEAD
-=======
 
   <jpa:repositories base-package="com.gdn.x.beirut.dao" />
   <context:component-scan base-package="com.gdn.x.beirut.services" />
   <!-- <context:component-scan base-package="com.gdn.x.productcategorybase.config" /> -->
   <context:property-placeholder location="file:///${X_CONF_DIR}/beirut/beirut.properties"
     properties-ref="applicationDefaultProperties" ignore-resource-not-found="true" ignore-unresolvable="true" />
-
-<!--   <bean id="namedJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate"> -->
-<!--     <constructor-arg ref="dataSource" /> -->
-<!--   </bean> -->
-<!--   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"> -->
-<!--     <constructor-arg ref="dataSource" /> -->
-<!--   </bean> -->
-  
-  <jpa:repositories base-package="com.ega.dao" />
-  <context:component-scan base-package="com.ega.services" />
-  <context:property-placeholder location="file:///${X_CONF_DIR}/beirut/beirut.properties"
-    properties-ref="applicationDefaultProperties" ignore-resource-not-found="true" ignore-unresolvable="true" />
-<!--     <bean id="namedJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
-    <constructor-arg ref="dataSource" />
-  </bean>
-  <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-    <constructor-arg ref="dataSource" />
-  </bean> -->
-
->>>>>>> refs/remotes/bliblidotcom/master
-  <jpa:repositories base-package="com.gdn.x.beirut.dao" />
-  <context:component-scan base-package="com.gdn.x.beirut.services" />
-<!--   <context:component-scan base-package="com.gdn.x.productcategorybase.config" /> -->
-  <context:property-placeholder location="file:///${X_CONF_DIR}/beirut/beirut.properties"
-    properties-ref="applicationDefaultProperties" ignore-resource-not-found="true" ignore-unresolvable="true" />
-   	<bean id = "dozerMapper" class = "org.dozer.DozerBeanMapper"/>
-   
-<!--   <bean id="namedJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate"> -->
-<!--     <constructor-arg ref="dataSource" /> -->
-<!--   </bean> -->
-<!--   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"> -->
-<!--     <constructor-arg ref="dataSource" /> -->
-<!--   </bean> -->
-
   <task:executor id="taskExecutor" queue-capacity="10" pool-size="${thread.pool.size}" rejection-policy="CALLER_RUNS" />
   <bean id="executorService" class="org.springframework.core.task.support.ExecutorServiceAdapter">
     <constructor-arg ref="taskExecutor" />
   </bean>
-<!--   <metrics:register metric-registry="metric-registry"> -->
-<!--     <bean metrics:name="jvm.gc" class="com.codahale.metrics.jvm.GarbageCollectorMetricSet" /> -->
-<!--     <bean metrics:name="jvm.memory" class="com.codahale.metrics.jvm.MemoryUsageGaugeSet" /> -->
-<!--     <bean metrics:name="jvm.thread-states" class="com.codahale.metrics.jvm.ThreadStatesGaugeSet" /> -->
-<!--     <bean metrics:name="jvm.fd.usage" class="com.codahale.metrics.jvm.FileDescriptorRatioGauge" /> -->
-<!--     <bean metrics:name="jvm.class-loading" class="com.codahale.metrics.jvm.ClassLoadingGaugeSet" /> -->
-<!--   </metrics:register> -->
-<!--   <bean id="healthCheckRedis" class="com.gdn.x.base.rest.web.healthcheck.HealthCheckRedis" /> -->
-<!--   <bean id="healthCheckPostgreSql" class="com.gdn.x.base.rest.web.healthcheck.HealthCheckPostgreSql" /> -->
+  <bean id="healthCheckRedis" class="com.gdn.x.base.rest.web.healthcheck.HealthCheckRedis" />
+  <bean id="healthCheckPostgreSql" class="com.gdn.x.base.rest.web.healthcheck.HealthCheckPostgreSql" />
 
 </beans>
