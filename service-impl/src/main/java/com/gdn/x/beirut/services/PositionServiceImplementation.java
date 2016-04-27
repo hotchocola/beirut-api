@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gdn.x.beirut.dao.PositionDAO;
+import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 
 @Service(value = "positionService")
@@ -29,6 +30,9 @@ public class PositionServiceImplementation implements PositionService {
   @Override
   @Transactional(readOnly = false)
   public void insertNewPosition(Position position) {
+    for (CandidatePosition iterable_element : position.getCandidatePosition()) {
+      iterable_element.setPosition(position);
+    }
     this.getPositionDao().save(position);
   }
 

@@ -48,12 +48,49 @@ public class Candidate extends GdnBaseEntity {
     this.setStoreId(STORE_ID);
   }
 
-  public CandidateDetail getCandidatedetail() {
-    return this.candidatedetail;
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    final Candidate other = (Candidate) obj;
+    if (candidatedetail == null) {
+      if (other.candidatedetail != null)
+        return false;
+    } else if (!candidatedetail.equals(other.candidatedetail))
+      return false;
+    if (emailaddress == null) {
+      if (other.emailaddress != null)
+        return false;
+    } else if (!emailaddress.equals(other.emailaddress))
+      return false;
+    if (firstname == null) {
+      if (other.firstname != null)
+        return false;
+    } else if (!firstname.equals(other.firstname))
+      return false;
+    if (lastname == null) {
+      if (other.lastname != null)
+        return false;
+    } else if (!lastname.equals(other.lastname))
+      return false;
+    if (phonenumber == null) {
+      if (other.phonenumber != null)
+        return false;
+    } else if (!phonenumber.equals(other.phonenumber))
+      return false;
+    return true;
   }
 
   public Set<CandidatePosition> getCandidatePositions() {
     return candidatePositions;
+  }
+
+  public CandidateDetail getCandidatedetail() {
+    return this.candidatedetail;
   }
 
   public String getEmailaddress() {
@@ -70,6 +107,18 @@ public class Candidate extends GdnBaseEntity {
 
   public String getPhonenumber() {
     return this.phonenumber;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((candidatedetail == null) ? 0 : candidatedetail.hashCode());
+    result = prime * result + ((emailaddress == null) ? 0 : emailaddress.hashCode());
+    result = prime * result + ((firstname == null) ? 0 : firstname.hashCode());
+    result = prime * result + ((lastname == null) ? 0 : lastname.hashCode());
+    result = prime * result + ((phonenumber == null) ? 0 : phonenumber.hashCode());
+    return result;
   }
 
   public void setCandidatedetail(CandidateDetail candidatedetail) {
