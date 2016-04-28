@@ -1,5 +1,7 @@
 package com.gdn.x.beirut.services;
 
+
+import java.util.Date;
 import java.util.List;
 
 import com.gdn.x.beirut.entities.Candidate;
@@ -19,6 +21,10 @@ public interface CandidateService {
   void markForDelete(String id);
 
   Candidate save(Candidate candidate);
+
+
+  List<Candidate> searchByCreatedDateBetween(Date start, Date end);
+
 
   List<Candidate> searchByFirstname(String firstname);
 

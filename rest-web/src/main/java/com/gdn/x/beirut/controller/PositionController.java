@@ -54,7 +54,6 @@ public class PositionController {
         requestId);
   }
 
-
   @RequestMapping(value = "/api/position/insertNewPosition", method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "insert new position", notes = "memasukan posisi baru.")
@@ -66,6 +65,7 @@ public class PositionController {
     dozerMapper.map(posreq, temp);
     if (posreq.getCandpos() != null) {
       for (CandidatePositionDTORequest iterable_element : posreq.getCandpos()) {
+
         CandidatePosition candidatepos = new CandidatePosition();
         dozerMapper.map(iterable_element, candidatepos);
         temp.addCandidatePosition(candidatepos);
@@ -78,6 +78,7 @@ public class PositionController {
     return new GdnRestSingleResponse(result, requestId);
   }
 
+
   @RequestMapping(value = "/api/position/updatePosition", method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "update position", notes = "mengganti posisi.")
@@ -86,7 +87,6 @@ public class PositionController {
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestParam String id,
       @RequestBody PositionDTORequest posreq) {
-
     Position pos = new Position(storeId);
     dozerMapper.map(posreq, pos);
     this.positionService.updatePositionTitle(id, pos.getTitle());
@@ -94,4 +94,5 @@ public class PositionController {
 
     return new GdnRestSingleResponse(posres, requestId);
   }
+
 }

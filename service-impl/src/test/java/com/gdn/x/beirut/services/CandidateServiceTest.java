@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.junit.After;
@@ -82,6 +84,47 @@ public class CandidateServiceTest {
   @After
   public void noMoreTransaction() {
     verifyNoMoreInteractions(this.candidateDao);
+  }
+
+  @Test
+  public void testFindByCreatedDateBetween() {
+    GregorianCalendar start = new GregorianCalendar(2016, 1, 1);
+    GregorianCalendar create = new GregorianCalendar(2016, 2, 1);
+    GregorianCalendar end = new GregorianCalendar(2016, 6, 1);
+    List<Candidate> candidates = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      Candidate newCandidate = new Candidate("1");
+      newCandidate.setEmailaddress("egaprianto" + i + "@asd.com");
+      newCandidate.setFirstname("Ega");
+      newCandidate.setLastname("Prianto");
+      newCandidate.setPhonenumber("123456789" + i);
+      newCandidate.setCreatedDate(new Date(System.currentTimeMillis()));
+      CandidateDetail candDetail = new CandidateDetail("1");
+      candDetail.setContent(("ini PDF" + i).getBytes());
+      newCandidate.setCandidatedetail(candDetail);
+      candidates.add(newCandidate);
+    }
+
+    Candidate newCandidate = new Candidate("1");
+    newCandidate.setEmailaddress("egaprianto@asd.com");
+    newCandidate.setFirstname("Ega");
+    newCandidate.setLastname("Prianto");
+    newCandidate.setPhonenumber("1234567890");
+    newCandidate.setCreatedDate(new Date(System.currentTimeMillis()));
+    CandidateDetail candDetail = new CandidateDetail("1");
+    candDetail.setContent(("ini PDF").getBytes());
+    newCandidate.setCandidatedetail(candDetail);
+    candidates.add(newCandidate);
+
+    when(this.candidateDao.findByCreatedDateBetween(start.getTime(), end.getTime()))
+        .thenReturn(candidates);
+
+    List<Candidate> result =
+        this.candidateService.searchByCreatedDateBetween(start.getTime(), end.getTime());
+    // Black Box Test
+    Assert.assertTrue(result.equals(candidates));
+    // White Box Test
+    verify(this.candidateDao, times(1)).findByCreatedDateBetween(start.getTime(), end.getTime());
   }
 
   @Test

@@ -85,12 +85,12 @@ public class Candidate extends GdnBaseEntity {
     return true;
   }
 
-  public Set<CandidatePosition> getCandidatePositions() {
-    return candidatePositions;
-  }
-
   public CandidateDetail getCandidatedetail() {
     return this.candidatedetail;
+  }
+
+  public Set<CandidatePosition> getCandidatePositions() {
+    return this.candidatePositions;
   }
 
   public String getEmailaddress() {
