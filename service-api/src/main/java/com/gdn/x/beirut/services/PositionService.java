@@ -8,6 +8,6 @@ public interface PositionService {
 
     List<Position> getAllPosition();
     void insertNewPosition(Position position);
-    void markForDeletePosition(Position position);
-    void updatePosition(Position oldPosition, Position newPosition);
+    List<Position> markForDeletePosition(List<String> id);
+    void updatePositionTitle(String id, String title);
 }
