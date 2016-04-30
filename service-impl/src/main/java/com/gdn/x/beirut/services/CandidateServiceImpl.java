@@ -21,17 +21,21 @@ public class CandidateServiceImpl implements CandidateService {
   CandidateDAO candidateDao;
 
   @Override
-  public List<Candidate> findCandidateByEmailAddress(String emailAddress) {
+  public List<Candidate> searchCandidateByEmailAddress(String emailAddress) {
     // TODO Auto-generated method stub
     return this.candidateDao.findByEmailaddress(emailAddress);
   }
 
   @Override
-  public List<Candidate> findCandidateByPhoneNumber(String phoneNumber) {
+  public List<Candidate> searchCandidateByPhoneNumber(String phoneNumber) {
     // TODO Auto-generated method stub
     return this.candidateDao.findByPhonenumber(phoneNumber);
   }
-
+  @Override
+  public List<Candidate> searchCandidateByPhoneNumberLike(String phoneNumber) {
+    // TODO Auto-generated method stub
+    return this.candidateDao.findByPhonenumberLike(phoneNumber);
+  }
   @Override
   public List<Candidate> getAllCandidates() {
     return this.candidateDao.findAll();

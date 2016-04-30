@@ -8,9 +8,11 @@ import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
 
 public interface CandidateService {
-  List<Candidate> findCandidateByEmailAddress(String emailAddress);
+  List<Candidate> searchCandidateByEmailAddress(String emailAddress);
 
-  List<Candidate> findCandidateByPhoneNumber(String phoneNumber);
+  List<Candidate> searchCandidateByPhoneNumber(String phoneNumber);
+
+  List<Candidate> searchCandidateByPhoneNumberLike(String phoneNumber);
 
   List<Candidate> getAllCandidates();
 
@@ -20,11 +22,11 @@ public interface CandidateService {
 
   void markForDelete(String id);
 
+
   Candidate save(Candidate candidate);
 
 
   List<Candidate> searchByCreatedDateBetween(Date start, Date end);
-
 
   List<Candidate> searchByFirstname(String firstname);
 
