@@ -1,3 +1,4 @@
+
 package com.gdn.x.beirut.entities;
 
 import javax.persistence.Column;
@@ -14,14 +15,9 @@ import com.gdn.common.base.entity.GdnBaseEntity;
 @Table(name = "StatusLog")
 public class StatusLog extends GdnBaseEntity {
 
-  // @Column(name = "newStatus")
-  // private enum newStatus {
-  // OPEN, ONHOLD, DECLINED, WITHDRAWL, JOIN
-  // }
-	
   @Column(name = "oldStatus")
   private Status oldStatus;
-  
+
   @Column(name = "newStatus")
   private Status newStatus;
 

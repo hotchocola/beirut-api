@@ -39,8 +39,8 @@ public class PositionDAOTest {
 
   @Before
   public void initialize(){
-    this.position1= new Position("12");
-    this.position2= new Position("12");
+    this.position1= new Position();
+    this.position2= new Position();
     this.position1.setTitle("Nanami");
     this.position2.setTitle("Budi");
     this.position1.setCreatedBy("Aderai");
@@ -67,5 +67,4 @@ public class PositionDAOTest {
     assertTrue(this.positionDAO.findByTitleContainingAndMarkForDelete(this.position2.getTitle(), false).isEmpty());
     //LOG.info("position list = {}", this.positionDao.findOne(this.position1.getId()));
   }
-
 }

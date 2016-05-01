@@ -5,19 +5,14 @@ import java.util.Set;
 import com.gdn.common.web.base.BaseResponse;
 
 public class PositionDTOResponse extends BaseResponse {
-  private String id;
   private String title;
+  private String CREATED_BY;
   private boolean markForDelete;
 
-  private Set<CandidatePositionDTORequest> candreqs;
+  private Set<CandidatePositionDTOResponse> candposdto;
 
-  public Set<CandidatePositionDTORequest> getCandreqs() {
-    return candreqs;
-  }
-
-  @Override
-  public String getId() {
-    return id;
+  public Set<CandidatePositionDTOResponse> getCandposdto() {
+    return candposdto;
   }
 
   public String getTitle() {
@@ -28,13 +23,16 @@ public class PositionDTOResponse extends BaseResponse {
     return markForDelete;
   }
 
-  public void setCandreqs(Set<CandidatePositionDTORequest> candreqs) {
-    this.candreqs = candreqs;
+  public void setCandidatePositionDTOResponse(CandidatePositionDTOResponse candposdto){
+    this.candposdto.add(candposdto);
   }
 
-  @Override
-  public void setId(String id) {
-    this.id = id;
+  public void setCandidatePositionManual(CandidatePositionDTOResponse candpos){
+    this.candposdto.add(candpos);
+  }
+
+  public void setCandreqs(Set<CandidatePositionDTOResponse> candposdto) {
+    this.candposdto = candposdto;
   }
 
   public void setMarkForDelete(boolean markForDelete) {
