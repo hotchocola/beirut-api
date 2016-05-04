@@ -9,9 +9,9 @@ public class PositionDTOResponse extends BaseResponse {
   private String title;
   private boolean markForDelete;
 
-  private Set<CandidatePositionDTORequest> candreqs;
+  private Set<CandidatePositionDTOResponse> candreqs;
 
-  public Set<CandidatePositionDTORequest> getCandreqs() {
+  public Set<CandidatePositionDTOResponse> getCandreqs() {
     return candreqs;
   }
 
@@ -28,7 +28,7 @@ public class PositionDTOResponse extends BaseResponse {
     return markForDelete;
   }
 
-  public void setCandreqs(Set<CandidatePositionDTORequest> candreqs) {
+  public void setCandreqs(Set<CandidatePositionDTOResponse> candreqs) {
     this.candreqs = candreqs;
   }
 

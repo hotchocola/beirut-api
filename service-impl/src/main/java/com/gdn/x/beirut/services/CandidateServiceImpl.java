@@ -3,6 +3,7 @@ package com.gdn.x.beirut.services;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,26 +21,21 @@ public class CandidateServiceImpl implements CandidateService {
   @Autowired
   CandidateDAO candidateDao;
 
-  @Override
-  public List<Candidate> searchCandidateByEmailAddress(String emailAddress) {
-    // TODO Auto-generated method stub
-    return this.candidateDao.findByEmailaddress(emailAddress);
-  }
 
   @Override
-  public List<Candidate> searchCandidateByPhoneNumber(String phoneNumber) {
-    // TODO Auto-generated method stub
-    return this.candidateDao.findByPhonenumber(phoneNumber);
+  public List<Candidate> getAllCandidateDetailStatus() {
+    List<Candidate> candidates = getAllCandidates();
+    for (Candidate candidate : candidates) {
+      Hibernate.initialize(candidate.getCandidatePositions());
+    }
+    return candidates;
   }
-  @Override
-  public List<Candidate> searchCandidateByPhoneNumberLike(String phoneNumber) {
-    // TODO Auto-generated method stub
-    return this.candidateDao.findByPhonenumberLike(phoneNumber);
-  }
+
   @Override
   public List<Candidate> getAllCandidates() {
     return this.candidateDao.findAll();
   }
+
 
 
   @Override
@@ -95,6 +91,24 @@ public class CandidateServiceImpl implements CandidateService {
   public List<Candidate> searchByLastname(String lastname) {
     // TODO Auto-generated method stub
     return this.candidateDao.findByLastnameLike(lastname);
+  }
+
+  @Override
+  public List<Candidate> searchCandidateByEmailAddress(String emailAddress) {
+    // TODO Auto-generated method stub
+    return this.candidateDao.findByEmailaddress(emailAddress);
+  }
+
+  @Override
+  public List<Candidate> searchCandidateByPhoneNumber(String phoneNumber) {
+    // TODO Auto-generated method stub
+    return this.candidateDao.findByPhonenumber(phoneNumber);
+  }
+
+  @Override
+  public List<Candidate> searchCandidateByPhoneNumberLike(String phoneNumber) {
+    // TODO Auto-generated method stub
+    return this.candidateDao.findByPhonenumberLike(phoneNumber);
   }
 
   @Override
