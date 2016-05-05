@@ -4,50 +4,50 @@ import com.gdn.common.web.base.BaseRequest;
 
 public class CandidateDTORequest extends BaseRequest {
 
-  private CandidateDetailDTORequest candidatedetail;
-  private String emailaddress;
-  private String firstname;
+  private CandidateDetailDTORequest candidateDetail;
+  private String emailAddress;
+  private String firstName;
 
-  private String lastname;
-  private String phonenumber;
+  private String lastName;
+  private String phoneNumber;
 
   public CandidateDetailDTORequest getCandidatedetail() {
-    return candidatedetail;
+    return candidateDetail;
   }
 
   public String getEmailaddress() {
-    return emailaddress;
+    return emailAddress;
   }
 
   public String getFirstname() {
-    return firstname;
+    return firstName;
   }
 
   public String getLastname() {
-    return lastname;
+    return lastName;
   }
 
   public String getPhonenumber() {
-    return phonenumber;
+    return phoneNumber;
   }
 
   public void setCandidatedetail(CandidateDetailDTORequest candidatedetail) {
-    this.candidatedetail = candidatedetail;
+    this.candidateDetail = candidatedetail;
   }
 
   public void setEmailaddress(String emailaddress) {
-    this.emailaddress = emailaddress;
+    this.emailAddress = emailaddress;
   }
 
   public void setFirstname(String firstname) {
-    this.firstname = firstname;
+    this.firstName = firstname;
   }
 
   public void setLastname(String lastname) {
-    this.lastname = lastname;
+    this.lastName = lastname;
   }
 
   public void setPhonenumber(String phonenumber) {
-    this.phonenumber = phonenumber;
+    this.phoneNumber = phonenumber;
   }
 }

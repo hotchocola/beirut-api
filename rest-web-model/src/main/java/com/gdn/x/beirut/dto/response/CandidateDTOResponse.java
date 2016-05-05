@@ -6,52 +6,51 @@ import com.gdn.common.web.base.BaseResponse;
 
 public class CandidateDTOResponse extends BaseResponse {
 
-  private CandidateDetailDTOResponse candidatedetail;
-  private String emailaddress;
-  private String firstname;
-  private String lastname;
-  private String phonenumber;
+  private CandidateDetailDTOResponse candidateDetail;
+  private String emailAddress;
+  private String firstName;
+  private String lastName;
+  private String phoneNumber;
   private Set<CandidatePositionDTOResponse> candidatePositions;
 
-  public CandidateDetailDTOResponse getCandidatedetail() {
-    return candidatedetail;
+  public CandidateDetailDTOResponse getCandidateDetail() {
+    return candidateDetail;
   }
 
-  public String getEmailaddress() {
-    return emailaddress;
+  public String getEmailAddress() {
+    return emailAddress;
   }
 
   public String getFirstname() {
-    return firstname;
+    return firstName;
   }
 
   public String getLastname() {
-    return lastname;
+    return lastName;
   }
 
   public String getPhonenumber() {
-    return phonenumber;
+    return phoneNumber;
   }
 
-  public void setCandidatedetail(CandidateDetailDTOResponse candidatedetail) {
-    this.candidatedetail = candidatedetail;
+  public void setCandidateDetail(CandidateDetailDTOResponse candidateDetail) {
+    this.candidateDetail = candidateDetail;
   }
 
-  public void setEmailaddress(String emailaddress) {
-    this.emailaddress = emailaddress;
+  public void setEmailAddress(String emailAddress) {
+    this.emailAddress = emailAddress;
   }
 
-  public void setFirstname(String firstname) {
-    this.firstname = firstname;
+  public void setFirstname(String firstName) {
+    this.firstName = firstName;
   }
 
-  public void setLastname(String lastname) {
-    this.lastname = lastname;
+  public void setLastname(String lastName) {
+    this.lastName = lastName;
   }
 
-  public void setPhonenumber(String phonenumber) {
-    this.phonenumber = phonenumber;
+  public void setPhonenumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
   }
-
 
 }

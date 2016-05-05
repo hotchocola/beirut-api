@@ -5,6 +5,7 @@ import java.util.Set;
 import com.gdn.common.web.base.BaseRequest;
 
 public class PositionDTORequest extends BaseRequest {
+
   private String title;
 
   private Set<CandidatePositionDTORequest> candpos;
@@ -24,4 +25,5 @@ public class PositionDTORequest extends BaseRequest {
   public void setTitle(String title) {
     this.title = title;
   }
+
 }

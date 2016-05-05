@@ -1,8 +1,10 @@
 package com.gdn.x.beirut.services;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,15 +41,23 @@ public class PositionServiceImpl implements PositionService {
   @Override
   @Transactional(readOnly = false)
   public List<Position> markForDeletePosition(List<String> ids) {
+    System.out.println(ids.toString());
     List<Position> positions = new ArrayList<Position>();
     for(int i=0; i< ids.size(); i++){
         Position posi = this.getPositionDao().findByIdAndMarkForDelete(ids.get(i), false);
-        if(posi != null){
-          posi.setMarkForDelete(true);
-          positions.add(posi);
-        } else {
-          break;
+        System.out.println("auibiubr");
+        // hibernate initialize kayak gak kepanggil.
+        Hibernate.initialize(posi.getCandidatePosition());
+        System.out.println("uhoiaafubrugb");
+        Iterator<CandidatePosition> iterator = posi.getCandidatePosition().iterator();
+        while(iterator.hasNext()){
+          CandidatePosition candpos = iterator.next();
+          candpos.setMarkForDelete(true);
+          System.out.println("aaa" + candpos.isMarkForDelete());
         }
+        posi.setMarkForDelete(true);
+        positions.add(posi);
+        System.out.println("patricia" + posi.isMarkForDelete() + " "+ posi.getTitle());
     }
     this.getPositionDao().save(positions);
     return positions;
@@ -56,10 +66,10 @@ public class PositionServiceImpl implements PositionService {
   @Override
   @Transactional(readOnly = false)
   public void updatePositionTitle(String id, String title) {
-    Position posi = this.getPositionDao().findByIdAndMarkForDelete(id, false);
+    Position posi = this.positionDAO.findByIdAndMarkForDelete(id, false);
     if(posi!=null){
       posi.setTitle(title);
-      this.getPositionDao().save(posi);
+      this.positionDAO.save(posi);
     }
   }
 }
