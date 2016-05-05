@@ -1,5 +1,6 @@
 package com.gdn.x.beirut.controller;
 
+import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -8,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.services.CandidateService;
@@ -23,7 +23,7 @@ public class CandidateController {
   @Autowired
   private CandidateService candidateService;
   @Autowired
-  private ObjectMapper mapper;
+  private Mapper dozerMapper;
 
   @RequestMapping(value = "/api/position/insertNewPosition", method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
