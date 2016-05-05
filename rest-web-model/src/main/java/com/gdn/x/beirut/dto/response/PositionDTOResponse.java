@@ -23,11 +23,11 @@ public class PositionDTOResponse extends BaseResponse {
     return markForDelete;
   }
 
-  public void setCandidatePositionDTOResponse(CandidatePositionDTOResponse candposdto){
+  public void setCandidatePositionDTOResponse(CandidatePositionDTOResponse candposdto) {
     this.candposdto.add(candposdto);
   }
 
-  public void setCandidatePositionManual(CandidatePositionDTOResponse candpos){
+  public void setCandidatePositionManual(CandidatePositionDTOResponse candpos) {
     this.candposdto.add(candpos);
   }
 

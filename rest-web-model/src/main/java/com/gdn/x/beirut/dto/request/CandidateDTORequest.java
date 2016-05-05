@@ -3,43 +3,51 @@ package com.gdn.x.beirut.dto.request;
 import com.gdn.common.web.base.BaseRequest;
 
 public class CandidateDTORequest extends BaseRequest {
-  public String EMAIL_ADDRESS;
 
-  public String FIRST_NAME;
+  private CandidateDetailDTORequest candidateDetail;
+  private String emailAddress;
+  private String firstName;
 
-  public String LAST_NAME;
+  private String lastName;
+  private String phoneNumber;
 
-  public String PHONE_NUMBER;
-
-  public String getEMAIL_ADDRESS() {
-    return EMAIL_ADDRESS;
+  public CandidateDetailDTORequest getCandidatedetail() {
+    return candidateDetail;
   }
 
-  public String getFIRST_NAME() {
-    return FIRST_NAME;
+  public String getEmailaddress() {
+    return emailAddress;
   }
 
-  public String getLAST_NAME() {
-    return LAST_NAME;
+  public String getFirstname() {
+    return firstName;
   }
 
-  public String getPHONE_NUMBER() {
-    return PHONE_NUMBER;
+  public String getLastname() {
+    return lastName;
   }
 
-  public void setEMAIL_ADDRESS(String eMAIL_ADDRESS) {
-    EMAIL_ADDRESS = eMAIL_ADDRESS;
+  public String getPhonenumber() {
+    return phoneNumber;
   }
 
-  public void setFIRST_NAME(String fIRST_NAME) {
-    FIRST_NAME = fIRST_NAME;
+  public void setCandidatedetail(CandidateDetailDTORequest candidatedetail) {
+    this.candidateDetail = candidatedetail;
   }
 
-  public void setLAST_NAME(String lAST_NAME) {
-    LAST_NAME = lAST_NAME;
+  public void setEmailaddress(String emailaddress) {
+    this.emailAddress = emailaddress;
   }
 
-  public void setPHONE_NUMBER(String pHONE_NUMBER) {
-    PHONE_NUMBER = pHONE_NUMBER;
+  public void setFirstname(String firstname) {
+    this.firstName = firstname;
+  }
+
+  public void setLastname(String lastname) {
+    this.lastName = lastname;
+  }
+
+  public void setPhonenumber(String phonenumber) {
+    this.phoneNumber = phonenumber;
   }
 }

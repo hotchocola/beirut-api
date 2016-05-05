@@ -15,7 +15,7 @@ import com.gdn.x.beirut.entities.Position;
 
 @Service(value = "positionService")
 @Transactional(readOnly = true)
-public class PositionServiceImplementation implements PositionService {
+public class PositionServiceImpl implements PositionService {
 
   @Autowired
   private PositionDAO positionDAO;

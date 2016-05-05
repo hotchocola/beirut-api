@@ -8,6 +8,7 @@
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
 		http://www.ryantenney.com/schema/metrics http://www.ryantenney.com/schema/metrics/metrics-3.0.xsd">
   <import resource="classpath:gdn-jpa-configuration.xml" />
+  <bean id="dozerMapper" class ="org.dozer.DozerBeanMapper"/>
 
   <bean id="dozerMapper" class ="org.dozer.DozerBeanMapper"/>
   

@@ -20,7 +20,7 @@ public class PositionServiceTest {
   private PositionDAO repository;
 
   @InjectMocks
-  private PositionServiceImplementation service;
+  private PositionServiceImpl service;
 
   private Position position;
   private final List<Position> pos = new ArrayList<Position>();
