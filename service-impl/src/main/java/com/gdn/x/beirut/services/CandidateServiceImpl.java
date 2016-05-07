@@ -100,7 +100,7 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
-  public List<Candidate> searchCandidateByPhoneNumber(String phoneNumber) {
+  public Candidate searchCandidateByPhoneNumber(String phoneNumber) {
     // TODO Auto-generated method stub
     return this.candidateDao.findByPhonenumber(phoneNumber);
   }
@@ -123,5 +123,18 @@ public class CandidateServiceImpl implements CandidateService {
       this.candidateDao.save(candidate);
     }
   }
+
+  // @Override
+  // public boolean setCandidatePositionStatus(String idCandidatePosition, Status newStatus) {
+  // // TODO Auto-generated method stub
+  // // 1. insert new status log...
+  // // 2. update status candidateposition (yang saat ini)
+  // CandidatePosition candidatePostition =
+  // this.candidateDao.findCandidatePositionById(idCandidatePosition);
+  // StatusLog newStatusLog = new StatusLog();
+  // newStatusLog.setStatus(newStatus);
+  // newStatusLog.setCandidatePosition(candidatePostition);
+  // return false;
+  // }
 
 }

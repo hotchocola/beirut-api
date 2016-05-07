@@ -86,7 +86,7 @@ public class CandidateDAOTest {
     Assert.assertTrue(new String(res.get(0).getCandidatedetail().getContent()).equals("ini PDF1"));
   }
 
-  @Test(expected = IndexOutOfBoundsException.class)
+  @Test(expected = NullPointerException.class)
   public void testFindByEmailAddressOnlyOneResult() {
     List<Candidate> res = this.candidateDAO.findByEmailaddress("egaprianto1@asd.com");
     res.get(1);
@@ -134,25 +134,19 @@ public class CandidateDAOTest {
 
   @Test
   public void testFindByPhonenumber() {
-    List<Candidate> res = this.candidateDAO.findByPhonenumber("1234567890");
-    Assert.assertNotNull(res.get(0).getFirstname());
-    Assert.assertNotNull(res.get(0).getEmailaddress());
-    Assert.assertNotNull(res.get(0).getLastname());
-    Assert.assertNotNull(res.get(0).getPhonenumber());
-    Assert.assertNotNull(res.get(0).getCandidatedetail());
-    Assert.assertNotNull(res.get(1).getFirstname());
-    Assert.assertNotNull(res.get(1).getEmailaddress());
-    Assert.assertNotNull(res.get(1).getLastname());
-    Assert.assertNotNull(res.get(1).getPhonenumber());
-    Assert.assertNotNull(res.get(1).getCandidatedetail());
-    Assert.assertTrue(res.get(0).getPhonenumber().equals(res.get(1).getPhonenumber()));
-    Assert.assertFalse(res.get(0).getEmailaddress().equals(res.get(1).getEmailaddress()));
+    Candidate res = this.candidateDAO.findByPhonenumber("1234567890");
+    Assert.assertNotNull(res.getFirstname());
+    Assert.assertNotNull(res.getEmailaddress());
+    Assert.assertNotNull(res.getLastname());
+    Assert.assertNotNull(res.getPhonenumber());
+    Assert.assertNotNull(res.getCandidatedetail());
+    Assert.assertTrue(res.getPhonenumber().equals("1234567890"));
   }
 
   @Test(expected = IndexOutOfBoundsException.class)
   public void testFindByPhonenumberSupposedOnlyTwoResult() {
-    List<Candidate> res = this.candidateDAO.findByPhonenumber("1234567890");
-    res.get(2);
+    Candidate res = this.candidateDAO.findByPhonenumber("1234567890");
+    res.getCreatedDate();
   }
 
 }

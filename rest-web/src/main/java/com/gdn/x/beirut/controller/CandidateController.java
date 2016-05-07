@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
-import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.services.CandidateService;
 import com.wordnik.swagger.annotations.Api;
@@ -45,8 +45,7 @@ public class CandidateController {
           throws Exception {
     Candidate candidate = this.candidateService.getCandidate(id);
     CandidateDTOResponse candres = new CandidateDTOResponse();
-    dozerMapper.map(candidate, candres);
-
+    CandidateMapper.map(candidate, candres, dozerMapper);
     return new GdnRestSingleResponse<CandidateDTOResponse>(candres, requestId);
   }
 
@@ -55,16 +54,14 @@ public class CandidateController {
   @ApiOperation(value = "mencari kandidat berdasarkan nomor telepon",
       notes = "mengeluarkan kandidat dengan nomor telepon tersebut.")
   @ResponseBody
-  public GdnRestListResponse<CandidateDTOResponse> findCandidateByPhoneNumber(
+  public GdnRestSingleResponse<CandidateDTOResponse> findCandidateByPhoneNumber(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username,
       @RequestParam String phoneNumber) throws Exception {
-    List<Candidate> candidates = this.candidateService.searchCandidateByPhoneNumber(phoneNumber);
-    List<CandidateDTOResponse> candres = new ArrayList<CandidateDTOResponse>();
-    dozerMapper.map(candidates, candres);
-
-    return new GdnRestListResponse<CandidateDTOResponse>(candres,
-        new PageMetaData(50, 0, candidates.size()), requestId);
+    Candidate candidate = this.candidateService.searchCandidateByPhoneNumber(phoneNumber);
+    CandidateDTOResponse candres = new CandidateDTOResponse();
+    CandidateMapper.map(candidate, candres, dozerMapper);
+    return new GdnRestSingleResponse<CandidateDTOResponse>(candres, requestId);
   }
 
   @RequestMapping(value = "/api/candidate/getAllCandidate", method = RequestMethod.POST,
@@ -78,7 +75,7 @@ public class CandidateController {
     List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
     for (Candidate candidate : candidates) {
       CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
-      dozerMapper.map(candidate, newCandidateDTORes);
+      CandidateMapper.map(candidate, newCandidateDTORes, dozerMapper);
       candidateResponse.add(newCandidateDTORes);
     }
     return new GdnRestListResponse<>(candidateResponse,
@@ -90,13 +87,12 @@ public class CandidateController {
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "insert new position", notes = "memasukan posisi baru.")
   @ResponseBody
-  public GdnRestSingleResponse<PositionDTOResponse> insertNewPosition(@RequestParam String clientId,
+  public GdnBaseRestResponse insertNewPosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestBody CandidateDTORequest candreq) {
     Candidate temp = new Candidate(storeId);
-    dozerMapper.map(candreq, temp);
-    PositionDTOResponse result = new PositionDTOResponse();
-    dozerMapper.map(temp, result);
-    return new GdnRestSingleResponse<PositionDTOResponse>(result, requestId);
+    CandidateMapper.map(candreq, temp, dozerMapper);
+    this.candidateService.save(temp);
+    return new GdnBaseRestResponse(true);
   }
 }

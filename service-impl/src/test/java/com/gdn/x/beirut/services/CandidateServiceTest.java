@@ -222,15 +222,16 @@ public class CandidateServiceTest {
 
   @Test
   public void testSearchCandidateByPhoneNumber() {
-    List<Candidate> res = new ArrayList<>();
+    Candidate res = null;
     for (Candidate candidate : candidateRanges) {
       if (candidate.getPhonenumber().equals("1234567890")) {
-        res.add(candidate);
+        res = candidate;
       }
     }
     when(this.candidateDao.findByPhonenumber("1234567890")).thenReturn(res);
-    List<Candidate> result = this.candidateService.searchCandidateByPhoneNumber("1234567890");
+    Candidate result = this.candidateService.searchCandidateByPhoneNumber("1234567890");
     // Black Box Test
+    Assert.assertFalse(res == null);
     Assert.assertTrue(result.equals(res));
     // White Box Test
     verify(this.candidateDao, times(1)).findByPhonenumber("1234567890");

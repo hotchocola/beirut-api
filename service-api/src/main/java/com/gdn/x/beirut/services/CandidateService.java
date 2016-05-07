@@ -30,7 +30,7 @@ public interface CandidateService {
 
   List<Candidate> searchCandidateByEmailAddress(String emailAddress);
 
-  List<Candidate> searchCandidateByPhoneNumber(String phoneNumber);
+  Candidate searchCandidateByPhoneNumber(String phoneNumber);
 
   List<Candidate> searchCandidateByPhoneNumberLike(String phoneNumber);
 

@@ -43,6 +43,10 @@ public class Candidate extends GdnBaseEntity {
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "candidate")
   private Set<CandidatePosition> candidatePositions;
 
+  public Candidate() {
+    super();
+  }
+
   public Candidate(String STORE_ID) {
     super();
     this.setStoreId(STORE_ID);
