@@ -41,10 +41,10 @@ public class CandidateController {
       @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
           throws Exception {
     Candidate candidate = this.candidateService.getCandidate(id);
-    CandidateDTOResponse candres = new CandidateDTOResponse();
-    dozerMapper.map(candidate, candres);
+    CandidateDTOResponse candidateDTOReponse = new CandidateDTOResponse();
+    dozerMapper.map(candidate, candidateDTOReponse);
 
-    return new GdnRestSingleResponse<CandidateDTOResponse>(candres, requestId);
+    return new GdnRestSingleResponse<CandidateDTOResponse>(candidateDTOReponse, requestId);
   }
 
   @RequestMapping(value = "/api/candidate/findCandidateByPhoneNumber", method = RequestMethod.POST,
@@ -62,15 +62,5 @@ public class CandidateController {
 
     return new GdnRestListResponse<CandidateDTOResponse>(candres,
         new PageMetaData(50, 0, candidates.size()), requestId);
-  }
-
-  @RequestMapping(value = "/api/position/insertNewPosition", method = RequestMethod.POST,
-      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "insert new position", notes = "memasukan posisi baru.")
-  @ResponseBody
-  public GdnRestListResponse<CandidateDTOResponse> getAllMahasiswaDetailStatus(
-      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
-      @RequestParam String channelId, @RequestParam String username) {
-    return null;
   }
 }
