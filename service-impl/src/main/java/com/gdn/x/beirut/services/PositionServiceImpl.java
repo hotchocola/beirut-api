@@ -22,13 +22,13 @@ public class PositionServiceImpl implements PositionService {
 
   @Override
   public List<Position> getAllPosition() {
-    return null;
+    return positionDAO.findByMarkForDelete(false);
   }
 
   @Override
   public List<Position> getPositionByTitle(String title) {
     // TODO Auto-generated method stub
-    return null;
+    return positionDAO.findByTitleContainingAndMarkForDelete(title, false);
   }
 
   public PositionDAO getPositionDao() {
