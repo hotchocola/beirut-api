@@ -22,31 +22,16 @@ public interface CandidateService {
 
   List<Candidate> searchByCreatedDateBetween(Date start, Date end);
 
-<<<<<<< HEAD
   List<Candidate> searchByFirstName(String firstname);
-
 
   List<Candidate> searchByLastName(String lastname);
 
-
   List<Candidate> searchCandidateByEmailAddress(String emailAddress);
 
   List<Candidate> searchCandidateByPhoneNumber(String phoneNumber);
 
   List<Candidate> searchCandidateByPhoneNumberLike(String phoneNumber);
-=======
-  List<Candidate> searchByFirstname(String firstname);
 
-
-  List<Candidate> searchByLastname(String lastname);
->>>>>>> refs/remotes/bliblidotcom/develop
-
-
-  List<Candidate> searchCandidateByEmailAddress(String emailAddress);
-
-  List<Candidate> searchCandidateByPhoneNumber(String phoneNumber);
-
-  List<Candidate> searchCandidateByPhoneNumberLike(String phoneNumber);
 
   void setCandidateDetail(String id, CandidateDetail candidateDetail) throws Exception;
 

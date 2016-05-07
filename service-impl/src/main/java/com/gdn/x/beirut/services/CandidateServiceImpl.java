@@ -77,25 +77,13 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   public List<Candidate> searchByCreatedDateBetween(Date start, Date end) {
-<<<<<<< HEAD
     // TODO Auto-generated method stub
     return this.candidateDao.findByCreatedDateBetween(start, end);
-=======
-    // TODO Auto-generated method stub
-    return this.candidateDao.findByCreatedDateBetween(start, end);
-  }
-
-  @Override
-  public List<Candidate> searchByFirstname(String firstname) {
-    // TODO Auto-generated method stub
-    return this.candidateDao.findByFirstnameLike(firstname);
->>>>>>> refs/remotes/bliblidotcom/develop
   }
 
   @Override
   public List<Candidate> searchByFirstName(String firstname) {
     // TODO Auto-generated method stub
-<<<<<<< HEAD
     return this.candidateDao.findByFirstNameLike(firstname);
   }
 
@@ -103,39 +91,24 @@ public class CandidateServiceImpl implements CandidateService {
   public List<Candidate> searchByLastName(String lastname) {
     // TODO Auto-generated method stub
     return this.candidateDao.findByLastNameLike(lastname);
-=======
-    return this.candidateDao.findByLastnameLike(lastname);
->>>>>>> refs/remotes/bliblidotcom/develop
   }
 
   @Override
   public List<Candidate> searchCandidateByEmailAddress(String emailAddress) {
     // TODO Auto-generated method stub
-<<<<<<< HEAD
     return this.candidateDao.findByEmailAddress(emailAddress);
-=======
-    return this.candidateDao.findByEmailaddress(emailAddress);
->>>>>>> refs/remotes/bliblidotcom/develop
   }
 
   @Override
   public List<Candidate> searchCandidateByPhoneNumber(String phoneNumber) {
     // TODO Auto-generated method stub
-<<<<<<< HEAD
     return this.candidateDao.findByPhoneNumber(phoneNumber);
-=======
-    return this.candidateDao.findByPhonenumber(phoneNumber);
->>>>>>> refs/remotes/bliblidotcom/develop
   }
 
   @Override
   public List<Candidate> searchCandidateByPhoneNumberLike(String phoneNumber) {
     // TODO Auto-generated method stub
-<<<<<<< HEAD
     return this.candidateDao.findByPhoneNumberLike(phoneNumber);
-=======
-    return this.candidateDao.findByPhonenumberLike(phoneNumber);
->>>>>>> refs/remotes/bliblidotcom/develop
   }
 
   @Override
@@ -150,6 +123,7 @@ public class CandidateServiceImpl implements CandidateService {
       this.candidateDao.save(candidate);
     }
   }
+
 
   // @Override
   // public boolean setCandidatePositionStatus(String idCandidatePosition, Status newStatus) {

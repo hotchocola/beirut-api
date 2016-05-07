@@ -44,23 +44,15 @@ public class CandidateController {
       @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
           throws Exception {
     Candidate candidate = this.candidateService.getCandidate(id);
-<<<<<<< HEAD
     CandidateDTOResponse candres = new CandidateDTOResponse();
     CandidateMapper.map(candidate, candres, dozerMapper);
     return new GdnRestSingleResponse<CandidateDTOResponse>(candres, requestId);
-=======
-    CandidateDTOResponse candidateDTOReponse = new CandidateDTOResponse();
-    dozerMapper.map(candidate, candidateDTOReponse);
-
-    return new GdnRestSingleResponse<CandidateDTOResponse>(candidateDTOReponse, requestId);
->>>>>>> refs/remotes/bliblidotcom/develop
   }
 
   @RequestMapping(value = "/api/candidate/findCandidateByPhoneNumber", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "mencari kandidat berdasarkan nomor telepon",
       notes = "mengeluarkan kandidat dengan nomor telepon tersebut.")
-<<<<<<< HEAD
   @ResponseBody
   public GdnRestListResponse<CandidateDTOResponse> findCandidateByPhoneNumber(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
@@ -107,18 +99,5 @@ public class CandidateController {
     CandidateMapper.map(candreq, temp, dozerMapper);
     this.candidateService.save(temp);
     return new GdnBaseRestResponse(true);
-=======
-  @ResponseBody
-  public GdnRestListResponse<CandidateDTOResponse> findCandidateByPhoneNumber(
-      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
-      @RequestParam String channelId, @RequestParam String username,
-      @RequestParam String phoneNumber) throws Exception {
-    List<Candidate> candidates = this.candidateService.searchCandidateByPhoneNumber(phoneNumber);
-    List<CandidateDTOResponse> candres = new ArrayList<CandidateDTOResponse>();
-    dozerMapper.map(candidates, candres);
-
-    return new GdnRestListResponse<CandidateDTOResponse>(candres,
-        new PageMetaData(50, 0, candidates.size()), requestId);
->>>>>>> refs/remotes/bliblidotcom/develop
   }
 }
