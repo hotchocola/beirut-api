@@ -12,14 +12,15 @@ public class CandidateMapper {
   public static void map(Candidate source, CandidateDTOResponse dest, Mapper dozerMapper) {
     dozerMapper.map(source, dest);
     CandidateDetailDTOResponse detilDTOres =
-        new CandidateDetailDTOResponse(source.getCandidatedetail().getStoreId());
-    dozerMapper.map(source.getCandidatedetail(), detilDTOres);
+        new CandidateDetailDTOResponse(source.getCandidateDetail().getStoreId());
+    dozerMapper.map(source.getCandidateDetail(), detilDTOres);
   }
 
   public static void map(CandidateDTORequest source, Candidate dest, Mapper dozerMapper) {
     dozerMapper.map(source, dest);
     CandidateDetail candDetail = new CandidateDetail();
-    dozerMapper.map(source.getCandidatedetail(), candDetail);
+    dozerMapper.map(source.getCandidateDetail(), candDetail);
+    dest.setCandidateDetail(candDetail);
     candDetail.setStoreId(dest.getStoreId());
     candDetail.setCandidate(dest);
   }

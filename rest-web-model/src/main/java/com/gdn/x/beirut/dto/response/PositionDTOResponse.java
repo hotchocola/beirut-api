@@ -6,7 +6,6 @@ import com.gdn.common.web.base.BaseResponse;
 
 public class PositionDTOResponse extends BaseResponse {
   private String title;
-  private String CREATED_BY;
   private boolean markForDelete;
 
   private Set<CandidatePositionDTOResponse> candposdto;

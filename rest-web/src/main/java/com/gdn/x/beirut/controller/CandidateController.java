@@ -54,19 +54,24 @@ public class CandidateController {
   @ApiOperation(value = "mencari kandidat berdasarkan nomor telepon",
       notes = "mengeluarkan kandidat dengan nomor telepon tersebut.")
   @ResponseBody
-  public GdnRestSingleResponse<CandidateDTOResponse> findCandidateByPhoneNumber(
+  public GdnRestListResponse<CandidateDTOResponse> findCandidateByPhoneNumber(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username,
       @RequestParam String phoneNumber) throws Exception {
-    Candidate candidate = this.candidateService.searchCandidateByPhoneNumber(phoneNumber);
-    CandidateDTOResponse candres = new CandidateDTOResponse();
-    CandidateMapper.map(candidate, candres, dozerMapper);
-    return new GdnRestSingleResponse<CandidateDTOResponse>(candres, requestId);
+    List<Candidate> candidates = this.candidateService.searchCandidateByPhoneNumber(phoneNumber);
+    List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
+    for (Candidate candidate : candidates) {
+      CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
+      CandidateMapper.map(candidate, newCandidateDTORes, dozerMapper);
+      candidateResponse.add(newCandidateDTORes);
+    }
+    return new GdnRestListResponse<>(candidateResponse,
+        new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
   @RequestMapping(value = "/api/candidate/getAllCandidate", method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "insert new position", notes = "memasukan posisi baru.")
+  @ApiOperation(value = "Get all Candidates", notes = "Mengambil semua kandidat")
   @ResponseBody
   public GdnRestListResponse<CandidateDTOResponse> getAllCandidate(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
@@ -85,9 +90,9 @@ public class CandidateController {
   @RequestMapping(value = "/api/position/insertNewCandidate", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "insert new position", notes = "memasukan posisi baru.")
+  @ApiOperation(value = "Insert new Candidate", notes = "memasukan kandidat baru.")
   @ResponseBody
-  public GdnBaseRestResponse insertNewPosition(@RequestParam String clientId,
+  public GdnBaseRestResponse insertNewCandidate(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestBody CandidateDTORequest candreq) {
     Candidate temp = new Candidate(storeId);
