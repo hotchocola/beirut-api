@@ -1,11 +1,10 @@
 package com.gdn.x.beirut.dto.response;
 
-import java.util.Set;
-
 import com.gdn.common.web.base.BaseResponse;
 
 public class PositionDTOResponse extends BaseResponse {
   private String title;
+<<<<<<< HEAD
   private boolean markForDelete;
 
   private Set<CandidatePositionDTOResponse> candposdto;
@@ -13,11 +12,14 @@ public class PositionDTOResponse extends BaseResponse {
   public Set<CandidatePositionDTOResponse> getCandposdto() {
     return candposdto;
   }
+=======
+>>>>>>> refs/remotes/bliblidotcom/develop
 
   public String getTitle() {
     return title;
   }
 
+<<<<<<< HEAD
   public boolean isMarkForDelete() {
     return markForDelete;
   }
@@ -38,6 +40,8 @@ public class PositionDTOResponse extends BaseResponse {
     this.markForDelete = markForDelete;
   }
 
+=======
+>>>>>>> refs/remotes/bliblidotcom/develop
   public void setTitle(String title) {
     this.title = title;
   }

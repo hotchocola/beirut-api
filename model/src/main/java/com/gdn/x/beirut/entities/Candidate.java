@@ -89,6 +89,7 @@ public class Candidate extends GdnBaseEntity {
     return true;
   }
 
+
   public CandidateDetail getCandidateDetail() {
     return candidateDetail;
   }
