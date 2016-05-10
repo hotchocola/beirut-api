@@ -167,7 +167,7 @@ public class CandidateServiceTest {
     // Black Box Test
     assertTrue(this.candidateDao.save(this.candidate).equals(this.candidate));
     // White Box Test
-    this.candidateService.save(this.candidate);
+    this.candidateService.createNew(this.candidate);
     verify(this.candidateDao, times(2)).save(this.candidate);
   }
 
