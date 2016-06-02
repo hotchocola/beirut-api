@@ -23,7 +23,7 @@ public class StatusLog extends GdnBaseEntity {
 
   // @Column(name = "oldStatus")
   // private Status oldStatus;
-  //
+  // asdasd
   // @Column(name = "newStatus")
   // private Status newStatus;
 
