@@ -1,24 +1,22 @@
 package com.gdn.x.beirut.dto.request;
 
-import java.util.Set;
-
 import com.gdn.common.web.base.BaseRequest;
 
 public class PositionDTORequest extends BaseRequest {
+
   private String title;
+  private String id;
 
-  private Set<CandidatePositionDTORequest> candpos;
-
-  public Set<CandidatePositionDTORequest> getCandpos() {
-    return candpos;
+  public String getId() {
+    return id;
   }
 
   public String getTitle() {
     return title;
   }
 
-  public void setCandpos(Set<CandidatePositionDTORequest> candpos) {
-    this.candpos = candpos;
+  public void setId(String id) {
+    this.id = id;
   }
 
   public void setTitle(String title) {

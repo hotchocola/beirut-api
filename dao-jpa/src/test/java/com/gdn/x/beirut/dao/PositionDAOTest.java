@@ -29,43 +29,41 @@ public class PositionDAOTest {
   private Position position2;
 
   @Autowired
-  private PositionDAO positionDAO;
+  private PositionDAO positionDao;
 
   @Test
   public void findById(){
     this.position1.setMarkForDelete(true);
-    assertEquals(this.positionDAO.findByIdAndMarkForDelete(this.position1.getId(), false), null);
+    assertEquals(this.positionDao.findByIdAndMarkForDelete(this.position1.getId(), false), null);
   }
 
   @Before
   public void initialize(){
-    this.position1= new Position("12");
-    this.position2= new Position("12");
+    this.position1= new Position();
+    this.position2= new Position();
     this.position1.setTitle("Nanami");
     this.position2.setTitle("Budi");
     this.position1.setCreatedBy("Aderai");
-    this.positionDAO.save(this.position1);
+    this.positionDao.save(this.position1);
+  }
+
+  @Test
+  public void testFindByMarkForDelete(){
+    assertTrue(this.positionDao.findByMarkForDelete(true).isEmpty());
   }
 
   @Test
   public void testFindByTitle(){
-    assertTrue(this.positionDAO.findByTitleContainingAndMarkForDelete(this.position2.getTitle(), false).isEmpty());
-  }
-
-  @Test
-  public void testMarkForDelete(){
-    this.position1.setMarkForDelete(true);
-    assertTrue(this.positionDAO.findByTitleAndMarkForDeleteNot(this.position1.getTitle(), true).isEmpty());
+    assertTrue(this.positionDao.findByTitleContainingAndMarkForDelete(this.position2.getTitle(), false).isEmpty());
   }
 
   @Test
   public void testSave(){
     System.out.println("aaaa" + this.position1.isMarkForDelete());
     System.out.println("bbbb" + this.position2.isMarkForDelete());
-    assertTrue(this.positionDAO.findByTitleContainingAndMarkForDelete(this.position1.getTitle(), false).size()==1);
-    assertTrue(this.positionDAO.findByTitleContainingAndMarkForDelete("Nana", false).size()==1);
-    assertTrue(this.positionDAO.findByTitleContainingAndMarkForDelete(this.position2.getTitle(), false).isEmpty());
+    assertTrue(this.positionDao.findByTitleContainingAndMarkForDelete(this.position1.getTitle(), false).size()==1);
+    assertTrue(this.positionDao.findByTitleContainingAndMarkForDelete("Nana", false).size()==1);
+    assertTrue(this.positionDao.findByTitleContainingAndMarkForDelete(this.position2.getTitle(), false).isEmpty());
     //LOG.info("position list = {}", this.positionDao.findOne(this.position1.getId()));
   }
-
 }

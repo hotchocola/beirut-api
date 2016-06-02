@@ -23,7 +23,7 @@ public class Position extends GdnBaseEntity {
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="position")
   private Set<CandidatePosition> candidatePosition= new HashSet<CandidatePosition>();
 
-  public Position(String STORE_ID){
+  public Position(){
     super();
   }
 
@@ -46,5 +46,4 @@ public class Position extends GdnBaseEntity {
   public void setTitle(String title) {
     this.title = title;
   }
-
 }

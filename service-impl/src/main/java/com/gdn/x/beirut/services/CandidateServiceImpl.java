@@ -1,8 +1,9 @@
 package com.gdn.x.beirut.services;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,22 +21,21 @@ public class CandidateServiceImpl implements CandidateService {
   @Autowired
   CandidateDAO candidateDao;
 
-  @Override
-  public List<Candidate> findCandidateByEmailAddress(String emailAddress) {
-    // TODO Auto-generated method stub
-    return null;
-  }
 
   @Override
-  public List<Candidate> findCandidateByPhoneNumber(String phoneNumber) {
-    // TODO Auto-generated method stub
-    return null;
+  public List<Candidate> getAllCandidateDetailStatus() {
+    List<Candidate> candidates = getAllCandidates();
+    for (Candidate candidate : candidates) {
+      Hibernate.initialize(candidate.getCandidatePositions());
+    }
+    return candidates;
   }
 
   @Override
   public List<Candidate> getAllCandidates() {
     return this.candidateDao.findAll();
   }
+
 
 
   @Override
@@ -56,7 +56,7 @@ public class CandidateServiceImpl implements CandidateService {
     if (candidate == null) {
       throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND);
     } else {
-      return candidate.getCandidatedetail();
+      return candidate.getCandidateDetail();
     }
   }
 
@@ -76,19 +76,39 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
-  public List<Candidate> searchByFirstname(String firstname) {
+  public List<Candidate> searchByCreatedDateBetween(Date start, Date end) {
     // TODO Auto-generated method stub
-    List<Candidate> candidates = new ArrayList<Candidate>();
-    candidates = this.candidateDao.findByFirstnameLike(firstname);
-    return candidates;
+    return this.candidateDao.findByCreatedDateBetween(start, end);
   }
 
   @Override
-  public List<Candidate> searchByLastname(String lastname) {
+  public List<Candidate> searchByFirstName(String firstname) {
     // TODO Auto-generated method stub
-    List<Candidate> candidates = new ArrayList<Candidate>();
-    candidates = this.candidateDao.findByLastnameLike(lastname);
-    return candidates;
+    return this.candidateDao.findByFirstNameLike(firstname);
+  }
+
+  @Override
+  public List<Candidate> searchByLastName(String lastname) {
+    // TODO Auto-generated method stub
+    return this.candidateDao.findByLastNameLike(lastname);
+  }
+
+  @Override
+  public List<Candidate> searchCandidateByEmailAddress(String emailAddress) {
+    // TODO Auto-generated method stub
+    return this.candidateDao.findByEmailAddress(emailAddress);
+  }
+
+  @Override
+  public List<Candidate> searchCandidateByPhoneNumber(String phoneNumber) {
+    // TODO Auto-generated method stub
+    return this.candidateDao.findByPhoneNumber(phoneNumber);
+  }
+
+  @Override
+  public List<Candidate> searchCandidateByPhoneNumberLike(String phoneNumber) {
+    // TODO Auto-generated method stub
+    return this.candidateDao.findByPhoneNumberLike(phoneNumber);
   }
 
   @Override
@@ -99,9 +119,23 @@ public class CandidateServiceImpl implements CandidateService {
     if (candidate == null) {
       throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND);
     } else {
-      candidate.setCandidatedetail(candidateDetail);
+      candidate.setCandidateDetail(candidateDetail);
       this.candidateDao.save(candidate);
     }
   }
+
+
+  // @Override
+  // public boolean setCandidatePositionStatus(String idCandidatePosition, Status newStatus) {
+  // // TODO Auto-generated method stub
+  // // 1. insert new status log...
+  // // 2. update status candidateposition (yang saat ini)
+  // CandidatePosition candidatePostition =
+  // this.candidateDao.findCandidatePositionById(idCandidatePosition);
+  // StatusLog newStatusLog = new StatusLog();
+  // newStatusLog.setStatus(newStatus);
+  // newStatusLog.setCandidatePosition(candidatePostition);
+  // return false;
+  // }
 
 }

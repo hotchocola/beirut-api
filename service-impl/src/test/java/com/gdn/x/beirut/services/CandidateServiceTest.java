@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.junit.After;
@@ -51,32 +52,63 @@ public class CandidateServiceTest {
 
   private List<Candidate> candidates;
 
+  private List<Candidate> candidateRanges;
+
   @Before
   public void initialize() {
     initMocks(this);
     this.candidate = new Candidate(STORE_ID);
-    this.candidate.setFirstname(FIRST_NAME);
-    this.candidate.setLastname(LAST_NAME);
+    this.candidate.setFirstName(FIRST_NAME);
+    this.candidate.setLastName(LAST_NAME);
 
     this.markForDeleteCandidate = new Candidate(STORE_ID);
-    this.markForDeleteCandidate.setFirstname(FIRST_NAME);
-    this.markForDeleteCandidate.setLastname(LAST_NAME);
+    this.markForDeleteCandidate.setFirstName(FIRST_NAME);
+    this.markForDeleteCandidate.setLastName(LAST_NAME);
     this.markForDeleteCandidate.setMarkForDelete(true);
 
     this.candidateDetail = new CandidateDetail(STORE_ID);
 
     this.candidateWithDetail = new Candidate(STORE_ID);
-    this.candidateWithDetail.setFirstname(FIRST_NAME);
-    this.candidateWithDetail.setLastname(LAST_NAME);
-    this.candidateWithDetail.setCandidatedetail(this.candidateDetail);
+    this.candidateWithDetail.setFirstName(FIRST_NAME);
+    this.candidateWithDetail.setLastName(LAST_NAME);
+    this.candidateWithDetail.setCandidateDetail(this.candidateDetail);
 
     this.candidates = new ArrayList<Candidate>();
     this.candidates.add(this.candidate);
 
-    when(this.candidateDao.findByFirstnameLike(LIKE_FIRST_NAME)).thenReturn(this.candidates);
-    when(this.candidateDao.findByLastnameLike(LIKE_LAST_NAME)).thenReturn(this.candidates);
+    when(this.candidateDao.findByFirstNameLike(LIKE_FIRST_NAME)).thenReturn(this.candidates);
+    when(this.candidateDao.findByLastNameLike(LIKE_LAST_NAME)).thenReturn(this.candidates);
     when(this.candidateDao.findOne(ID)).thenReturn(this.candidate);
     when(this.candidateDao.save(this.candidate)).thenReturn(this.candidate);
+    candidateRanges = new ArrayList<>();
+    GregorianCalendar start = new GregorianCalendar(2016, 1, 1);
+    GregorianCalendar create = new GregorianCalendar(2016, 2, 1);
+    GregorianCalendar end = new GregorianCalendar(2016, 6, 1);
+    for (int i = 0; i < 10; i++) {
+      Candidate newCandidate = new Candidate(STORE_ID);
+      newCandidate.setEmailAddress("egaprianto" + i + "@asd.com");
+      newCandidate.setFirstName("Ega");
+      newCandidate.setLastName("Prianto");
+      newCandidate.setPhoneNumber("123456789" + i);
+      newCandidate.setCreatedDate(create.getTime());
+      CandidateDetail candDetail = new CandidateDetail("1");
+      candDetail.setContent(("ini PDF" + i).getBytes());
+      newCandidate.setCandidateDetail(candDetail);
+      candidates.add(newCandidate);
+    }
+
+    Candidate newCandidate = new Candidate(STORE_ID);
+    newCandidate.setEmailAddress("egaprianto@asd.com");
+    newCandidate.setFirstName("Ega");
+    newCandidate.setLastName("Prianto");
+    newCandidate.setPhoneNumber("1234567890");
+    newCandidate.setCreatedDate(create.getTime());
+    CandidateDetail candDetail = new CandidateDetail("1");
+    candDetail.setContent(("ini PDF").getBytes());
+    newCandidate.setCandidateDetail(candDetail);
+    candidateRanges.add(newCandidate);
+    when(this.candidateDao.findByCreatedDateBetween(start.getTime(), end.getTime()))
+        .thenReturn(candidates);
   }
 
   @After
@@ -140,22 +172,84 @@ public class CandidateServiceTest {
   }
 
   @Test
-  public void testSearchByFirstname() {
+  public void testSearchByCreatedDateBetween() {
+    GregorianCalendar start = new GregorianCalendar(2016, 1, 1);
+    GregorianCalendar end = new GregorianCalendar(2016, 6, 1);
+
+    List<Candidate> result =
+        this.candidateService.searchByCreatedDateBetween(start.getTime(), end.getTime());
     // Black Box Test
-    Assert
-        .assertTrue(this.candidateDao.findByFirstnameLike(LIKE_FIRST_NAME).equals(this.candidates));
+    Assert.assertTrue(result.equals(candidates));
     // White Box Test
-    this.candidateService.searchByFirstname(LIKE_FIRST_NAME);
-    verify(this.candidateDao, times(2)).findByFirstnameLike(LIKE_FIRST_NAME);
+    verify(this.candidateDao, times(1)).findByCreatedDateBetween(start.getTime(), end.getTime());
   }
 
   @Test
-  public void testSearchByLastname() {
+  public void testSearchByFirstName() {
     // Black Box Test
-    Assert.assertTrue(this.candidateDao.findByLastnameLike(LIKE_LAST_NAME).equals(this.candidates));
+    Assert
+        .assertTrue(this.candidateDao.findByFirstNameLike(LIKE_FIRST_NAME).equals(this.candidates));
+    // White Box Test
+    this.candidateService.searchByFirstName(LIKE_FIRST_NAME);
+    verify(this.candidateDao, times(2)).findByFirstNameLike(LIKE_FIRST_NAME);
+  }
+
+  @Test
+  public void testSearchByLastName() {
+    // Black Box Test
+    Assert.assertTrue(this.candidateDao.findByLastNameLike(LIKE_LAST_NAME).equals(this.candidates));
     // White Box Test (CEK PEMANGGILAN)
-    this.candidateService.searchByLastname(LIKE_LAST_NAME);
-    verify(this.candidateDao, times(2)).findByLastnameLike(LIKE_LAST_NAME);
+    this.candidateService.searchByLastName(LIKE_LAST_NAME);
+    verify(this.candidateDao, times(2)).findByLastNameLike(LIKE_LAST_NAME);
+  }
+
+  @Test
+  public void testSearchCandidateByEmailAddress() {
+    List<Candidate> res = new ArrayList<>();
+    for (Candidate candidate : candidateRanges) {
+      if (candidate.getEmailAddress().equals("egaprianto@asd.com")) {
+        res.add(candidate);
+      }
+    }
+    when(this.candidateDao.findByEmailAddress("egaprianto@asd.com")).thenReturn(res);
+    List<Candidate> result =
+        this.candidateService.searchCandidateByEmailAddress("egaprianto@asd.com");
+    // Black Box Test
+    Assert.assertTrue(result.equals(res));
+    // White Box Test
+    verify(this.candidateDao, times(1)).findByEmailAddress("egaprianto@asd.com");
+  }
+
+  @Test
+  public void testSearchCandidateByPhoneNumber() {
+    List<Candidate> res = new ArrayList<>();
+    for (Candidate candidate : candidateRanges) {
+      if (candidate.getPhoneNumber().equals("1234567890")) {
+        res.add(candidate);
+      }
+    }
+    when(this.candidateDao.findByPhoneNumber("1234567890")).thenReturn(res);
+    List<Candidate> result = this.candidateService.searchCandidateByPhoneNumber("1234567890");
+    // Black Box Test
+    Assert.assertTrue(result.equals(res));
+    // White Box Test
+    verify(this.candidateDao, times(1)).findByPhoneNumber("1234567890");
+  }
+
+  @Test
+  public void testSearchCandidateByPhoneNumberLike() {
+    List<Candidate> res = new ArrayList<>();
+    for (Candidate candidate : candidateRanges) {
+      if (candidate.getPhoneNumber().contains("123456789")) {
+        res.add(candidate);
+      }
+    }
+    when(this.candidateDao.findByPhoneNumberLike("123456789")).thenReturn(res);
+    List<Candidate> result = this.candidateService.searchCandidateByPhoneNumberLike("123456789");
+    // Black Box Test
+    Assert.assertTrue(result.equals(res));
+    // White Box Test
+    verify(this.candidateDao, times(1)).findByPhoneNumberLike("123456789");
   }
 
   @Test
