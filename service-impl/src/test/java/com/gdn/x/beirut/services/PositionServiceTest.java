@@ -5,6 +5,9 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -23,14 +26,17 @@ public class PositionServiceTest {
   @InjectMocks
   private PositionServiceImpl service;
 
+  @PersistenceContext
+  private EntityManager em;
+
   private Position position;
   private final List<Position> pos = new ArrayList<Position>();
 
   @Test
   @Ignore
-  public void checkMarkForDelete(){
+  public void checkMarkForDelete() {
     List<String> ids = new ArrayList<String>();
-    for(int i=0; i<pos.size(); i++){
+    for (int i = 0; i < pos.size(); i++) {
       ids.add(pos.get(i).getId());
     }
     this.service.markForDeletePosition(ids);
@@ -39,19 +45,19 @@ public class PositionServiceTest {
 
 
   @Test
-  public void checkUpdatePositionTitle(){
+  public void checkUpdatePositionTitle() {
     this.service.updatePositionTitle(this.position.getId(), "Emporio Ivankov");
     Mockito.verify(this.repository).findByIdAndMarkForDelete(this.position.getId(), false);
   }
 
   @Test
-  public void getAllPosition(){
+  public void getAllPosition() {
     this.service.getAllPosition();
     Mockito.verify(this.repository, Mockito.times(1)).findByMarkForDelete(false);
   }
 
   @Test
-  public void getPositionByTitle(){
+  public void getPositionByTitle() {
     this.service.getPositionByTitle("Cho");
     Mockito.verify(this.repository).findByTitleContainingAndMarkForDelete("Cho", false);
   }
@@ -60,12 +66,15 @@ public class PositionServiceTest {
   public void initialize() throws Exception {
     initMocks(this);
 
-    this.position=new Position();
+    this.position = new Position();
     this.position.setTitle("Choa");
     this.position.setId("122");
     pos.add(this.position);
     this.repository.save(this.position);
-    Mockito.when(this.repository.findByTitleContainingAndMarkForDelete(this.position.getTitle(), false)).thenReturn(pos);
+    Mockito
+        .when(
+            this.repository.findByTitleContainingAndMarkForDelete(this.position.getTitle(), false))
+        .thenReturn(pos);
     Mockito.when(this.repository.save(this.position)).thenReturn(this.position);
     List<String> aa = new ArrayList<String>();
     aa.add("1");
