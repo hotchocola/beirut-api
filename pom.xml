@@ -324,12 +324,12 @@
       </dependency>
       <dependency>
         <groupId>com.gdn.x.beirut</groupId>
-        <artifactId>beirut-dao-api</artifactId>
+        <artifactId>beirut-candidateDAO-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>com.gdn.x.beirut</groupId>
-        <artifactId>beirut-dao-jpa</artifactId>
+        <artifactId>beirut-candidateDAO-jpa</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -618,8 +618,8 @@
   </dependencies>
   <modules>
     <module>model</module>
-    <module>dao-api</module>
-    <module>dao-jpa</module>
+    <module>candidateDAO-api</module>
+    <module>candidateDAO-jpa</module>
     <module>service-api</module>
     <module>service-impl</module>
     <module>rest-web-model</module>

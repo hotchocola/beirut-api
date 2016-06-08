@@ -1,26 +1,62 @@
 package com.gdn.x.beirut.services;
 
-import java.util.Date;
-import java.util.List;
-
-import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.CandidateDAO;
+import com.gdn.x.beirut.dao.PositionDAO;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
+import com.gdn.x.beirut.entities.CandidatePosition;
+import com.gdn.x.beirut.entities.Position;
+import com.gdn.x.beirut.entities.Status;
+import com.gdn.x.beirut.entities.StatusLog;
+
+import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
 public class CandidateServiceImpl implements CandidateService {
 
-  @Autowired
-  CandidateDAO candidateDao;
+  private static final Logger LOG = LoggerFactory.getLogger(CandidateServiceImpl.class);
+  private static final String ID_SHOULD_EMPTY_FOR_NEW_RECORD = "id should empty for new record";
+  private static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
 
+  @Autowired
+  private CandidateDAO candidateDAO;
+
+  @Autowired
+  private PositionDAO positionDAO;
+
+  @Override
+  @Transactional(readOnly = false)
+  public void applyNewPosition(Candidate candidate, Position position) throws Exception {
+    Candidate existingCandidate = getCandidate(candidate.getId());
+    existingCandidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
+    candidateDAO.save(existingCandidate);
+  }
+
+  @Override
+  @Transactional(readOnly = false)
+  public Candidate createNew(Candidate candidate, Position position) throws Exception {
+    if (candidate.getId() == null) {
+      CandidatePosition candidatePosition = new CandidatePosition();
+      candidatePosition.setCandidate(candidate);
+      candidatePosition.setPosition(position);
+      candidate.getCandidatePositions().add(candidatePosition);
+      return candidateDAO.save(candidate);
+    }
+    throw new ApplicationException(ErrorCategory.VALIDATION, ID_SHOULD_EMPTY_FOR_NEW_RECORD);
+  }
 
   @Override
   public List<Candidate> getAllCandidateDetailStatus() {
@@ -33,15 +69,17 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   public List<Candidate> getAllCandidates() {
-    return this.candidateDao.findAll();
+    return candidateDAO.findAll();
   }
 
-
+  @Override
+  public Page<Candidate> getAllCandidatesWithPageable(Pageable pageable) {
+    return candidateDAO.findAll(pageable);
+  }
 
   @Override
   public Candidate getCandidate(String id) throws Exception {
-    // TODO Auto-generated method stub
-    final Candidate candidate = this.candidateDao.findOne(id);
+    Candidate candidate = candidateDAO.findOne(id);
     if (candidate == null) {
       throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND);
     } else {
@@ -51,79 +89,94 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   public CandidateDetail getCandidateDetail(String id) throws Exception {
-    // TODO Auto-generated method stub
-    final Candidate candidate = this.candidateDao.findOne(id);
-    if (candidate == null) {
-      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND);
-    } else {
-      return candidate.getCandidateDetail();
-    }
+    Candidate candidate = getCandidate(id);
+    Hibernate.initialize(candidate.getCandidateDetail());
+    return candidate.getCandidateDetail();
+  }
+
+  public CandidateDAO getCandidateDAO() {
+    return candidateDAO;
+  }
+
+  public PositionDAO getPositionDAO() {
+    return positionDAO;
   }
 
   @Override
   @Transactional(readOnly = false)
-  public void markForDelete(String id) {
-    // TODO Auto-generated method stub
-    final Candidate candidate = this.candidateDao.findOne(id);
+  public void markForDelete(String id) throws Exception {
+    Candidate candidate = getCandidate(id);
     candidate.setMarkForDelete(true);
-    this.candidateDao.save(candidate);
-  }
-
-  @Override
-  @Transactional(readOnly = false)
-  public Candidate save(Candidate candidate) {
-    return this.candidateDao.save(candidate);
+    candidateDAO.save(candidate);
   }
 
   @Override
   public List<Candidate> searchByCreatedDateBetween(Date start, Date end) {
-    // TODO Auto-generated method stub
-    return this.candidateDao.findByCreatedDateBetween(start, end);
+    return candidateDAO.findByCreatedDateBetween(start, end);
   }
 
   @Override
   public List<Candidate> searchByFirstName(String firstname) {
-    // TODO Auto-generated method stub
-    return this.candidateDao.findByFirstNameLike(firstname);
+    return candidateDAO.findByFirstNameLike(firstname);
   }
 
   @Override
   public List<Candidate> searchByLastName(String lastname) {
-    // TODO Auto-generated method stub
-    return this.candidateDao.findByLastNameLike(lastname);
+    return candidateDAO.findByLastNameLike(lastname);
   }
 
   @Override
   public List<Candidate> searchCandidateByEmailAddress(String emailAddress) {
-    // TODO Auto-generated method stub
-    return this.candidateDao.findByEmailAddress(emailAddress);
+    return candidateDAO.findByEmailAddress(emailAddress);
   }
 
   @Override
   public List<Candidate> searchCandidateByPhoneNumber(String phoneNumber) {
-    // TODO Auto-generated method stub
-    return this.candidateDao.findByPhoneNumber(phoneNumber);
+    return candidateDAO.findByPhoneNumber(phoneNumber);
   }
 
   @Override
   public List<Candidate> searchCandidateByPhoneNumberLike(String phoneNumber) {
-    // TODO Auto-generated method stub
-    return this.candidateDao.findByPhoneNumberLike(phoneNumber);
+    return candidateDAO.findByPhoneNumberLike(phoneNumber);
+  }
+
+  public void setCandidateDAO(CandidateDAO candidateDAO) {
+    this.candidateDAO = candidateDAO;
+  }
+
+  public void setPositionDAO(PositionDAO positionDAO) {
+    this.positionDAO = positionDAO;
   }
 
   @Override
   @Transactional(readOnly = false)
-  public void setCandidateDetail(String id, CandidateDetail candidateDetail) throws Exception {
-    // TODO Auto-generated method stub
-    final Candidate candidate = this.candidateDao.findOne(id);
-    if (candidate == null) {
-      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND);
+  public void updateCandidateDetail(Candidate candidate) throws Exception {
+    if (candidate.getId() != null) {
+      Candidate existingCandidate = getCandidate(candidate.getId());
+      existingCandidate.setFirstName(candidate.getFirstName());
+      existingCandidate.setLastName(candidate.getLastName());
+      existingCandidate.setEmailAddress(candidate.getEmailAddress());
+      existingCandidate.setPhoneNumber(candidate.getPhoneNumber());
+      Hibernate.initialize(candidate.getCandidateDetail());
+      CandidateDetail existingDetail = existingCandidate.getCandidateDetail();
+      existingDetail.setContent(candidate.getCandidateDetail().getContent());
+      candidateDAO.save(candidate);
     } else {
-      candidate.setCandidateDetail(candidateDetail);
-      this.candidateDao.save(candidate);
+      throw new ApplicationException(ErrorCategory.VALIDATION, ID_SHOULD_NOT_BE_EMPTY);
     }
   }
 
+  @Override
+  @Transactional(readOnly = false)
+  public void updateCandidateStatus(Candidate candidate, Position position, Status status) throws Exception {
+    Candidate existingCandidate = getCandidate(candidate.getId());
+    Position existingPosition = positionDAO.findOne(position.getId());
+    Hibernate.initialize(existingCandidate.getCandidatePositions());
+    existingCandidate.getCandidatePositions().stream().filter(candidatePosition -> candidatePosition.getPosition().equals(existingPosition)).forEach(candidatePosition -> {
+      candidatePosition.getStatusLogs().add(new StatusLog(candidatePosition, status));
+    });
+    candidateDAO.save(existingCandidate);
+  }
 
   // @Override
   // public boolean setCandidatePositionStatus(String idCandidatePosition, Status newStatus) {
@@ -131,10 +184,10 @@ public class CandidateServiceImpl implements CandidateService {
   // // 1. insert new status log...
   // // 2. update status candidateposition (yang saat ini)
   // CandidatePosition candidatePostition =
-  // this.candidateDao.findCandidatePositionById(idCandidatePosition);
+  // candidateDAO.findCandidatePositionById(idCandidatePosition);
   // StatusLog newStatusLog = new StatusLog();
   // newStatusLog.setStatus(newStatus);
-  // newStatusLog.setCandidatePosition(candidatePostition);
+  // newStatusLog.setCandidatePositions(candidatePostition);
   // return false;
   // }
 

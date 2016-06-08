@@ -1,33 +1,27 @@
 package com.gdn.x.beirut.dao;
 
-import java.util.Date;
-import java.util.List;
+import com.gdn.x.beirut.entities.Candidate;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.gdn.x.beirut.entities.Candidate;
-
+import java.util.Date;
+import java.util.List;
 
 public interface CandidateDAO extends JpaRepository<Candidate, String> {
-  // List<CandidatePosition> findAllCandidatePositions();
 
   List<Candidate> findByCreatedDateBetween(Date start, Date end);
 
-  List<Candidate> findByEmailAddress(String emailaddress);
+  List<Candidate> findByEmailAddress(String emailAddress);
 
-  List<Candidate> findByFirstName(String firstname);
+  List<Candidate> findByFirstName(String firstName);
 
-  List<Candidate> findByFirstNameLike(String firstname);
+  List<Candidate> findByFirstNameLike(String firstName);
 
-  List<Candidate> findByLastName(String lastname);
+  List<Candidate> findByLastName(String lastName);
 
-  List<Candidate> findByLastNameLike(String lastname);
+  List<Candidate> findByLastNameLike(String lastName);
 
-  List<Candidate> findByPhoneNumber(String phonenumber);
+  List<Candidate> findByPhoneNumber(String phoneNumber);
 
-  List<Candidate> findByPhoneNumberLike(String phonenumber);
-  // @Query("from CandidatePosition where id = :id")
-  // CandidatePosition findCandidatePositionById(@[param("id") String id);
-  //
-  // }
+  List<Candidate> findByPhoneNumberLike(String phoneNumber);
 }

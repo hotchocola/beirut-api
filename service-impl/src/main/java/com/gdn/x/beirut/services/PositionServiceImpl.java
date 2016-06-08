@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,8 @@ import com.gdn.x.beirut.entities.Position;
 @Transactional(readOnly = true)
 public class PositionServiceImpl implements PositionService {
 
+  private static final Logger LOG = LoggerFactory.getLogger(PositionServiceImpl.class);
+
   @Autowired
   private PositionDAO positionDAO;
 
@@ -27,7 +31,6 @@ public class PositionServiceImpl implements PositionService {
 
   @Override
   public List<Position> getPositionByTitle(String title) {
-    // TODO Auto-generated method stub
     return positionDAO.findByTitleContainingAndMarkForDelete(title, false);
   }
 
@@ -38,7 +41,7 @@ public class PositionServiceImpl implements PositionService {
   @Override
   @Transactional(readOnly = false)
   public boolean insertNewPosition(Position position) {
-    for (CandidatePosition iterable_element : position.getCandidatePosition()) {
+    for (CandidatePosition iterable_element : position.getCandidatePositions()) {
       iterable_element.setPosition(position);
     }
     this.getPositionDao().save(position);
@@ -52,19 +55,14 @@ public class PositionServiceImpl implements PositionService {
     List<Position> positions = new ArrayList<Position>();
     for (int i = 0; i < ids.size(); i++) {
       Position posi = this.getPositionDao().findByIdAndMarkForDelete(ids.get(i), false);
-      System.out.println("auibiubr");
-      // hibernate initialize kayak gak kepanggil.
-      Hibernate.initialize(posi.getCandidatePosition());
-      System.out.println("uhoiaafubrugb");
-      Iterator<CandidatePosition> iterator = posi.getCandidatePosition().iterator();
+      Hibernate.initialize(posi.getCandidatePositions());
+      Iterator<CandidatePosition> iterator = posi.getCandidatePositions().iterator();
       while (iterator.hasNext()) {
         CandidatePosition candpos = iterator.next();
         candpos.setMarkForDelete(true);
-        System.out.println("aaa" + candpos.isMarkForDelete());
       }
       posi.setMarkForDelete(true);
       positions.add(posi);
-      System.out.println("patricia" + posi.isMarkForDelete() + " " + posi.getTitle());
     }
     this.getPositionDao().save(positions);
   }

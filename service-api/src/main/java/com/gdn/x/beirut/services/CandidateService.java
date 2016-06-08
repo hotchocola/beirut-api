@@ -1,24 +1,33 @@
 package com.gdn.x.beirut.services;
 
 
+import com.gdn.x.beirut.entities.Candidate;
+import com.gdn.x.beirut.entities.CandidateDetail;
+import com.gdn.x.beirut.entities.Position;
+import com.gdn.x.beirut.entities.Status;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Date;
 import java.util.List;
 
-import com.gdn.x.beirut.entities.Candidate;
-import com.gdn.x.beirut.entities.CandidateDetail;
-
 public interface CandidateService {
+  void applyNewPosition(Candidate candidate, Position position) throws Exception;
+
+  Candidate createNew(Candidate candidate, Position position) throws Exception;
+
   List<Candidate> getAllCandidateDetailStatus();
 
   List<Candidate> getAllCandidates();
+
+  Page<Candidate> getAllCandidatesWithPageable(Pageable pageable);
 
   Candidate getCandidate(String id) throws Exception;
 
   CandidateDetail getCandidateDetail(String id) throws Exception;
 
-  void markForDelete(String id);
-
-  Candidate save(Candidate candidate);
+  void markForDelete(String id) throws Exception;
 
   List<Candidate> searchByCreatedDateBetween(Date start, Date end);
 
@@ -32,7 +41,7 @@ public interface CandidateService {
 
   List<Candidate> searchCandidateByPhoneNumberLike(String phoneNumber);
 
+  void updateCandidateDetail(Candidate candidate) throws Exception;
 
-  void setCandidateDetail(String id, CandidateDetail candidateDetail) throws Exception;
-
+  void updateCandidateStatus(Candidate candidate, Position position, Status status) throws Exception;
 }
