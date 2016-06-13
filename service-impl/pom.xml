@@ -31,7 +31,7 @@
     </dependency>
     <dependency>
       <groupId>com.gdn.x.beirut</groupId>
-      <artifactId>beirut-dao-api</artifactId>
+      <artifactId>beirut-candidateDAO-api</artifactId>
     </dependency>
     <dependency>
       <groupId>net.sf.dozer</groupId>

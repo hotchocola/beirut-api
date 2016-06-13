@@ -97,7 +97,7 @@ public class CandidateController {
       @RequestParam String username, @RequestBody CandidateDTORequest candreq) {
     Candidate temp = new Candidate(storeId);
     CandidateMapper.map(candreq, temp, dozerMapper);
-    this.candidateService.save(temp);
+    this.candidateService.createNew(temp);
     return new GdnBaseRestResponse(true);
   }
 }

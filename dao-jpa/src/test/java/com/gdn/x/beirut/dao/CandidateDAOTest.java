@@ -1,7 +1,7 @@
 package com.gdn.x.beirut.dao;
 
-import java.util.GregorianCalendar;
-import java.util.List;
+import com.gdn.x.beirut.entities.Candidate;
+import com.gdn.x.beirut.entities.CandidateDetail;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,8 +16,8 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gdn.x.beirut.entities.Candidate;
-import com.gdn.x.beirut.entities.CandidateDetail;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
@@ -31,26 +31,28 @@ public class CandidateDAOTest {
 
   @Before
   public void initialize() {
-
     for (int i = 0; i < 10; i++) {
-      Candidate newCandidate = new Candidate("1");
+      Candidate newCandidate = new Candidate();
       newCandidate.setEmailAddress("egaprianto" + i + "@asd.com");
       newCandidate.setFirstName("Ega");
       newCandidate.setLastName("Prianto");
       newCandidate.setPhoneNumber("123456789" + i);
-      CandidateDetail candDetail = new CandidateDetail("1");
+      CandidateDetail candDetail = new CandidateDetail();
       candDetail.setContent(("ini PDF" + i).getBytes());
       newCandidate.setCandidateDetail(candDetail);
+      candDetail.setCandidate(newCandidate);
       this.candidateDAO.save(newCandidate);
     }
 
-    Candidate newCandidate = new Candidate("1");
+    Candidate newCandidate = new Candidate();
     newCandidate.setEmailAddress("egaprianto@asd.com");
     newCandidate.setFirstName("Ega");
     newCandidate.setLastName("Prianto");
     newCandidate.setPhoneNumber("1234567890");
-    CandidateDetail candDetail = new CandidateDetail("1");
+    CandidateDetail candDetail = new CandidateDetail();
     candDetail.setContent(("ini PDF").getBytes());
+    candDetail.setCandidate(newCandidate);
+
     newCandidate.setCandidateDetail(candDetail);
     this.candidateDAO.save(newCandidate);
   }

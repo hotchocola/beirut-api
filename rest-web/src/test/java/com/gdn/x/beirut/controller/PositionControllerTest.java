@@ -61,7 +61,7 @@ public class PositionControllerTest {
     CandidatePosition candidatePosition = new CandidatePosition();
     candidatePosition.setId("12");
     candidatePositions.add(candidatePosition);
-    p.setCandidatePosition(candidatePositions);
+    p.setCandidatePositions(candidatePositions);
 
     Mockito.doNothing().when(this.service).insertNewPosition(Mockito.any(Position.class));
     this.mockMVC
