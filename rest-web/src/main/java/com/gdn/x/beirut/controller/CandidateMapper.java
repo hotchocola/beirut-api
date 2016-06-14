@@ -12,7 +12,7 @@ public class CandidateMapper {
   public static void map(Candidate source, CandidateDTOResponse dest, Mapper dozerMapper) {
     dozerMapper.map(source, dest);
     CandidateDetailDTOResponse detilDTOres =
-        new CandidateDetailDTOResponse(source.getCandidateDetail().getStoreId());
+        new CandidateDetailDTOResponse(source.getCandidateDetail().getId());
     dozerMapper.map(source.getCandidateDetail(), detilDTOres);
   }
 
@@ -21,7 +21,7 @@ public class CandidateMapper {
     CandidateDetail candDetail = new CandidateDetail();
     dozerMapper.map(source.getCandidateDetail(), candDetail);
     dest.setCandidateDetail(candDetail);
-    candDetail.setStoreId(dest.getStoreId());
+    candDetail.setId(dest.getId());
     candDetail.setCandidate(dest);
   }
 }

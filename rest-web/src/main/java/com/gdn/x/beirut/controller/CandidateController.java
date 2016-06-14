@@ -18,8 +18,10 @@ import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
+import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
+import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.services.CandidateService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -94,10 +96,13 @@ public class CandidateController {
   @ResponseBody
   public GdnBaseRestResponse insertNewCandidate(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody CandidateDTORequest candreq) {
-    Candidate temp = new Candidate(storeId);
+      @RequestParam String username, @RequestBody CandidateDTORequest candreq,
+      @RequestBody PositionDTORequest posreq) throws Exception {
+    Candidate temp = new Candidate();
+    Position pos = new Position();
     CandidateMapper.map(candreq, temp, dozerMapper);
-    this.candidateService.createNew(temp);
+    dozerMapper.map(posreq, pos);
+    this.candidateService.createNew(temp, pos);
     return new GdnBaseRestResponse(true);
   }
 }

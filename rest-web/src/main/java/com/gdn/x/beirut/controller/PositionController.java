@@ -125,4 +125,3 @@ public class PositionController {
         .updatePositionTitle(positionDTORequest.getId(), positionDTORequest.getTitle()));
   }
 }
-
