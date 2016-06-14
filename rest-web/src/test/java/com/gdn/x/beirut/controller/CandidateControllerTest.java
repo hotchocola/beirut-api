@@ -50,7 +50,6 @@ public class CandidateControllerTest {
   @Test
   public void findCandidateByIdTest() throws Exception {
     String uri = "/api/candidate/getAllCandidate";
-
     Mockito.when(this.candidateService.getAllCandidates()).thenReturn(cands);
     this.mockMVC.perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
         .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
@@ -82,7 +81,7 @@ public class CandidateControllerTest {
 
     for (Candidate candidate : cands) {
       CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
-      CandidateMapper.map(candidate, newCandidateDTORes, beanMapper);
+      CandidateMapper.mapLazy(candidate, newCandidateDTORes, beanMapper);
       candidateResponse.add(newCandidateDTORes);
     }
     candidateController.setDozerMapper(beanMapper);

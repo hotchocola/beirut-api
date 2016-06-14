@@ -7,22 +7,27 @@ import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gdn.common.enums.ErrorCategory;
+import com.gdn.common.exception.ApplicationException;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
-import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
+import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.services.CandidateService;
+import com.gdn.x.beirut.services.PositionService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
@@ -33,8 +38,15 @@ public class CandidateController {
 
   @Autowired
   private CandidateService candidateService;
+
+  @Autowired
+  private PositionService positionService;
+
   @Autowired
   private Mapper dozerMapper;
+
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @RequestMapping(value = "findCandidateById", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -82,31 +94,52 @@ public class CandidateController {
     List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
     for (Candidate candidate : candidates) {
       CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
-      CandidateMapper.map(candidate, newCandidateDTORes, dozerMapper);
+      System.out.println(candidate);
+      CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
       candidateResponse.add(newCandidateDTORes);
     }
     return new GdnRestListResponse<>(candidateResponse,
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
+  public PositionService getPositionService() {
+    return positionService;
+  }
+
   @RequestMapping(value = "insertNewCandidate", method = RequestMethod.POST,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Insert new Candidate", notes = "memasukan kandidat baru.")
   @ResponseBody
   public GdnBaseRestResponse insertNewCandidate(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody CandidateDTORequest candreq,
-      @RequestBody PositionDTORequest posreq) throws Exception {
-    Candidate temp = new Candidate();
-    Position pos = new Position();
-    CandidateMapper.map(candreq, temp, dozerMapper);
-    dozerMapper.map(posreq, pos);
-    this.candidateService.createNew(temp, pos);
-    return new GdnBaseRestResponse(true);
+      @RequestParam String username, @RequestParam String candidateDTORequestString,
+      @RequestPart MultipartFile file) throws Exception {
+    if (file == null || file.getBytes().length == 0) {
+      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER,
+          "file content mustbe present");
+    }
+    CandidateDTORequest candidateDTORequest =
+        objectMapper.readValue(candidateDTORequestString, CandidateDTORequest.class);
+    Candidate newCandidate = new Candidate();
+    Position position = positionService.getPosition(candidateDTORequest.getPositionId());
+    CandidateDetail candidateDetail = new CandidateDetail();
+    candidateDetail.setContent(file.getBytes());
+    candidateDetail.setCandidate(newCandidate);
+    newCandidate.setCandidateDetail(candidateDetail);
+    CandidateMapper.map(candidateDTORequest, newCandidate, dozerMapper);
+    Candidate existingCandidate = this.candidateService.createNew(newCandidate, position);
+    if (existingCandidate.getId() == null) {
+      return new GdnBaseRestResponse(false);
+    }
+    return new GdnBaseRestResponse(requestId);
   }
 
   public void setDozerMapper(Mapper dm) {
     this.dozerMapper = dm;
+  }
+
+  public void setPositionService(PositionService positionService) {
+    this.positionService = positionService;
   }
 }

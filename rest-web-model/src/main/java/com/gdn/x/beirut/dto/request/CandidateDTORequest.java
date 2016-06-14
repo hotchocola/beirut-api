@@ -4,15 +4,11 @@ import com.gdn.common.web.base.BaseRequest;
 
 public class CandidateDTORequest extends BaseRequest {
 
-  private CandidateDetailDTORequest candidateDetail;
   private String emailAddress;
   private String firstName;
   private String lastName;
   private String phoneNumber;
-
-  public CandidateDetailDTORequest getCandidateDetail() {
-    return candidateDetail;
-  }
+  private String positionId;
 
   public String getEmailAddress() {
     return emailAddress;
@@ -30,10 +26,6 @@ public class CandidateDTORequest extends BaseRequest {
     return phoneNumber;
   }
 
-  public void setCandidateDetail(CandidateDetailDTORequest candidateDetail) {
-    this.candidateDetail = candidateDetail;
-  }
-
   public void setEmailAddress(String emailAddress) {
     this.emailAddress = emailAddress;
   }
@@ -48,6 +40,14 @@ public class CandidateDTORequest extends BaseRequest {
 
   public void setPhoneNumber(String phoneNumber) {
     this.phoneNumber = phoneNumber;
+  }
+
+  public String getPositionId() {
+    return positionId;
+  }
+
+  public void setPositionId(String positionId) {
+    this.positionId = positionId;
   }
 
 }

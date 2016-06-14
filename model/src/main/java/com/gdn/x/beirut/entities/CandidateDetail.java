@@ -1,42 +1,45 @@
 package com.gdn.x.beirut.entities;
 
-import com.gdn.common.base.entity.GdnBaseEntity;
-
 import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.gdn.common.base.entity.GdnBaseEntity;
 
 @Entity
 @Table(name = CandidateDetail.TABLE_NAME)
 public class CandidateDetail implements Serializable {
 
+  private static final long serialVersionUID = -5841108367030595782L;
   public static final String TABLE_NAME = "candidate_detail";
   public static final String COLUMN_CONTENT = "content";
 
   @Id
   private String id;
 
-  @Column(name = CandidateDetail.COLUMN_CONTENT)
+  @Lob
+  @Column(name = CandidateDetail.COLUMN_CONTENT, nullable = false, columnDefinition = "blob")
   private byte[] content;
-
-  public CandidateDetail() {
-    //nothing to do here
-  }
-
-  public CandidateDetail(Candidate candidate) {
-    this.candidate = candidate;
-  }
 
   @MapsId
   @OneToOne
   @JoinColumn(name = GdnBaseEntity.ID)
   private Candidate candidate;
+
+  public CandidateDetail() {
+    // nothing to do here
+  }
+
+  public CandidateDetail(Candidate candidate) {
+    this.candidate = candidate;
+  }
 
   public Candidate getCandidate() {
     return candidate;

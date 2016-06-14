@@ -9,16 +9,20 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.PositionDAO;
 import com.gdn.x.beirut.entities.Position;
 
 public class PositionServiceTest {
+
+  private static final String DEFAULT_ID = "ID";
 
   @Mock
   private PositionDAO repository;
@@ -50,6 +54,7 @@ public class PositionServiceTest {
   public void checkUpdatePositionTitle() {
     this.service.updatePositionTitle(this.position.getId(), "Emporio Ivankov");
     verify(this.repository).findOne(this.position.getId());
+    verify(this.repository).save(position);
   }
 
   @Test
@@ -67,7 +72,6 @@ public class PositionServiceTest {
   @Before
   public void initialize() throws Exception {
     initMocks(this);
-
     this.position = new Position();
     this.position.setTitle("Choa");
     this.position.setId("122");
@@ -80,6 +84,28 @@ public class PositionServiceTest {
     Mockito.when(this.repository.save(this.position)).thenReturn(this.position);
     List<String> aa = new ArrayList<String>();
     aa.add("1");
+  }
+
+  @Test
+  public void testGetPosition() throws Exception {
+    Mockito.when(repository.findOne(DEFAULT_ID)).thenReturn(position);
+    this.service.getPosition(DEFAULT_ID);
+    verify(this.repository).findOne(DEFAULT_ID);
+  }
+
+  @Test
+  public void testGetPositionAndReturnException() throws Exception {
+    Mockito.when(repository.findOne(DEFAULT_ID)).thenReturn(null);
+    try {
+      this.service.getPosition(DEFAULT_ID);
+    } catch (Exception e) {
+      if (e instanceof ApplicationException) {
+        Assert.assertEquals("Can not find data :no position id = " + DEFAULT_ID, e.getMessage());
+      } else {
+        Assert.assertTrue(false);
+      }
+    }
+    verify(this.repository).findOne(DEFAULT_ID);
   }
 
 }
