@@ -195,9 +195,17 @@ public class CandidateServiceImpl implements CandidateService {
   public void updateCandidateStatusBulk(List<Candidate> candidates, Position position,
       Status status) throws Exception {
     // TODO Auto-generated method stub
-    for (Candidate candidate : candidates) {
-      this.updateCandidateStatus(candidate, position, status);
-    }
+    // for (Candidate candidate : candidates) {
+    // this.updateCandidateStatus(candidate, position, status);
+    // }
+    candidates.stream().forEach(candidate -> {
+      try {
+        this.updateCandidateStatus(candidate, position, status);
+      } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    });
   }
 
 
