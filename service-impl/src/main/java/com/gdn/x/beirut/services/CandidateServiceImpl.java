@@ -193,4 +193,15 @@ public class CandidateServiceImpl implements CandidateService {
     candidateDAO.save(existingCandidate);
   }
 
+  @Override
+  public void updateCandidateStatusBulk(List<Candidate> candidates, Position position,
+      Status status) throws Exception {
+    // TODO Auto-generated method stub
+    for (Candidate candidate : candidates) {
+      this.updateCandidateStatus(candidate, position, status);
+    }
+  }
+
+
+
 }

@@ -45,4 +45,7 @@ public interface CandidateService {
 
   void updateCandidateStatus(Candidate candidate, Position position, Status status)
       throws Exception;
+
+  void updateCandidateStatusBulk(List<Candidate> candidates, Position position, Status status)
+      throws Exception;
 }
