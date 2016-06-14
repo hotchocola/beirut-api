@@ -79,7 +79,7 @@ public class PositionController {
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestBody PositionDTORequest positionDTORequest) {
     List<Position> positions =
-        this.positionService.getPositionByTitle(positionDTORequest.getTitle());
+        this.positionService.getPositionByTitle(positionDTORequest.getTitle(), storeId);
     List<PositionDTOResponse> positionDTOResponses = new ArrayList<PositionDTOResponse>();
 
     for (Position positiones : positions) {
@@ -125,4 +125,3 @@ public class PositionController {
         .updatePositionTitle(positionDTORequest.getId(), positionDTORequest.getTitle()));
   }
 }
-

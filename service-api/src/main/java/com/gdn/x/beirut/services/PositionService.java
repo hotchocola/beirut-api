@@ -8,7 +8,7 @@ public interface PositionService {
 
   List<Position> getAllPosition();
 
-  List<Position> getPositionByTitle(String title);
+  List<Position> getPositionByTitle(String title, String storeId);
 
   boolean insertNewPosition(Position position);
 

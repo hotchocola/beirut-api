@@ -55,14 +55,12 @@ public class CandidateServiceImpl implements CandidateService {
     return candidateDAO.save(candidate);
   }
 
-  @Override
-  public List<Candidate> getAllCandidateDetailStatus() {
-    List<Candidate> candidates = getAllCandidates();
-    for (Candidate candidate : candidates) {
-      Hibernate.initialize(candidate.getCandidatePositions());
-    }
-    return candidates;
-  }
+  // public Candidate getAllCandidatePositionStatus(String id) {
+  // Candidate candidate = candidateDAO.findOne(id);
+  // Hibernate.initialize(candidate.getCandidatePositions());
+  //
+  // return candidate;
+  // }
 
   @Override
   public List<Candidate> getAllCandidates() {

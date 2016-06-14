@@ -26,12 +26,12 @@ public class PositionServiceImpl implements PositionService {
 
   @Override
   public List<Position> getAllPosition() {
-    return positionDAO.findByMarkForDelete(false);
+    return positionDAO.findAll();
   }
 
   @Override
-  public List<Position> getPositionByTitle(String title) {
-    return positionDAO.findByTitleContainingAndMarkForDelete(title, false);
+  public List<Position> getPositionByTitle(String title, String storeId) {
+    return positionDAO.findByTitleContainingAndStoreIdAndMarkForDelete(title, storeId, false);
   }
 
   public PositionDAO getPositionDao() {
@@ -54,7 +54,8 @@ public class PositionServiceImpl implements PositionService {
     System.out.println(ids.toString());
     List<Position> positions = new ArrayList<Position>();
     for (int i = 0; i < ids.size(); i++) {
-      Position posi = this.getPositionDao().findByIdAndMarkForDelete(ids.get(i), false);
+      Position posi =
+          (Position) this.getPositionDao().findByStoreIdAndMarkForDelete(ids.get(i), false);
       Hibernate.initialize(posi.getCandidatePositions());
       Iterator<CandidatePosition> iterator = posi.getCandidatePositions().iterator();
       while (iterator.hasNext()) {
@@ -70,7 +71,7 @@ public class PositionServiceImpl implements PositionService {
   @Override
   @Transactional(readOnly = false)
   public boolean updatePositionTitle(String id, String title) {
-    Position posi = this.positionDAO.findByIdAndMarkForDelete(id, false);
+    Position posi = this.positionDAO.findOne(id);
     if (posi != null) {
       posi.setTitle(title);
       this.positionDAO.save(posi);
