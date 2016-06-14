@@ -618,8 +618,8 @@
   </dependencies>
   <modules>
     <module>model</module>
-    <module>candidateDAO-api</module>
-    <module>candidateDAO-jpa</module>
+    <module>dao-api</module>
+    <module>dao-jpa</module>
     <module>service-api</module>
     <module>service-impl</module>
     <module>rest-web-model</module>

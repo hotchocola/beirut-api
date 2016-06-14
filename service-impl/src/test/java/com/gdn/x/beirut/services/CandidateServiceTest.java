@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,8 +20,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import com.gdn.x.beirut.dao.CandidateDAO;
+import com.gdn.x.beirut.dao.PositionDAO;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
+import com.gdn.x.beirut.entities.CandidatePosition;
+import com.gdn.x.beirut.entities.Position;
+import com.gdn.x.beirut.entities.Status;
+import com.gdn.x.beirut.entities.StatusLog;
 
 public class CandidateServiceTest {
 
@@ -36,8 +42,13 @@ public class CandidateServiceTest {
 
   private static final String LAST_NAME = "FAHRI";
 
+  private static final Status STATUS = Status.APPLY;
+
   @Mock
   private CandidateDAO candidateDao;
+
+  @Mock
+  private PositionDAO positionDao;
 
   @InjectMocks
   private CandidateServiceImpl candidateService;
@@ -54,21 +65,36 @@ public class CandidateServiceTest {
 
   private List<Candidate> candidateRanges;
 
+  private Position position;
+
   @Before
   public void initialize() {
     initMocks(this);
-    this.candidate = new Candidate(STORE_ID);
+    this.position = new Position();
+    this.position.setId(ID);
+    this.position.setStoreId(STORE_ID);
+    this.position.setTitle("Position Title");
+
+    this.candidate = new Candidate();
+    this.candidate.setId(ID);
+    this.candidate.setStoreId(STORE_ID);
     this.candidate.setFirstName(FIRST_NAME);
     this.candidate.setLastName(LAST_NAME);
 
-    this.markForDeleteCandidate = new Candidate(STORE_ID);
+    this.markForDeleteCandidate = new Candidate();
+    this.markForDeleteCandidate.setId(ID);
+    this.markForDeleteCandidate.setStoreId(STORE_ID);
     this.markForDeleteCandidate.setFirstName(FIRST_NAME);
     this.markForDeleteCandidate.setLastName(LAST_NAME);
     this.markForDeleteCandidate.setMarkForDelete(true);
 
-    this.candidateDetail = new CandidateDetail(STORE_ID);
+    this.candidateDetail = new CandidateDetail();
+    this.candidateDetail.setId(ID);
 
-    this.candidateWithDetail = new Candidate(STORE_ID);
+
+    this.candidateWithDetail = new Candidate();
+    this.candidateWithDetail.setId(ID);
+    this.candidateWithDetail.setStoreId(STORE_ID);
     this.candidateWithDetail.setFirstName(FIRST_NAME);
     this.candidateWithDetail.setLastName(LAST_NAME);
     this.candidateWithDetail.setCandidateDetail(this.candidateDetail);
@@ -85,25 +111,29 @@ public class CandidateServiceTest {
     GregorianCalendar create = new GregorianCalendar(2016, 2, 1);
     GregorianCalendar end = new GregorianCalendar(2016, 6, 1);
     for (int i = 0; i < 10; i++) {
-      Candidate newCandidate = new Candidate(STORE_ID);
+      Candidate newCandidate = new Candidate();
+      newCandidate.setId(ID);
+      newCandidate.setStoreId(STORE_ID);
       newCandidate.setEmailAddress("egaprianto" + i + "@asd.com");
       newCandidate.setFirstName("Ega");
       newCandidate.setLastName("Prianto");
       newCandidate.setPhoneNumber("123456789" + i);
       newCandidate.setCreatedDate(create.getTime());
-      CandidateDetail candDetail = new CandidateDetail("1");
+      CandidateDetail candDetail = new CandidateDetail();
       candDetail.setContent(("ini PDF" + i).getBytes());
       newCandidate.setCandidateDetail(candDetail);
       candidates.add(newCandidate);
     }
 
-    Candidate newCandidate = new Candidate(STORE_ID);
+    Candidate newCandidate = new Candidate();
+    newCandidate.setId(ID);
+    newCandidate.setStoreId(STORE_ID);
     newCandidate.setEmailAddress("egaprianto@asd.com");
     newCandidate.setFirstName("Ega");
     newCandidate.setLastName("Prianto");
     newCandidate.setPhoneNumber("1234567890");
     newCandidate.setCreatedDate(create.getTime());
-    CandidateDetail candDetail = new CandidateDetail("1");
+    CandidateDetail candDetail = new CandidateDetail();
     candDetail.setContent(("ini PDF").getBytes());
     newCandidate.setCandidateDetail(candDetail);
     candidateRanges.add(newCandidate);
@@ -118,9 +148,13 @@ public class CandidateServiceTest {
 
   @Test
   public void testGetAllCandidates() {
-    final Candidate cand1 = new Candidate(STORE_ID);
-    final Candidate cand2 = new Candidate(STORE_ID);
-    final List<Candidate> candidates = new ArrayList<Candidate>();
+    Candidate cand1 = new Candidate();
+    cand1.setId(ID);
+    cand1.setStoreId(STORE_ID);
+    Candidate cand2 = new Candidate();
+    cand2.setId(ID);
+    cand2.setStoreId(STORE_ID);
+    List<Candidate> candidates = new ArrayList<Candidate>();
     candidates.add(cand1);
     candidates.add(cand2);
     when(this.candidateDao.findAll()).thenReturn(candidates);
@@ -151,7 +185,7 @@ public class CandidateServiceTest {
   }
 
   @Test
-  public void testMarkForDelete() {
+  public void testMarkForDelete() throws Exception {
     // Black Box Test
 
     // White Box Test
@@ -163,11 +197,15 @@ public class CandidateServiceTest {
   }
 
   @Test
-  public void testSave() {
+  public void testSave() throws Exception {
     // Black Box Test
     assertTrue(this.candidateDao.save(this.candidate).equals(this.candidate));
     // White Box Test
-    this.candidateService.createNew(this.candidate);
+    this.candidateService.createNew(this.candidate, this.position);
+    CandidatePosition candidatePosition = new CandidatePosition();
+    candidatePosition.setCandidate(candidate);
+    candidatePosition.setPosition(position);
+    candidate.getCandidatePositions().add(candidatePosition);
     verify(this.candidateDao, times(2)).save(this.candidate);
   }
 
@@ -252,7 +290,7 @@ public class CandidateServiceTest {
     verify(this.candidateDao, times(1)).findByPhoneNumberLike("123456789");
   }
 
-  @Test
+  // @Test
   public void testSetCandidateDetail() throws Exception {
     // Black Box Test
 
@@ -260,6 +298,25 @@ public class CandidateServiceTest {
     this.candidateService.setCandidateDetail(ID, this.candidateDetail);
     verify(this.candidateDao, times(1)).findOne(ID);
     verify(this.candidateDao, times(1)).save(this.candidateWithDetail);
+  }
+
+  @Test
+  public void testUpdateCandidateStatus() throws Exception {
+    when(this.positionDao.findOne(ID)).thenReturn(this.position);
+    Candidate testCandidate = candidate;
+    this.candidateService.updateCandidateStatus(testCandidate, position, STATUS);
+    verify(this.candidateDao, times(1)).findOne(ID);
+    verify(this.positionDao, times(1)).findOne(ID);
+    //
+    Hibernate.initialize(testCandidate.getCandidatePositions());
+    testCandidate.getCandidatePositions().stream()
+        .filter(candidatePosition -> candidatePosition.getPosition().equals(position))
+        .forEach(candidatePosition -> {
+          candidatePosition.getStatusLogs().add(new StatusLog(candidatePosition, STATUS));
+          candidatePosition.setStatus(STATUS); // add missing setter zal
+        });
+    //
+    verify(this.candidateDao, times(1)).save(testCandidate);
   }
 
 }
