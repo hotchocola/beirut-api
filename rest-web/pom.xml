@@ -14,6 +14,7 @@
 
   <build>
     <finalName>${project.name}</finalName>
+	<!--
 	<resources>
       <resource>
         <directory>src/main/resources</directory>
@@ -27,6 +28,7 @@
         </includes>
       </resource>
     </resources>
+	-->
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -61,7 +63,7 @@
     </dependency>
     <dependency>
       <groupId>com.gdn.x.beirut</groupId>
-      <artifactId>beirut-dao-api</artifactId>
+      <artifactId>beirut-candidateDAO-api</artifactId>
     </dependency>
     <dependency>
       <groupId>com.gdn.x.beirut</groupId>
@@ -69,7 +71,7 @@
     </dependency>
     <dependency>
       <groupId>com.gdn.x.beirut</groupId>
-      <artifactId>beirut-dao-jpa</artifactId>
+      <artifactId>beirut-candidateDAO-jpa</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
