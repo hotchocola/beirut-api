@@ -1,27 +1,29 @@
 package com.gdn.x.beirut.controller;
 
 import org.dozer.Mapper;
+import org.springframework.beans.BeanUtils;
 
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
-import com.gdn.x.beirut.entities.CandidateDetail;
 
 public class CandidateMapper {
-  public static void map(Candidate source, CandidateDTOResponse dest, Mapper dozerMapper) {
-    dozerMapper.map(source, dest);
+  public static void map(Candidate candidate, CandidateDTOResponse candidateDTOResponse,
+      Mapper dozerMapper) {
+    dozerMapper.map(candidate, candidateDTOResponse);
     CandidateDetailDTOResponse detilDTOres =
-        new CandidateDetailDTOResponse(source.getCandidateDetail().getId());
-    dozerMapper.map(source.getCandidateDetail(), detilDTOres);
+        new CandidateDetailDTOResponse(candidate.getCandidateDetail().getId());
+    dozerMapper.map(candidate.getCandidateDetail(), detilDTOres);
   }
 
-  public static void map(CandidateDTORequest source, Candidate dest, Mapper dozerMapper) {
-    dozerMapper.map(source, dest);
-    CandidateDetail candDetail = new CandidateDetail();
-    dozerMapper.map(source.getCandidateDetail(), candDetail);
-    dest.setCandidateDetail(candDetail);
-    candDetail.setId(dest.getId());
-    candDetail.setCandidate(dest);
+  public static void map(CandidateDTORequest candidateDTORequest, Candidate candidate,
+      Mapper dozerMapper) {
+    dozerMapper.map(candidateDTORequest, candidate);
+  }
+
+  public static void mapLazy(Candidate candidate, CandidateDTOResponse candidateDTOResponse,
+      Mapper dozerMapper) {
+    BeanUtils.copyProperties(candidate, candidateDTOResponse, "candidateDetail");
   }
 }

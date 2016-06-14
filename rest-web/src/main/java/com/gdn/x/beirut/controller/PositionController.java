@@ -92,7 +92,7 @@ public class PositionController {
         new PageMetaData(5, 5, positions.size()), requestId);
   }
 
-  @RequestMapping(value = "/api/position/insertNewPosition", method = RequestMethod.GET,
+  @RequestMapping(value = "/api/position/insertNewPosition", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "insert new position", notes = "memasukan posisi baru.")
