@@ -34,7 +34,7 @@ public class PositionController {
   @Autowired
   private Mapper dozerMapper;
 
-  @RequestMapping(value = "/api/position/deletePosition", method = RequestMethod.POST,
+  @RequestMapping(value = "deletePosition", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "delete position", notes = "menghapus posisi.")
@@ -52,7 +52,7 @@ public class PositionController {
     return new GdnBaseRestResponse(true);
   }
 
-  @RequestMapping(value = "/api/position/getAllPosition", method = RequestMethod.POST,
+  @RequestMapping(value = "/api/position/getAllPosition", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "get all position", notes = "mengambil semua posisi.")
   @ResponseBody
@@ -71,7 +71,7 @@ public class PositionController {
         new PageMetaData(5, 5, positions.size()), requestId);
   }
 
-  @RequestMapping(value = "/api/position/getPositionByTitle", method = RequestMethod.POST,
+  @RequestMapping(value = "/api/position/getPositionByTitle", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "get position by title", notes = "mengambil semua posisi dengan nama.")
   @ResponseBody
@@ -92,7 +92,7 @@ public class PositionController {
         new PageMetaData(5, 5, positions.size()), requestId);
   }
 
-  @RequestMapping(value = "/api/position/insertNewPosition", method = RequestMethod.POST,
+  @RequestMapping(value = "/api/position/insertNewPosition", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "insert new position", notes = "memasukan posisi baru.")
