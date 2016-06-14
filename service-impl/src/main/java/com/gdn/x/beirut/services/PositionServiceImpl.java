@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gdn.common.enums.ErrorCategory;
+import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.PositionDAO;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
@@ -27,6 +29,16 @@ public class PositionServiceImpl implements PositionService {
   @Override
   public List<Position> getAllPosition() {
     return positionDAO.findAll();
+  }
+
+  @Override
+  public Position getPosition(String positionId) throws Exception {
+    Position existingPosition = getPositionDao().findOne(positionId);
+    if (existingPosition == null) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+          "no position id = " + positionId);
+    }
+    return existingPosition;
   }
 
   @Override
