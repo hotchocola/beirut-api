@@ -12,6 +12,7 @@ public interface PositionService {
 
   boolean insertNewPosition(Position position);
 
+  void markForDeletePosition(List<String> id);
 
   boolean updatePositionTitle(String id, String title);
 }
