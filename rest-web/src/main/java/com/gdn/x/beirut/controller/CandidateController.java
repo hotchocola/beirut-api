@@ -27,7 +27,7 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 @Controller
-@RequestMapping(value = "/api/candidate")
+@RequestMapping(value = "/api/candidate/")
 @Api(value = "CandidateController", description = "Controller untuk Candidate")
 public class CandidateController {
 
@@ -36,7 +36,7 @@ public class CandidateController {
   @Autowired
   private Mapper dozerMapper;
 
-  @RequestMapping(value = "/api/candidate/findCandidateById", method = RequestMethod.POST,
+  @RequestMapping(value = "findCandidateById", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "mencari kandidat berdasarkan ID",
       notes = "mengeluarkan kandidat dengan ID tersebut.")
@@ -51,7 +51,7 @@ public class CandidateController {
     return new GdnRestSingleResponse<CandidateDTOResponse>(candres, requestId);
   }
 
-  @RequestMapping(value = "/api/candidate/findCandidateByPhoneNumber", method = RequestMethod.POST,
+  @RequestMapping(value = "findCandidateByPhoneNumber", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "mencari kandidat berdasarkan nomor telepon",
       notes = "mengeluarkan kandidat dengan nomor telepon tersebut.")
@@ -71,7 +71,7 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
-  @RequestMapping(value = "/api/candidate/getAllCandidate", method = RequestMethod.POST,
+  @RequestMapping(value = "getAllCandidate", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Get all Candidates", notes = "Mengambil semua kandidat")
   @ResponseBody
@@ -89,7 +89,7 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
-  @RequestMapping(value = "/api/position/insertNewCandidate", method = RequestMethod.POST,
+  @RequestMapping(value = "insertNewCandidate", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Insert new Candidate", notes = "memasukan kandidat baru.")
@@ -104,5 +104,9 @@ public class CandidateController {
     dozerMapper.map(posreq, pos);
     this.candidateService.createNew(temp, pos);
     return new GdnBaseRestResponse(true);
+  }
+
+  public void setDozerMapper(Mapper dm) {
+    this.dozerMapper = dm;
   }
 }
