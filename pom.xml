@@ -324,12 +324,12 @@
       </dependency>
       <dependency>
         <groupId>com.gdn.x.beirut</groupId>
-        <artifactId>beirut-candidateDAO-api</artifactId>
+        <artifactId>beirut-dao-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>com.gdn.x.beirut</groupId>
-        <artifactId>beirut-candidateDAO-jpa</artifactId>
+        <artifactId>beirut-dao-jpa</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
