@@ -290,15 +290,15 @@ public class CandidateServiceTest {
     verify(this.candidateDao, times(1)).findByPhoneNumberLike("123456789");
   }
 
-  // @Test
-  public void testSetCandidateDetail() throws Exception {
-    // Black Box Test
-
-    // White Box Test
-    this.candidateService.setCandidateDetail(ID, this.candidateDetail);
-    verify(this.candidateDao, times(1)).findOne(ID);
-    verify(this.candidateDao, times(1)).save(this.candidateWithDetail);
-  }
+  // // @Test
+  // public void testSetCandidateDetail() throws Exception {
+  // // Black Box Test
+  //
+  // // White Box Test
+  // this.candidateService.setCandidateDetail(ID, this.candidateDetail);
+  // verify(this.candidateDao, times(1)).findOne(ID);
+  // verify(this.candidateDao, times(1)).save(this.candidateWithDetail);
+  // }
 
   @Test
   public void testUpdateCandidateStatus() throws Exception {
