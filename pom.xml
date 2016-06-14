@@ -50,20 +50,6 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>${maven-javadoc-plugin-version}</version>
-          <executions>
-            <execution>
-              <id>attach-javadocs</id>
-              <goals>
-                <goal>jar</goal>
-                <goal>test-jar</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
           <version>${maven-clean-plugin-version}</version>
         </plugin>
@@ -338,12 +324,12 @@
       </dependency>
       <dependency>
         <groupId>com.gdn.x.beirut</groupId>
-        <artifactId>beirut-dao-api</artifactId>
+        <artifactId>beirut-candidateDAO-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>com.gdn.x.beirut</groupId>
-        <artifactId>beirut-dao-jpa</artifactId>
+        <artifactId>beirut-candidateDAO-jpa</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
