@@ -77,9 +77,8 @@ public class PositionController {
   @ResponseBody
   public GdnRestListResponse<PositionDTOResponse> getPositionByTitle(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody PositionDTORequest positionDTORequest) {
-    List<Position> positions =
-        this.positionService.getPositionByTitle(positionDTORequest.getTitle(), storeId);
+      @RequestParam String username, @RequestParam String title) {
+    List<Position> positions = this.positionService.getPositionByTitle(title, storeId);
     List<PositionDTOResponse> positionDTOResponses = new ArrayList<PositionDTOResponse>();
 
     for (Position positiones : positions) {

@@ -42,6 +42,8 @@ public class PositionControllerTest {
 
   private static final String TITLE = "title";
 
+  private final String UriBasePath = "/api/position/";
+
   @InjectMocks
   PositionController positionController;
 
@@ -64,14 +66,11 @@ public class PositionControllerTest {
 
   @Test
   public void deletePositionTest() throws Exception {
-    String uri = "/api/position/deletePosition";
+    String uri = "deletePosition";
     String json = "[{  \"title\": \"qweqw\",  \"id\": \"123\"}]";
-    positionDTORequest.setId("123");
-    positionDTORequest.setTitle("title");
-    positionDTORequests.add(positionDTORequest);
     Mockito.doNothing().when(this.positionService).markForDeletePosition(Mockito.anyList());
     this.mockMVC
-        .perform(MockMvcRequestBuilders.post(uri).param("clientId", CLIENT_ID)
+        .perform(MockMvcRequestBuilders.post(UriBasePath + uri).param("clientId", CLIENT_ID)
             .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
             .param("channelId", CHANNEL_ID).param("username", USERNAME).content(json)
             .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
@@ -90,6 +89,12 @@ public class PositionControllerTest {
     initMocks(this);
     this.mockMVC = standaloneSetup(this.positionController).build();
     this.positionController.setDozerMapper(dm);
+    this.position.setId(ID);
+    this.position.setTitle(TITLE);
+    this.positions.add(this.position);
+    this.positionDTORequest.setId("id");
+    this.positionDTORequest.setTitle("title");
+    this.positionDTORequests.add(positionDTORequest);
   }
 
   // @RequestParam String clientId,
@@ -100,13 +105,10 @@ public class PositionControllerTest {
 
   @Test
   public void testGetAllPosition() throws Exception {
-    String uri = "/api/position/getAllPosition";
-    this.position.setId(ID);
-    this.position.setTitle(TITLE);
-    this.positions.add(this.position);
+    String uri = "getAllPosition";
     Mockito.when(this.positionService.getAllPosition()).thenReturn(this.positions);
     this.mockMVC
-        .perform(MockMvcRequestBuilders.get(uri).accept(MediaType.APPLICATION_JSON)
+        .perform(MockMvcRequestBuilders.get(UriBasePath + uri).accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON).param("clientId", CLIENT_ID)
             .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
             .param("channelId", CHANNEL_ID).param("username", USERNAME))
@@ -115,5 +117,54 @@ public class PositionControllerTest {
     Mockito.verify(this.positionService, Mockito.times(2)).getAllPosition();
   }
 
+  @Test
+  public void testGetPositionByTitle() throws Exception {
+    String uri = "getPositionByTitle";
+    Mockito.when(this.positionService.getPositionByTitle(TITLE, STORE_ID))
+        .thenReturn(this.positions);
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.get(UriBasePath + uri).accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("title", TITLE))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+    this.positionController.getPositionByTitle(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
+        USERNAME, TITLE);
+    Mockito.verify(this.positionService, Mockito.times(2)).getPositionByTitle(TITLE, STORE_ID);
+  }
+
+  @Test
+  public void testInsertNewPosition() throws Exception {
+    String uri = "insertNewPosition";
+    Position temp = new Position();
+    String positionDTORequestJson = "{\"title\":\"title\"}";
+    dozerMapper.map(this.positionDTORequest, temp);
+    Mockito.when(this.positionService.insertNewPosition(temp)).thenReturn(true);
+    this.mockMVC.perform(MockMvcRequestBuilders.post(UriBasePath + uri)
+        .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+        .param("clientId", CLIENT_ID).param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+        .param("channelId", CHANNEL_ID).param("username", USERNAME).content(positionDTORequestJson))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+    this.positionController.insertNewPosition(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME,
+        this.positionDTORequest);
+    Mockito.verify(this.positionService, Mockito.times(1)).insertNewPosition(temp);
+  }
+
+  @Test
+  public void testUpdatePosition() throws Exception {
+    String uri = "updatePosition";
+    String positionDTORequestJson = "{\"id\":\"id\",\"title\":\"title\"}";
+    Mockito.when(this.positionService.updatePositionTitle(this.positionDTORequest.getId(),
+        this.positionDTORequest.getTitle())).thenReturn(true);
+    this.mockMVC.perform(MockMvcRequestBuilders.post(UriBasePath + uri)
+        .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+        .param("clientId", CLIENT_ID).param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+        .param("channelId", CHANNEL_ID).param("username", USERNAME).content(positionDTORequestJson))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+    this.positionController.updatePosition(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME,
+        this.positionDTORequest);
+    Mockito.verify(this.positionService, Mockito.times(2))
+        .updatePositionTitle(this.positionDTORequest.getId(), this.positionDTORequest.getTitle());
+  }
 
 }
