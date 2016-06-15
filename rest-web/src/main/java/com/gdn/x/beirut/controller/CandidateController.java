@@ -104,9 +104,12 @@ public class CandidateController {
   @ResponseBody
   public GdnRestListResponse<CandidateDTOResponse> findCandidateByCreatedDateBetween(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
-      @RequestParam String channelId, @RequestParam String username, @RequestParam Date start,
-      @RequestParam Date end) throws Exception {
-    List<Candidate> candidates = this.candidateService.searchByCreatedDateBetween(start, end);
+      @RequestParam String channelId, @RequestParam String username, @RequestParam Long start,
+      @RequestParam Long end) throws Exception {
+    Date startDate = new Date(start);
+    Date endDate = new Date(end);
+    List<Candidate> candidates =
+        this.candidateService.searchByCreatedDateBetween(startDate, endDate);
     List<CandidateDTOResponse> candreses = new ArrayList<CandidateDTOResponse>();
     for (Candidate candidate : candidates) {
       CandidateDTOResponse canres = new CandidateDTOResponse();
