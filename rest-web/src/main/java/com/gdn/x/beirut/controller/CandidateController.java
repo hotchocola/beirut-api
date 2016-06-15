@@ -270,25 +270,6 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
-  @RequestMapping(value = "getAllCandidateDetailStatus", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
-      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "Menemukan detail status kandidat", notes = "")
-  @ResponseBody
-  public GdnRestListResponse<CandidateDTOResponse> getAllCandidateDetailStatus(
-      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
-      @RequestParam String channelId, @RequestParam String username) throws Exception {
-    List<Candidate> candidates = this.candidateService.getAllCandidates();
-    List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
-    for (Candidate candidate : candidates) {
-      CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
-      System.out.println(candidate);
-      CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
-      candidateResponse.add(newCandidateDTORes);
-    }
-    return new GdnRestListResponse<>(candidateResponse,
-        new PageMetaData(50, 0, candidateResponse.size()), requestId);
-  }
 
   @RequestMapping(value = "getAllCandidatesWithPageable", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
