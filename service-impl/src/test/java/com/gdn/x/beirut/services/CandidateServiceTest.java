@@ -286,16 +286,6 @@ public class CandidateServiceTest {
     verify(this.candidateDao, times(1)).findByPhoneNumber("1234567890");
   }
 
-  // // @Test
-  // public void testSetCandidateDetail() throws Exception {
-  // // Black Box Test
-  //
-  // // White Box Test
-  // this.candidateService.setCandidateDetail(ID, this.candidateDetail);
-  // verify(this.candidateDao, times(1)).findOne(ID);
-  // verify(this.candidateDao, times(1)).save(this.candidateWithDetail);
-  // }
-
   @Test
   public void testSearchCandidateByPhoneNumberLike() {
     List<Candidate> res = new ArrayList<>();
