@@ -8,6 +8,8 @@ public interface PositionService {
 
   List<Position> getAllPosition();
 
+  Position getPosition(String positionId) throws Exception;
+
   List<Position> getPositionByTitle(String title, String storeId);
 
   boolean insertNewPosition(Position position);

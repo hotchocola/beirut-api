@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import com.gdn.x.beirut.dao.CandidateDAO;
 import com.gdn.x.beirut.dao.PositionDAO;
@@ -112,7 +113,7 @@ public class CandidateServiceTest {
     GregorianCalendar end = new GregorianCalendar(2016, 6, 1);
     for (int i = 0; i < 10; i++) {
       Candidate newCandidate = new Candidate();
-      newCandidate.setId(ID);
+      newCandidate.setId(ID + " " + i);
       newCandidate.setStoreId(STORE_ID);
       newCandidate.setEmailAddress("egaprianto" + i + "@asd.com");
       newCandidate.setFirstName("Ega");
@@ -137,6 +138,26 @@ public class CandidateServiceTest {
     candDetail.setContent(("ini PDF").getBytes());
     newCandidate.setCandidateDetail(candDetail);
     candidateRanges.add(newCandidate);
+
+
+    for (int i = 0; i < 10; i++) {
+      Candidate toBeDeletedCandidate = new Candidate();
+      toBeDeletedCandidate.setId(ID + " " + i);
+      toBeDeletedCandidate.setStoreId(STORE_ID);
+      toBeDeletedCandidate.setEmailAddress("egaprianto" + i + "@asd.com");
+      toBeDeletedCandidate.setFirstName("Ega");
+      toBeDeletedCandidate.setLastName("Prianto");
+      toBeDeletedCandidate.setPhoneNumber("123456789" + i);
+      toBeDeletedCandidate.setCreatedDate(create.getTime());
+      toBeDeletedCandidate.setMarkForDelete(false);
+      CandidateDetail candidateDetail = new CandidateDetail();
+      candidateDetail.setContent(("ini PDF" + i).getBytes());
+      toBeDeletedCandidate.setCandidateDetail(candidateDetail);
+      candidates.add(toBeDeletedCandidate);
+      Mockito.when(this.candidateDao.findByIdAndMarkForDelete(ID + " " + i, false))
+          .thenReturn(toBeDeletedCandidate);
+    }
+
     when(this.candidateDao.findByCreatedDateBetween(start.getTime(), end.getTime()))
         .thenReturn(candidates);
   }
@@ -185,15 +206,21 @@ public class CandidateServiceTest {
   }
 
   @Test
-  public void testMarkForDelete() throws Exception {
+  public void testMarkForDeleteBulk() throws Exception {
     // Black Box Test
 
     // White Box Test
-    this.candidateService.markForDelete(ID);
-    verify(this.candidateDao, times(1)).findOne(ID);
+    List<String> ids = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      String id = ID + " " + i;
+      ids.add(id);
+    }
+    this.candidateService.markForDelete(ids);
+    verify(this.candidateDao, times(10)).findByIdAndMarkForDelete(Mockito.anyString(),
+        Mockito.eq(false));
     final Candidate candidate = this.candidate;
     candidate.setMarkForDelete(true);
-    verify(this.candidateDao, times(1)).save(this.markForDeleteCandidate);
+    verify(this.candidateDao, times(10)).save(Mockito.any(Candidate.class));
   }
 
   @Test
