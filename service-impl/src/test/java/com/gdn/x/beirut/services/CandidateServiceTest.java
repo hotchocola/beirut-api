@@ -184,17 +184,17 @@ public class CandidateServiceTest {
     verify(this.candidateDao, times(2)).findOne(ID);
   }
 
-  @Test
-  public void testMarkForDelete() throws Exception {
-    // Black Box Test
-
-    // White Box Test
-    this.candidateService.markForDelete(ID);
-    verify(this.candidateDao, times(1)).findOne(ID);
-    final Candidate candidate = this.candidate;
-    candidate.setMarkForDelete(true);
-    verify(this.candidateDao, times(1)).save(this.markForDeleteCandidate);
-  }
+  // @Test
+  // public void testMarkForDelete() throws Exception {
+  // // Black Box Test
+  //
+  // // White Box Test
+  // this.candidateService.markForDelete(ID);
+  // verify(this.candidateDao, times(1)).findOne(ID);
+  // final Candidate candidate = this.candidate;
+  // candidate.setMarkForDelete(true);
+  // verify(this.candidateDao, times(1)).save(this.markForDeleteCandidate);
+  // }
 
   @Test
   public void testSave() throws Exception {

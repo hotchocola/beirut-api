@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
+import com.gdn.common.web.param.PageableHelper;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
@@ -286,16 +287,22 @@ public class CandidateController {
   }
 
   @RequestMapping(value = "getAllCandidatesWithPageable", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Getting all candidates with pageable", notes = "")
   @ResponseBody
-  public Page<CandidateDTOResponse> getAllCandidateWithPageable(@RequestParam String clientId,
-      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody Pageable pageable) throws Exception {
-    Page<Candidate> page = this.candidateService.getAllCandidatesWithPageable(pageable);
-    Page<CandidateDTOResponse> pageresponse = null;
-    dozerMapper.map(page, pageresponse);
+  public GdnRestListResponse<CandidateDTOResponse> getAllCandidateWithPageable(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam int page,
+      @RequestParam int size) throws Exception {
+    Pageable pageable = PageableHelper.generatePageable(page, size);
+    Page<Candidate> pages = this.candidateService.getAllCandidatesWithPageable(pageable);
+    List<CandidateDTOResponse> toShow = new ArrayList<>();
+    for (Candidate candidate : pages) {
+      CandidateDTOResponse newCandidateDTOResponse = new CandidateDTOResponse();
+      CandidateMapper.mapLazy(candidate, newCandidateDTOResponse, dozerMapper);
+    }
+    GdnRestListResponse<CandidateDTOResponse> pageresponse =
+        new GdnRestListResponse<>(toShow, new PageMetaData(50, 0, toShow.size()), requestId);
     return pageresponse;
   }
 

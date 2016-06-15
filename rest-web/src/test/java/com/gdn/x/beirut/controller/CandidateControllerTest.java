@@ -24,6 +24,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gdn.common.web.wrapper.response.GdnRestListResponse;
+import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
@@ -38,7 +40,7 @@ public class CandidateControllerTest {
   private static final String USERNAME = "username";
   private static final String PHONENUM = "123";
 
-  private static final Pageable pageable = new PageRequest(50, 10);
+  private static final Pageable pageable = new PageRequest(1, 4);
 
   private Mapper beanMapper;
   private MockMvc mockMVC;
@@ -47,6 +49,8 @@ public class CandidateControllerTest {
   private final Page<Candidate> pageCandidate = new PageImpl(candidates, pageable, 10);
   private final Date start = new Date(1434323587);
   private final Date end = new Date(1465945987);
+  private final String page = "1";
+  private final String size = "4";
 
   private final List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
 
@@ -103,16 +107,16 @@ public class CandidateControllerTest {
     Mockito.when(this.candidateService.getAllCandidatesWithPageable(pageable))
         .thenReturn(pageCandidate);
     this.mockMVC
-        .perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
-            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
-            .param("channelId", CHANNEL_ID).param("username", USERNAME).content(pageable)
-            .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+        .perform(
+            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
+                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+                .param("username", USERNAME).param("page", page).param("size", size))
         .andExpect(status().isOk());
-    Page<CandidateDTOResponse> res = this.candidateController.getAllCandidateWithPageable(CLIENT_ID,
-        STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME, pageable);
-    CandidateDTOResponse candsdtores = new CandidateDTOResponse();
-    Page<CandidateDTOResponse> expectedRes =
-        new PageImpl<CandidateDTOResponse>(candidateResponse, pageable, 10);
+    GdnRestListResponse<CandidateDTOResponse> res =
+        this.candidateController.getAllCandidateWithPageable(CLIENT_ID, STORE_ID, REQUEST_ID,
+            CHANNEL_ID, USERNAME, Integer.parseInt(page), Integer.parseInt(size));
+    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
+        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
     for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
       expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
     }
