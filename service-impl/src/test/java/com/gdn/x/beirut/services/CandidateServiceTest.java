@@ -217,16 +217,25 @@ public class CandidateServiceTest {
   }
 
   @Test
-  public void testMarkForDeleteBulk() throws Exception {
-    // Black Box Test
+  public void testMarkForDelete() throws Exception {
+    Mockito.when(this.candidateDao.findByIdAndMarkForDelete(ID, false)).thenReturn(candidate);
 
-    // White Box Test
+    this.candidateService.markForDelete(ID);
+    verify(this.candidateDao, times(1)).findByIdAndMarkForDelete(Mockito.anyString(),
+        Mockito.eq(false));
+    verify(this.candidateDao, times(1)).save(Mockito.any(Candidate.class));
+  }
+
+  @Test
+  public void testMarkForDeleteBulk() throws Exception {
     List<String> ids = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
       String id = ID + " " + i;
       ids.add(id);
     }
     this.candidateService.markForDelete(ids);
+    // Black Box Test
+    // White Box Test
     verify(this.candidateDao, times(10)).findByIdAndMarkForDelete(Mockito.anyString(),
         Mockito.eq(false));
     final Candidate candidate = this.candidate;

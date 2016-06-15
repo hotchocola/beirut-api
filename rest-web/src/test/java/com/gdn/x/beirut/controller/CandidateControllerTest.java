@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -28,6 +29,7 @@ import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
+import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
@@ -193,6 +195,24 @@ public class CandidateControllerTest {
 
     Mockito.verify(candidateService, Mockito.times(2)).createNew(newCandidate, newPosition);
     Mockito.verify(positionService, Mockito.times(2)).getPosition(POSITION_ID);
+  }
+
+  @Test
+  public void testMarkForDeleteBulk() throws Exception {
+    String uri = "/api/candidate/markForDeleteBulk";
+    String json =
+        FileUtils.readFileToString(new File("src/test/resources/JSON/markForDeleteJSON.json"));
+    ListStringRequest listStringIds = objectMapper.readValue(json, ListStringRequest.class);
+    Mockito.doNothing().when(this.positionService).markForDeletePosition(Mockito.anyList());
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.post(uri).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).content(json)
+            .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+
+    this.candidateService.markForDelete(listStringIds.getValues());
+    Mockito.verify(this.candidateService, Mockito.times(2)).markForDelete(Mockito.anyList());
   }
 
   @Test

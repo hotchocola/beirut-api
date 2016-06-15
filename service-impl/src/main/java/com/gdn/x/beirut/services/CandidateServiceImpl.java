@@ -57,13 +57,6 @@ public class CandidateServiceImpl implements CandidateService {
     return candidateDAO.save(candidate);
   }
 
-  // public Candidate getAllCandidatePositionStatus(String id) {
-  // Candidate candidate = candidateDAO.findOne(id);
-  // Hibernate.initialize(candidate.getCandidatePositions());
-  //
-  // return candidate;
-  // }
-
   @Override
   public List<Candidate> getAllCandidates() {
     return candidateDAO.findAll();
@@ -112,6 +105,9 @@ public class CandidateServiceImpl implements CandidateService {
   @Override
   public void markForDelete(String id) throws Exception {
     Candidate candidate = this.candidateDAO.findByIdAndMarkForDelete(id, false);
+    if (candidate == null) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "id not found in database");
+    }
     Hibernate.initialize(candidate.getCandidatePositions());
     Iterator<CandidatePosition> iterator = candidate.getCandidatePositions().iterator();
     while (iterator.hasNext()) {

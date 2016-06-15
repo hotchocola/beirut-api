@@ -24,6 +24,7 @@ import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.CandidatesPositionStatusDTOWrapper;
+import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
@@ -293,6 +294,24 @@ public class CandidateController {
     return new GdnBaseRestResponse(requestId);
   }
 
+  @RequestMapping(value = "markForDeleteBulk", method = RequestMethod.POST,
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Delete Id yang ada", notes = "Semua yang ada di list akan di hapus")
+  @ResponseBody
+  public GdnBaseRestResponse markForDeleteBulk(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestBody ListStringRequest idsRequest)
+          throws Exception {
+    try {
+      this.candidateService.markForDelete(idsRequest.getValues());
+      return new GdnBaseRestResponse(requestId);
+    } catch (Exception e) {
+      return new GdnBaseRestResponse(e.getMessage(), "", false, requestId);
+    }
+
+  }
+
   public void setDozerMapper(Mapper dm) {
     this.dozerMapper = dm;
   }
@@ -304,6 +323,7 @@ public class CandidateController {
   public void setPositionService(PositionService positionService) {
     this.positionService = positionService;
   }
+
 
   @RequestMapping(value = "updateCandidateDetail", method = RequestMethod.POST,
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
