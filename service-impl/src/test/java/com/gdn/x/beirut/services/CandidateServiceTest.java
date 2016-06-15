@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import com.gdn.x.beirut.dao.CandidateDAO;
 import com.gdn.x.beirut.dao.PositionDAO;
@@ -144,6 +145,17 @@ public class CandidateServiceTest {
   @After
   public void noMoreTransaction() {
     verifyNoMoreInteractions(this.candidateDao);
+  }
+
+
+  @Test
+  public void testApplyNewPosition() throws Exception {
+    Assert.assertTrue(this.candidateDao.findOne(ID).equals(this.candidate));
+    this.candidateService.applyNewPosition(this.candidate, this.position);
+    Candidate cand = this.candidate;
+    cand.getCandidatePositions().add(new CandidatePosition(this.candidate, this.position));
+    Mockito.verify(this.candidateDao, Mockito.times(2)).findOne(ID);
+    Mockito.verify(this.candidateDao, times(1)).save(cand);
   }
 
   @Test
@@ -274,6 +286,16 @@ public class CandidateServiceTest {
     verify(this.candidateDao, times(1)).findByPhoneNumber("1234567890");
   }
 
+  // // @Test
+  // public void testSetCandidateDetail() throws Exception {
+  // // Black Box Test
+  //
+  // // White Box Test
+  // this.candidateService.setCandidateDetail(ID, this.candidateDetail);
+  // verify(this.candidateDao, times(1)).findOne(ID);
+  // verify(this.candidateDao, times(1)).save(this.candidateWithDetail);
+  // }
+
   @Test
   public void testSearchCandidateByPhoneNumberLike() {
     List<Candidate> res = new ArrayList<>();
@@ -289,16 +311,6 @@ public class CandidateServiceTest {
     // White Box Test
     verify(this.candidateDao, times(1)).findByPhoneNumberLike("123456789");
   }
-
-  // // @Test
-  // public void testSetCandidateDetail() throws Exception {
-  // // Black Box Test
-  //
-  // // White Box Test
-  // this.candidateService.setCandidateDetail(ID, this.candidateDetail);
-  // verify(this.candidateDao, times(1)).findOne(ID);
-  // verify(this.candidateDao, times(1)).save(this.candidateWithDetail);
-  // }
 
   @Test
   public void testUpdateCandidateStatus() throws Exception {
