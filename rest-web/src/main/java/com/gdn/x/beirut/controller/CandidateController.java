@@ -96,8 +96,7 @@ public class CandidateController {
     return new GdnBaseRestResponse();
   }
 
-  @RequestMapping(value = "findCandidateByCreatedDateBetween", method = RequestMethod.POST,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
+  @RequestMapping(value = "findCandidateByCreatedDateBetween", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Find candidate which created between day x and day y",
       notes = "mencari kandidat yang dibuat pada periode tertentu.")
@@ -213,13 +212,13 @@ public class CandidateController {
   }
 
   @RequestMapping(value = "findCandidateByPhoneNumberLike", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Find candidate by their phone number that much alike", notes = "")
   @ResponseBody
-  public GdnBaseRestResponse findCandidateByPhoneNumberLike(@RequestParam String clientId,
-      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestParam String phoneNumber) throws Exception {
+  public GdnRestListResponse<CandidateDTOResponse> findCandidateByPhoneNumberLike(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username,
+      @RequestParam String phoneNumber) throws Exception {
     List<Candidate> candidates =
         this.candidateService.searchCandidateByPhoneNumberLike(phoneNumber);
     List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
