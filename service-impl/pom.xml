@@ -79,6 +79,7 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+<<<<<<< HEAD
     <!-- 
     <dependency>
       <groupId>org.neo4j</groupId>
@@ -87,4 +88,7 @@
     </dependency>
      -->	
   </dependencies>
+=======
+</dependencies>
+>>>>>>> 764f7c418c05ae92caca4b4c7303c54bbb34e38a
 </project>

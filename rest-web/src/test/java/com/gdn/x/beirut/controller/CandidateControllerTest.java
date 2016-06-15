@@ -91,6 +91,7 @@ public class CandidateControllerTest {
   }
 
   @Test
+<<<<<<< HEAD
   public void testFindCandidateById() throws Exception {
     String uri = "/api/candidate/findCandidateById";
     Mockito.when(this.candidateService.getCandidate(ID)).thenReturn(candidate);
@@ -136,6 +137,11 @@ public class CandidateControllerTest {
   public void testgetAllCandidate() throws Exception {
     String uri = "/api/candidate/getAllCandidate";
     Mockito.when(this.candidateService.getAllCandidates()).thenReturn(candidates);
+=======
+  public void findCandidateByIdTest() throws Exception {
+    String uri = "/api/candidate/getAllCandidate";
+    Mockito.when(this.candidateService.getAllCandidates()).thenReturn(cands);
+>>>>>>> 764f7c418c05ae92caca4b4c7303c54bbb34e38a
     this.mockMVC.perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
         .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
         .param("username", USERNAME)).andExpect(status().isOk());
@@ -149,6 +155,7 @@ public class CandidateControllerTest {
     Mockito.verify(this.candidateService, Mockito.times(2)).getAllCandidates();
   }
 
+<<<<<<< HEAD
   @Test
   public void testInsertNewCandidate() throws Exception {
     String uri = "/api/candidate/insertNewCandidate";
@@ -188,6 +195,29 @@ public class CandidateControllerTest {
 
     this.candidateController.insertNewCandidate(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
         USERNAME, candidateDTORequestString, file);
+=======
+  @Before
+  public void initialize() throws Exception {
+    initMocks(this);
+    this.mockMVC = standaloneSetup(this.candidateController).build();
+    beanMapper = new DozerBeanMapper();
+    cand.setId("ID");
+    cand.setStoreId(STORE_ID);
+    cand.setCandidateDetail(new CandidateDetail());
+    cand.setPhoneNumber("1234567890");
+    cand.setEmailAddress("egaegaega@ega.ega");
+    cand.setCreatedBy("ega");
+    cand.setLastName("Prianto");
+    cand.setFirstName("Ega");
+    cands.add(cand);
+
+    for (Candidate candidate : cands) {
+      CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
+      CandidateMapper.mapLazy(candidate, newCandidateDTORes, beanMapper);
+      candidateResponse.add(newCandidateDTORes);
+    }
+    candidateController.setDozerMapper(beanMapper);
+>>>>>>> 764f7c418c05ae92caca4b4c7303c54bbb34e38a
 
     Mockito.verify(candidateService, Mockito.times(2)).createNew(newCandidate, newPosition);
     Mockito.verify(positionService, Mockito.times(2)).getPosition(POSITION_ID);
