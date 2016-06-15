@@ -25,6 +25,8 @@ public interface CandidateService {
 
   CandidateDetail getCandidateDetail(String id) throws Exception;
 
+  void markForDelete(List<String> ids) throws Exception;
+
   void markForDelete(String id) throws Exception;
 
   List<Candidate> searchByCreatedDateBetween(Date start, Date end);

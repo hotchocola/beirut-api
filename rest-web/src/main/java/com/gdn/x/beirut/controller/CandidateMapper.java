@@ -13,6 +13,7 @@ import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 
+
 public class CandidateMapper {
   public static void map(Candidate candidate, CandidateDTOResponse candidateDTOResponse,
       Mapper dozerMapper) {
@@ -42,4 +43,5 @@ public class CandidateMapper {
       Mapper dozerMapper) {
     BeanUtils.copyProperties(candidate, candidateDTOResponse, "candidateDetail");
   }
+
 }

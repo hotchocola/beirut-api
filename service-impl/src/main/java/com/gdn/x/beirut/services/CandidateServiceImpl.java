@@ -1,6 +1,7 @@
 package com.gdn.x.beirut.services;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -52,6 +53,7 @@ public class CandidateServiceImpl implements CandidateService {
     candidatePosition.setCandidate(candidate);
     candidatePosition.setPosition(position);
     candidate.getCandidatePositions().add(candidatePosition);
+    position.getCandidatePositions().add(candidatePosition);
     return candidateDAO.save(candidate);
   }
 
@@ -97,12 +99,31 @@ public class CandidateServiceImpl implements CandidateService {
     return positionDAO;
   }
 
+  // Bulk Delete
   @Override
   @Transactional(readOnly = false)
+  public void markForDelete(List<String> ids) throws Exception {
+    System.out.println(ids.toString());
+    for (int i = 0; i < ids.size(); i++) {
+      markForDelete(ids.get(i));
+    }
+  }
+
+  @Override
   public void markForDelete(String id) throws Exception {
-    Candidate candidate = getCandidate(id);
+    Candidate candidate = this.candidateDAO.findByIdAndMarkForDelete(id, false);
+    Hibernate.initialize(candidate.getCandidatePositions());
+    Iterator<CandidatePosition> iterator = candidate.getCandidatePositions().iterator();
+    while (iterator.hasNext()) {
+      CandidatePosition candidatePositon = iterator.next();
+      candidatePositon.setMarkForDelete(true);
+      Hibernate.initialize(candidatePositon.getStatusLogs());
+      candidatePositon.getStatusLogs().stream().forEach(statusLog -> {
+        statusLog.setMarkForDelete(true);
+      });
+    }
     candidate.setMarkForDelete(true);
-    candidateDAO.save(candidate);
+    this.candidateDAO.save(candidate);
   }
 
   @Override
