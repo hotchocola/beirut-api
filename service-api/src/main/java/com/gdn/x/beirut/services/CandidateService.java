@@ -27,6 +27,8 @@ public interface CandidateService {
 
   void markForDelete(List<String> ids) throws Exception;
 
+  void markForDelete(String id) throws Exception;
+
   List<Candidate> searchByCreatedDateBetween(Date start, Date end);
 
   List<Candidate> searchByFirstName(String firstname);

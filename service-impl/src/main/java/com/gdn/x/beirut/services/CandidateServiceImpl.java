@@ -1,6 +1,5 @@
 package com.gdn.x.beirut.services;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +22,7 @@ import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
+import com.gdn.x.beirut.entities.StatusLog;
 
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
@@ -99,24 +99,31 @@ public class CandidateServiceImpl implements CandidateService {
     return positionDAO;
   }
 
-  // ?
+  // Bulk Delete
   @Override
   @Transactional(readOnly = false)
   public void markForDelete(List<String> ids) throws Exception {
     System.out.println(ids.toString());
-    List<Position> positions = new ArrayList<Position>();
     for (int i = 0; i < ids.size(); i++) {
-      Candidate candi = getCandidateDAO().findByStoreIdAndMarkForDelete(ids.get(i), false);
-      Hibernate.initialize(candi.getCandidatePositions());
-      Iterator<CandidatePosition> iterator = candi.getCandidatePositions().iterator();
-      while (iterator.hasNext()) {
-        CandidatePosition candpos = iterator.next();
-        candpos.setMarkForDelete(true);
-      }
-      candi.setMarkForDelete(true);
-      // positions.add(candi);
+      markForDelete(ids.get(i));
     }
-    // this.getPositionDao().save(positions);
+  }
+
+  @Override
+  public void markForDelete(String id) throws Exception {
+    Candidate candidate = this.candidateDAO.findByIdAndMarkForDelete(id, false);
+    Hibernate.initialize(candidate.getCandidatePositions());
+    Iterator<CandidatePosition> iterator = candidate.getCandidatePositions().iterator();
+    while (iterator.hasNext()) {
+      CandidatePosition candidatePositon = iterator.next();
+      candidatePositon.setMarkForDelete(true);
+      Hibernate.initialize(candidatePositon.getStatusLogs());
+      candidatePositon.getStatusLogs().stream().forEach(statusLog -> {
+        statusLog.setMarkForDelete(true);
+      });
+    }
+    candidate.setMarkForDelete(true);
+    this.candidateDAO.save(candidate);
   }
 
   @Override
@@ -193,16 +200,16 @@ public class CandidateServiceImpl implements CandidateService {
   @Transactional(readOnly = false)
   public void updateCandidateStatus(Candidate candidate, Position position, Status status)
       throws Exception {
-    // Candidate existingCandidate = getCandidate(candidate.getId());
-    // Position existingPosition = positionDAO.findOne(position.getId());
-    // Hibernate.initialize(existingCandidate.getCandidatePositions());
-    // existingCandidate.getCandidatePositions().stream()
-    // .filter(candidatePosition -> candidatePosition.getPosition().equals(existingPosition))
-    // .forEach(candidatePosition -> {
-    // candidatePosition.getStatusLogs().add(new StatusLog(candidatePosition, status));
-    // candidatePosition.setStatus(status); // add missing setter zal
-    // });
-    // candidateDAO.save(existingCandidate);
+    Candidate existingCandidate = getCandidate(candidate.getId());
+    Position existingPosition = positionDAO.findOne(position.getId());
+    Hibernate.initialize(existingCandidate.getCandidatePositions());
+    existingCandidate.getCandidatePositions().stream()
+        .filter(candidatePosition -> candidatePosition.getPosition().equals(existingPosition))
+        .forEach(candidatePosition -> {
+          candidatePosition.getStatusLogs().add(new StatusLog(candidatePosition, status));
+          candidatePosition.setStatus(status); // add missing setter zal
+        });
+    candidateDAO.save(existingCandidate);
   }
 
   @Override

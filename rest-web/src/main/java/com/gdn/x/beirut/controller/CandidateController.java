@@ -7,6 +7,7 @@ import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,15 +23,13 @@ import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
+import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
-<<<<<<< HEAD
-=======
 import com.gdn.x.beirut.entities.CandidatePosition;
->>>>>>> 764f7c418c05ae92caca4b4c7303c54bbb34e38a
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.services.CandidateService;
@@ -55,8 +54,6 @@ public class CandidateController {
   @Autowired
   private ObjectMapper objectMapper;
 
-<<<<<<< HEAD
-=======
   @RequestMapping(value = "applyNewPosition", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -155,7 +152,6 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
->>>>>>> 764f7c418c05ae92caca4b4c7303c54bbb34e38a
   @RequestMapping(value = "findCandidateById", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "mencari kandidat berdasarkan ID",
@@ -257,21 +253,8 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
-<<<<<<< HEAD
-  public ObjectMapper getObjectMapper() {
-    return objectMapper;
-  }
-
-  public PositionService getPositionService() {
-    return positionService;
-  }
-
   @RequestMapping(value = "insertNewCandidate", method = RequestMethod.POST,
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
-=======
-  @RequestMapping(value = "getAllCandidateDetailStatus", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
->>>>>>> 764f7c418c05ae92caca4b4c7303c54bbb34e38a
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Menemukan detail status kandidat", notes = "")
   @ResponseBody
@@ -288,6 +271,10 @@ public class CandidateController {
     }
     return new GdnRestListResponse<>(candidateResponse,
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
+  }
+
+  public ObjectMapper getObjectMapper() {
+    return objectMapper;
   }
 
   public PositionService getPositionService() {
@@ -327,15 +314,10 @@ public class CandidateController {
     this.dozerMapper = dm;
   }
 
-<<<<<<< HEAD
   public void setObjectMapper(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
   }
 
-  public void setPositionService(PositionService positionService) {
-    this.positionService = positionService;
-  }
-=======
   public void setPositionService(PositionService positionService) {
     this.positionService = positionService;
   }
@@ -368,8 +350,6 @@ public class CandidateController {
     Candidate can = this.candidateService.getCandidate(candidate.getId());
     Position pos = this.positionService.getPosition(position.getId());
 
-
     return new GdnBaseRestResponse(requestId);
   }
->>>>>>> 764f7c418c05ae92caca4b4c7303c54bbb34e38a
 }
