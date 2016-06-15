@@ -46,43 +46,6 @@ public class Candidate extends GdnBaseEntity {
     // setId(UUID.randomUUID().toString());
   }
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (!super.equals(obj))
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    Candidate other = (Candidate) obj;
-    if (candidatePositions == null) {
-      if (other.candidatePositions != null)
-        return false;
-    } else if (!candidatePositions.equals(other.candidatePositions))
-      return false;
-    if (emailAddress == null) {
-      if (other.emailAddress != null)
-        return false;
-    } else if (!emailAddress.equals(other.emailAddress))
-      return false;
-    if (firstName == null) {
-      if (other.firstName != null)
-        return false;
-    } else if (!firstName.equals(other.firstName))
-      return false;
-    if (lastName == null) {
-      if (other.lastName != null)
-        return false;
-    } else if (!lastName.equals(other.lastName))
-      return false;
-    if (phoneNumber == null) {
-      if (other.phoneNumber != null)
-        return false;
-    } else if (!phoneNumber.equals(other.phoneNumber))
-      return false;
-    return true;
-  }
-
   public CandidateDetail getCandidateDetail() {
     return candidateDetail;
   }
@@ -105,18 +68,6 @@ public class Candidate extends GdnBaseEntity {
 
   public String getPhoneNumber() {
     return phoneNumber;
-  }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((candidatePositions == null) ? 0 : candidatePositions.hashCode());
-    result = prime * result + ((emailAddress == null) ? 0 : emailAddress.hashCode());
-    result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
-    result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
-    result = prime * result + ((phoneNumber == null) ? 0 : phoneNumber.hashCode());
-    return result;
   }
 
   public void setCandidateDetail(CandidateDetail candidateDetail) {
