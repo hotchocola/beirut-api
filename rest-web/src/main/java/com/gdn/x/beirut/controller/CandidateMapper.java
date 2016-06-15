@@ -6,12 +6,11 @@ import org.dozer.Mapper;
 import org.springframework.beans.BeanUtils;
 
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
-import com.gdn.x.beirut.dto.request.CandidatesPositionStatusDTOWrapper;
+import com.gdn.x.beirut.dto.request.CandidatesPositionDTOWrapper;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.Position;
-import com.gdn.x.beirut.entities.Status;
 
 
 public class CandidateMapper {
@@ -28,15 +27,12 @@ public class CandidateMapper {
     dozerMapper.map(candidateDTORequest, candidate);
   }
 
-  public static void map(List<Candidate> candidate, Position position, Status status,
-      CandidatesPositionStatusDTOWrapper objWrapper, Mapper dozerMapper) {
-    for (CandidateDTORequest candDTO : objWrapper.getCandidates()) {
-      Candidate newCand = new Candidate();
-      dozerMapper.map(candDTO, newCand);
-      candidate.add(newCand);
+  public static void map(List<String> idCandidates, Position position,
+      CandidatesPositionDTOWrapper objWrapper, Mapper dozerMapper) {
+    for (String id : objWrapper.getIdCandidates()) {
+      idCandidates.add(id);
     }
     dozerMapper.map(objWrapper.getPosition(), position);
-    dozerMapper.map(objWrapper.getStatus(), status);
   }
 
   public static void mapLazy(Candidate candidate, CandidateDTOResponse candidateDTOResponse,
