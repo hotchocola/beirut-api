@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,6 +20,10 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -50,12 +55,19 @@ public class CandidateControllerTest {
   private static final String PHONE_NUMBER = "123";
   private static final String POSITION_ID = "22bf3cdb-d49e-4534-af52-9ce28064e7f3";
   private static final String POSITION_TITLE = "POS_TITLE";
+  private static final String PHONENUM = "123";
+  private static final Pageable pageable = new PageRequest(1, 4);
   private ObjectMapper objectMapper;
-  private Mapper beanMapper;
 
+  private Mapper beanMapper;
   private MockMvc mockMVC;
   private final Candidate candidate = new Candidate();
   private final List<Candidate> candidates = new LinkedList<>();
+  private final Page<Candidate> pageCandidate = new PageImpl(candidates, pageable, 10);
+  private final Long start = (long) 1434323587;
+  private final Long end = (long) 1465945987;
+  private final String page = "1";
+  private final String size = "4";
 
   private final List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
 
@@ -94,6 +106,35 @@ public class CandidateControllerTest {
 
   }
 
+
+  public void searchByCreatedDateBetweenTest() throws Exception {
+    String uri = "/api/candidate/findCandidateByCreatedDateBetween";
+    Date startDate = new Date(start);
+    Date endDate = new Date(end);
+    String startString = start.toString();
+    String endString = end.toString();
+
+    GdnRestListResponse<CandidateDTOResponse> res =
+        this.candidateController.findCandidateByCreatedDateBetween(CLIENT_ID, STORE_ID, REQUEST_ID,
+            CHANNEL_ID, USERNAME, start, end);
+
+    Mockito.when(this.candidateService.searchByCreatedDateBetween(startDate, endDate))
+        .thenReturn(candidates);
+    this.mockMVC
+        .perform(
+            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
+                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+                .param("username", USERNAME).param("start", startString).param("end", endString))
+        .andExpect(status().isOk()).andReturn().equals(res);
+
+    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
+        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
+    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
+      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
+    }
+    Mockito.verify(this.candidateService, Mockito.times(2)).searchByCreatedDateBetween(startDate,
+        endDate);
+  }
 
   @Test
   public void testFindCandidateById() throws Exception {
@@ -243,6 +284,7 @@ public class CandidateControllerTest {
     Mockito.verify(this.candidateService, Mockito.times(2)).updateCandidateDetail(updatedCandidate);
   }
 
+
   // @Test
   public void testUpdateCandidatesStatus() throws Exception {
     String uri = "/api/candidate/updateCandidateStatus";
@@ -269,5 +311,4 @@ public class CandidateControllerTest {
     Mockito.verify(this.candidateService, Mockito.times(2)).updateCandidateStatusBulk(idCandidates,
         idPosition, Status.APPLY);
   }
-
 }
