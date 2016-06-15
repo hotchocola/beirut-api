@@ -43,9 +43,9 @@ public interface CandidateService {
 
   void updateCandidateDetail(Candidate candidate) throws Exception;
 
-  void updateCandidateStatus(Candidate candidate, Position position, Status status)
+  void updateCandidateStatus(Candidate candidate, String idPosition, Status status)
       throws Exception;
 
-  void updateCandidateStatusBulk(List<String> idCandidates, Position position, Status status)
+  void updateCandidateStatusBulk(List<String> idCandidates, String idPosition, Status status)
       throws Exception;
 }

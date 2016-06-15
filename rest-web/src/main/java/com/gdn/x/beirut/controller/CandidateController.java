@@ -23,7 +23,6 @@ import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
-import com.gdn.x.beirut.dto.request.CandidatesPositionDTOWrapper;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
@@ -355,14 +354,12 @@ public class CandidateController {
   @ResponseBody
   public GdnBaseRestResponse updateCandidatesStatus(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestParam Status status,
-      @RequestBody CandidatesPositionDTOWrapper objectWrapper) throws Exception {
-    List<String> idCandidates = new ArrayList<String>();
-    Position position = new Position();
-    CandidateMapper.map(idCandidates, position, objectWrapper, dozerMapper);
+      @RequestParam String username, @RequestParam Status status, @RequestParam String idPosition,
+      @RequestBody ListStringRequest idCandidates) throws Exception {
+    // CandidateMapper.map(idCandidates, position, objectWrapper, dozerMapper);
     // System.out.println(objectWrapper.toString());
     // System.out.println(idCandidates.get(0)); // DEBUG
-    this.candidateService.updateCandidateStatusBulk(idCandidates, position, status);
+    this.candidateService.updateCandidateStatusBulk(idCandidates.getValues(), idPosition, status);
 
     return new GdnBaseRestResponse(true);
   }

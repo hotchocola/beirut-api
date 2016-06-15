@@ -341,7 +341,7 @@ public class CandidateServiceTest {
   public void testUpdateCandidateStatus() throws Exception {
     when(this.positionDao.findOne(ID)).thenReturn(this.position);
     Candidate testCandidate = candidate;
-    this.candidateService.updateCandidateStatus(testCandidate, position, STATUS);
+    this.candidateService.updateCandidateStatus(testCandidate, ID, STATUS);
     verify(this.candidateDao, times(1)).findOne(ID);
     verify(this.positionDao, times(1)).findOne(ID);
     //

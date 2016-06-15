@@ -193,10 +193,10 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   @Transactional(readOnly = false)
-  public void updateCandidateStatus(Candidate candidate, Position position, Status status)
+  public void updateCandidateStatus(Candidate candidate, String idPosition, Status status)
       throws Exception {
     Candidate existingCandidate = getCandidate(candidate.getId());
-    Position existingPosition = positionDAO.findOne(position.getId());
+    Position existingPosition = positionDAO.findOne(idPosition);
     Hibernate.initialize(existingCandidate.getCandidatePositions());
     existingCandidate.getCandidatePositions().stream()
         .filter(candidatePosition -> candidatePosition.getPosition().equals(existingPosition))
@@ -209,12 +209,12 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   @Transactional(readOnly = false)
-  public void updateCandidateStatusBulk(List<String> idCandidates, Position position, Status status)
+  public void updateCandidateStatusBulk(List<String> idCandidates, String idPosition, Status status)
       throws Exception {
     idCandidates.stream().forEach(idCandidate -> {
       Candidate candidate = this.candidateDAO.findOne(idCandidate);
       try {
-        this.updateCandidateStatus(candidate, position, status);
+        this.updateCandidateStatus(candidate, idPosition, status);
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
