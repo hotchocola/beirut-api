@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
+import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 import com.gdn.x.beirut.entities.Position;
@@ -41,13 +42,8 @@ public class PositionController {
   @ResponseBody
   public GdnBaseRestResponse deletePosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody List<PositionDTORequest> positionDTORequests) {
-
-    List<String> ids = new ArrayList<String>();
-    for (PositionDTORequest positionDTO : positionDTORequests) {
-      ids.add(positionDTO.getId());
-    }
-    this.positionService.markForDeletePosition(ids);
+      @RequestParam String username, @RequestBody ListStringRequest idsToDelete) {
+    this.positionService.markForDeletePosition(idsToDelete.getValues());
 
     return new GdnBaseRestResponse(true);
   }
@@ -115,12 +111,13 @@ public class PositionController {
   @ResponseBody
   public GdnBaseRestResponse updatePosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody PositionDTORequest positionDTORequest) {
+      @RequestParam String username, @RequestParam(required = true) String id,
+      @RequestBody PositionDTORequest positionDTORequest) {
     Position pos = new Position();
     dozerMapper.map(positionDTORequest, pos);
     pos.setStoreId(storeId);
 
-    return new GdnBaseRestResponse(this.positionService
-        .updatePositionTitle(positionDTORequest.getId(), positionDTORequest.getTitle()));
+    return new GdnBaseRestResponse(
+        this.positionService.updatePositionTitle(id, positionDTORequest.getTitle()));
   }
 }

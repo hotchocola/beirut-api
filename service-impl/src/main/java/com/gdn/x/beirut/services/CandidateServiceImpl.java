@@ -53,16 +53,9 @@ public class CandidateServiceImpl implements CandidateService {
     candidatePosition.setCandidate(candidate);
     candidatePosition.setPosition(position);
     candidate.getCandidatePositions().add(candidatePosition);
-    position.getCandidatePositions().add(candidatePosition);
+    // position.getCandidatePositions().add(candidatePosition);
     return candidateDAO.save(candidate);
   }
-
-  // public Candidate getAllCandidatePositionStatus(String id) {
-  // Candidate candidate = candidateDAO.findOne(id);
-  // Hibernate.initialize(candidate.getCandidatePositions());
-  //
-  // return candidate;
-  // }
 
   @Override
   public List<Candidate> getAllCandidates() {
@@ -112,6 +105,9 @@ public class CandidateServiceImpl implements CandidateService {
   @Override
   public void markForDelete(String id) throws Exception {
     Candidate candidate = this.candidateDAO.findByIdAndMarkForDelete(id, false);
+    if (candidate == null) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "id not found in database");
+    }
     Hibernate.initialize(candidate.getCandidatePositions());
     Iterator<CandidatePosition> iterator = candidate.getCandidatePositions().iterator();
     while (iterator.hasNext()) {
@@ -132,7 +128,7 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
-  public List<Candidate> searchByFirstName(String firstname) {
+  public List<Candidate> searchByFirstNameLike(String firstname) {
     return candidateDAO.findByFirstNameLike(firstname);
   }
 
@@ -197,10 +193,10 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   @Transactional(readOnly = false)
-  public void updateCandidateStatus(Candidate candidate, Position position, Status status)
+  public void updateCandidateStatus(Candidate candidate, String idPosition, Status status)
       throws Exception {
     Candidate existingCandidate = getCandidate(candidate.getId());
-    Position existingPosition = positionDAO.findOne(position.getId());
+    Position existingPosition = positionDAO.findOne(idPosition);
     Hibernate.initialize(existingCandidate.getCandidatePositions());
     existingCandidate.getCandidatePositions().stream()
         .filter(candidatePosition -> candidatePosition.getPosition().equals(existingPosition))
@@ -213,12 +209,12 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   @Transactional(readOnly = false)
-  public void updateCandidateStatusBulk(List<String> idCandidates, Position position, Status status)
+  public void updateCandidateStatusBulk(List<String> idCandidates, String idPosition, Status status)
       throws Exception {
     idCandidates.stream().forEach(idCandidate -> {
       Candidate candidate = this.candidateDAO.findOne(idCandidate);
       try {
-        this.updateCandidateStatus(candidate, position, status);
+        this.updateCandidateStatus(candidate, idPosition, status);
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();

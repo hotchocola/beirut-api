@@ -217,16 +217,25 @@ public class CandidateServiceTest {
   }
 
   @Test
-  public void testMarkForDeleteBulk() throws Exception {
-    // Black Box Test
+  public void testMarkForDelete() throws Exception {
+    Mockito.when(this.candidateDao.findByIdAndMarkForDelete(ID, false)).thenReturn(candidate);
 
-    // White Box Test
+    this.candidateService.markForDelete(ID);
+    verify(this.candidateDao, times(1)).findByIdAndMarkForDelete(Mockito.anyString(),
+        Mockito.eq(false));
+    verify(this.candidateDao, times(1)).save(Mockito.any(Candidate.class));
+  }
+
+  @Test
+  public void testMarkForDeleteBulk() throws Exception {
     List<String> ids = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
       String id = ID + " " + i;
       ids.add(id);
     }
     this.candidateService.markForDelete(ids);
+    // Black Box Test
+    // White Box Test
     verify(this.candidateDao, times(10)).findByIdAndMarkForDelete(Mockito.anyString(),
         Mockito.eq(false));
     final Candidate candidate = this.candidate;
@@ -266,7 +275,7 @@ public class CandidateServiceTest {
     Assert
         .assertTrue(this.candidateDao.findByFirstNameLike(LIKE_FIRST_NAME).equals(this.candidates));
     // White Box Test
-    this.candidateService.searchByFirstName(LIKE_FIRST_NAME);
+    this.candidateService.searchByFirstNameLike(LIKE_FIRST_NAME);
     verify(this.candidateDao, times(2)).findByFirstNameLike(LIKE_FIRST_NAME);
   }
 
@@ -332,7 +341,7 @@ public class CandidateServiceTest {
   public void testUpdateCandidateStatus() throws Exception {
     when(this.positionDao.findOne(ID)).thenReturn(this.position);
     Candidate testCandidate = candidate;
-    this.candidateService.updateCandidateStatus(testCandidate, position, STATUS);
+    this.candidateService.updateCandidateStatus(testCandidate, ID, STATUS);
     verify(this.candidateDao, times(1)).findOne(ID);
     verify(this.positionDao, times(1)).findOne(ID);
     //
