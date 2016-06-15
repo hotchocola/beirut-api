@@ -52,6 +52,7 @@ public class CandidateServiceImpl implements CandidateService {
     candidatePosition.setCandidate(candidate);
     candidatePosition.setPosition(position);
     candidate.getCandidatePositions().add(candidatePosition);
+    position.getCandidatePositions().add(candidatePosition);
     return candidateDAO.save(candidate);
   }
 

@@ -49,7 +49,7 @@ public class CandidateController {
   private ObjectMapper objectMapper;
 
   @RequestMapping(value = "findCandidateById", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "mencari kandidat berdasarkan ID",
       notes = "mengeluarkan kandidat dengan ID tersebut.")
   @ResponseBody
@@ -64,7 +64,7 @@ public class CandidateController {
   }
 
   @RequestMapping(value = "findCandidateByPhoneNumber", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "mencari kandidat berdasarkan nomor telepon",
       notes = "mengeluarkan kandidat dengan nomor telepon tersebut.")
   @ResponseBody
@@ -102,6 +102,10 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
+  public ObjectMapper getObjectMapper() {
+    return objectMapper;
+  }
+
   public PositionService getPositionService() {
     return positionService;
   }
@@ -137,6 +141,10 @@ public class CandidateController {
 
   public void setDozerMapper(Mapper dm) {
     this.dozerMapper = dm;
+  }
+
+  public void setObjectMapper(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
   }
 
   public void setPositionService(PositionService positionService) {
