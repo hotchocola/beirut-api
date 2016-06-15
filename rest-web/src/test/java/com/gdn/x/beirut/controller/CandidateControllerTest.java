@@ -23,18 +23,22 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
+import com.gdn.x.beirut.dto.request.CandidatesPositionDTOWrapper;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
+import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
+import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.services.CandidateService;
 import com.gdn.x.beirut.services.PositionService;
 
@@ -242,34 +246,34 @@ public class CandidateControllerTest {
   }
 
   // @Test
-  // public void testUpdateCandidatesStatus() throws Exception {
-  // String uri = "/api/candidate/updateCandidateStatus";
-  // String content =
-  // "{\"candidates\":[{\"emailAddress\":\"izal@zal.zal\",\"firstName\":\"z\",\"lastName\":\"z\",\"phoneNumber\":
-  // \"2\",\"positionId\":\"1\"}],\"position\":{\"title\":\"title\",\"id\":\"1\"},\"status\":\"APPLY\"}";
-  // CandidatesPositionStatusDTOWrapper contentWrapper = new CandidatesPositionStatusDTOWrapper();
-  // contentWrapper.setCandidates(Mockito.anyList());
-  // PositionDTORequest position = new PositionDTORequest();
-  // position.setId("1");
-  // position.setTitle("title");
-  // Position post = new Position();
-  // post.setId("1");
-  // post.setTitle("title");
-  // Status stat = Status.APPLY;
-  // contentWrapper.setPosition(position);
-  // contentWrapper.setStatus(StatusDTORequest.APPLY);
-  // StatusDTORequest status = StatusDTORequest.APPLY;
-  // this.mockMVC
-  // .perform(MockMvcRequestBuilders.post(uri).accept(MediaType.APPLICATION_JSON)
-  // .contentType(MediaType.APPLICATION_JSON_VALUE).param("clientId", CLIENT_ID)
-  // .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
-  // .param("channelId", CHANNEL_ID).param("username", USERNAME).content(content))
-  // .andExpect(MockMvcResultMatchers.status().isOk());
-  // // this.candidateService.updateCandidateStatusBulk(candidates, position, status);
-  // this.candidateController.updateCandidatesStatus(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
-  // USERNAME, contentWrapper);
-  // Mockito.verify(this.candidateService, Mockito.times(2)).updateCandidateStatusBulk(candidates,
-  // post, stat);
-  // }
+  public void testUpdateCandidatesStatus() throws Exception {
+    String uri = "/api/candidate/updateCandidateStatus";
+    String content = "{\"idCandidates\":" + "[{\"string\":\"1\"}]" + ",\"position\":"
+        + "{\"title\":\"title\",\"id\":\"1\"}}";
+    CandidatesPositionDTOWrapper contentWrapper = new CandidatesPositionDTOWrapper();
+    List<String> idCandidates = new ArrayList<String>();
+    idCandidates.add("1");
+    contentWrapper.setIdCandidates(idCandidates);
+    PositionDTORequest position = new PositionDTORequest();
+    position.setTitle("title");
+    Position post = new Position();
+    post.setId("1");
+    post.setTitle("title");
+    contentWrapper.setPosition(position);
+
+    Mockito.doNothing().when(this.candidateService).updateCandidateStatusBulk(idCandidates, post,
+        Status.APPLY);
+    System.out.println(content);
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.post(uri).accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON_VALUE).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).content(content))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+    this.candidateController.updateCandidatesStatus(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
+        USERNAME, Status.APPLY, contentWrapper);
+    Mockito.verify(this.candidateService, Mockito.times(2)).updateCandidateStatusBulk(idCandidates,
+        post, Status.APPLY);
+  }
 
 }

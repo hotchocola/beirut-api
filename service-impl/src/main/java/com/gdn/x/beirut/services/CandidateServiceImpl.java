@@ -209,9 +209,10 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   @Transactional(readOnly = false)
-  public void updateCandidateStatusBulk(List<Candidate> candidates, Position position,
-      Status status) throws Exception {
-    candidates.stream().forEach(candidate -> {
+  public void updateCandidateStatusBulk(List<String> idCandidates, Position position, Status status)
+      throws Exception {
+    idCandidates.stream().forEach(idCandidate -> {
+      Candidate candidate = this.candidateDAO.findOne(idCandidate);
       try {
         this.updateCandidateStatus(candidate, position, status);
       } catch (Exception e) {
