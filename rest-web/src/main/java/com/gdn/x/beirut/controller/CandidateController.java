@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -287,16 +289,15 @@ public class CandidateController {
   @RequestMapping(value = "getAllCandidatesWithPageable", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "Update candidate status", notes = "")
+  @ApiOperation(value = "Getting all candidates with pageable", notes = "")
   @ResponseBody
   public Page<CandidateDTOResponse> getAllCandidateWithPageable(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody Candidate candidate,
-      @RequestBody Position position, @RequestBody Status status) throws Exception {
-    Candidate can = this.candidateService.getCandidate(candidate.getId());
-    Position pos = this.positionService.getPosition(position.getId());
-
-    return new GdnBaseRestResponse(requestId);
+      @RequestParam String username, @RequestBody Pageable pageable) throws Exception {
+    Page<Candidate> page = this.candidateService.getAllCandidatesWithPageable(pageable);
+    Page<CandidateDTOResponse> pageresponse = null;
+    dozerMapper.map(page, pageresponse);
+    return pageresponse;
   }
 
   public PositionService getPositionService() {

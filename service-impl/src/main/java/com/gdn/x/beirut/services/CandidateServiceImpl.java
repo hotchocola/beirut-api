@@ -23,6 +23,7 @@ import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
+import com.gdn.x.beirut.entities.StatusLog;
 
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
@@ -192,16 +193,16 @@ public class CandidateServiceImpl implements CandidateService {
   @Transactional(readOnly = false)
   public void updateCandidateStatus(Candidate candidate, Position position, Status status)
       throws Exception {
-    // Candidate existingCandidate = getCandidate(candidate.getId());
-    // Position existingPosition = positionDAO.findOne(position.getId());
-    // Hibernate.initialize(existingCandidate.getCandidatePositions());
-    // existingCandidate.getCandidatePositions().stream()
-    // .filter(candidatePosition -> candidatePosition.getPosition().equals(existingPosition))
-    // .forEach(candidatePosition -> {
-    // candidatePosition.getStatusLogs().add(new StatusLog(candidatePosition, status));
-    // candidatePosition.setStatus(status); // add missing setter zal
-    // });
-    // candidateDAO.save(existingCandidate);
+    Candidate existingCandidate = getCandidate(candidate.getId());
+    Position existingPosition = positionDAO.findOne(position.getId());
+    Hibernate.initialize(existingCandidate.getCandidatePositions());
+    existingCandidate.getCandidatePositions().stream()
+        .filter(candidatePosition -> candidatePosition.getPosition().equals(existingPosition))
+        .forEach(candidatePosition -> {
+          candidatePosition.getStatusLogs().add(new StatusLog(candidatePosition, status));
+          candidatePosition.setStatus(status); // add missing setter zal
+        });
+    candidateDAO.save(existingCandidate);
   }
 
   @Override
