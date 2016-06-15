@@ -23,6 +23,7 @@ import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
+import com.gdn.x.beirut.dto.request.CandidatesPositionStatusDTOWrapper;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
@@ -53,6 +54,7 @@ public class CandidateController {
 
   @Autowired
   private ObjectMapper objectMapper;
+
 
   @RequestMapping(value = "applyNewPosition", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
@@ -329,15 +331,19 @@ public class CandidateController {
   @RequestMapping(value = "updateCandidateStatus", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "Update candidate status", notes = "")
+  @ApiOperation(value = "update candidate status",
+      notes = "Update satu atau lebih Status Candidate dengan Position yang diberikan (Jika punya) menjadi status yang diberikan")
   @ResponseBody
-  public GdnBaseRestResponse updateCandidateStatus(@RequestParam String clientId,
+  public GdnBaseRestResponse updateCandidatesStatus(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody Candidate candidate,
-      @RequestBody Position position, @RequestBody Status status) throws Exception {
-    Candidate can = this.candidateService.getCandidate(candidate.getId());
-    Position pos = this.positionService.getPosition(position.getId());
-
-    return new GdnBaseRestResponse(requestId);
+      @RequestParam String username, @RequestBody CandidatesPositionStatusDTOWrapper objectWrapper)
+          throws Exception {
+    List<Candidate> candidates = new ArrayList<Candidate>();
+    Position position = new Position();
+    Status status = null;
+    CandidateMapper.map(candidates, position, status, objectWrapper, dozerMapper);
+    this.candidateService.updateCandidateStatusBulk(candidates, position, status);
+    return new GdnBaseRestResponse(true);
   }
+
 }

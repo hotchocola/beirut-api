@@ -167,6 +167,17 @@ public class CandidateServiceTest {
     verifyNoMoreInteractions(this.candidateDao);
   }
 
+
+  @Test
+  public void testApplyNewPosition() throws Exception {
+    Assert.assertTrue(this.candidateDao.findOne(ID).equals(this.candidate));
+    this.candidateService.applyNewPosition(this.candidate, this.position);
+    Candidate cand = this.candidate;
+    cand.getCandidatePositions().add(new CandidatePosition(this.candidate, this.position));
+    Mockito.verify(this.candidateDao, Mockito.times(2)).findOne(ID);
+    Mockito.verify(this.candidateDao, times(1)).save(cand);
+  }
+
   @Test
   public void testGetAllCandidates() {
     Candidate cand1 = new Candidate();
@@ -317,16 +328,6 @@ public class CandidateServiceTest {
     verify(this.candidateDao, times(1)).findByPhoneNumberLike("123456789");
   }
 
-  // // @Test
-  // public void testSetCandidateDetail() throws Exception {
-  // // Black Box Test
-  //
-  // // White Box Test
-  // this.candidateService.setCandidateDetail(ID, this.candidateDetail);
-  // verify(this.candidateDao, times(1)).findOne(ID);
-  // verify(this.candidateDao, times(1)).save(this.candidateWithDetail);
-  // }
-
   @Test
   public void testUpdateCandidateStatus() throws Exception {
     when(this.positionDao.findOne(ID)).thenReturn(this.position);
@@ -345,5 +346,14 @@ public class CandidateServiceTest {
     //
     verify(this.candidateDao, times(1)).save(testCandidate);
   }
+
+
+  // public void testUpdateCandidateStatusBulk(List<Candidate> candidates, Position position,
+  // Status status) throws Exception {
+  // @Test
+  // public void testUpdateCandidateStatusBulk(){
+  //
+  // }
+
 
 }

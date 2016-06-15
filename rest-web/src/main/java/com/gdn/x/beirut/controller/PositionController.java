@@ -52,7 +52,7 @@ public class PositionController {
     return new GdnBaseRestResponse(true);
   }
 
-  @RequestMapping(value = "/api/position/getAllPosition", method = RequestMethod.GET,
+  @RequestMapping(value = "getAllPosition", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "get all position", notes = "mengambil semua posisi.")
   @ResponseBody
@@ -71,15 +71,14 @@ public class PositionController {
         new PageMetaData(5, 5, positions.size()), requestId);
   }
 
-  @RequestMapping(value = "/api/position/getPositionByTitle", method = RequestMethod.GET,
+  @RequestMapping(value = "getPositionByTitle", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "get position by title", notes = "mengambil semua posisi dengan nama.")
   @ResponseBody
   public GdnRestListResponse<PositionDTOResponse> getPositionByTitle(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody PositionDTORequest positionDTORequest) {
-    List<Position> positions =
-        this.positionService.getPositionByTitle(positionDTORequest.getTitle(), storeId);
+      @RequestParam String username, @RequestParam String title) {
+    List<Position> positions = this.positionService.getPositionByTitle(title, storeId);
     List<PositionDTOResponse> positionDTOResponses = new ArrayList<PositionDTOResponse>();
 
     for (Position positiones : positions) {
@@ -92,7 +91,7 @@ public class PositionController {
         new PageMetaData(5, 5, positions.size()), requestId);
   }
 
-  @RequestMapping(value = "/api/position/insertNewPosition", method = RequestMethod.POST,
+  @RequestMapping(value = "insertNewPosition", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "insert new position", notes = "memasukan posisi baru.")
@@ -110,7 +109,7 @@ public class PositionController {
     this.dozerMapper = dm;
   }
 
-  @RequestMapping(value = "/api/position/updatePosition", method = RequestMethod.POST,
+  @RequestMapping(value = "updatePosition", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "update position", notes = "mengganti posisi.")
   @ResponseBody
