@@ -90,6 +90,7 @@ public class CandidateControllerTest {
 
   }
 
+
   @Test
   public void testFindCandidateById() throws Exception {
     String uri = "/api/candidate/findCandidateById";
@@ -133,7 +134,7 @@ public class CandidateControllerTest {
   }
 
   @Test
-  public void testgetAllCandidate() throws Exception {
+  public void testGetAllCandidate() throws Exception {
     String uri = "/api/candidate/getAllCandidate";
     Mockito.when(this.candidateService.getAllCandidates()).thenReturn(candidates);
     this.mockMVC.perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
@@ -191,5 +192,31 @@ public class CandidateControllerTest {
 
     Mockito.verify(candidateService, Mockito.times(2)).createNew(newCandidate, newPosition);
     Mockito.verify(positionService, Mockito.times(2)).getPosition(POSITION_ID);
+  }
+
+  @Test
+  public void testUpdateCandidateDetail() throws Exception {
+    String uri = "/api/candidate/updateCandidateDetail";
+    FileInputStream inputFile =
+        new FileInputStream(new File("src/test/resources/JSON/updatedFile.txt"));
+
+    MockMultipartFile file =
+        new MockMultipartFile("file", "file.txt", "multipart/form-data", inputFile);
+    Mockito.when(this.candidateService.getCandidate(ID)).thenReturn(candidate);
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.fileUpload(uri).file(file).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("idCandidate", ID))
+        .andExpect(status().isOk());
+
+    this.candidateController.updateCandidateDetail(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
+        USERNAME, ID, file);
+    Mockito.verify(this.candidateService, Mockito.times(2)).getCandidate(ID);
+    Candidate updatedCandidate = new Candidate();
+    beanMapper.map(candidate, updatedCandidate);
+    updatedCandidate.getCandidateDetail().setContent(file.getBytes());
+    Assert.assertArrayEquals(candidate.getCandidateDetail().getContent(),
+        updatedCandidate.getCandidateDetail().getContent());
+    Mockito.verify(this.candidateService, Mockito.times(2)).updateCandidateDetail(updatedCandidate);
   }
 }
