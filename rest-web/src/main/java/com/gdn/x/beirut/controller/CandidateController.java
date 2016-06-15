@@ -142,4 +142,17 @@ public class CandidateController {
   public void setPositionService(PositionService positionService) {
     this.positionService = positionService;
   }
+
+  @RequestMapping(value = "updateCandidateStatus", method = RequestMethod.POST,
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "update candidate status",
+      notes = "Update satu atau lebih Status Candidate dengan Position yang diberikan (Jika punya) menjadi status yang diberikan")
+  @ResponseBody
+  public void updateCandidatesStatus(@RequestParam String clientId, @RequestParam String storeId,
+      @RequestParam String requestId, @RequestParam String channelId, @RequestParam String username,
+      @RequestParam List<Candidate> candidates) {
+
+  }
+
 }

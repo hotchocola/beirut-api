@@ -174,7 +174,6 @@ public class CandidateServiceImpl implements CandidateService {
     }
   }
 
-  // BULK ?
   @Override
   @Transactional(readOnly = false)
   public void updateCandidateStatus(Candidate candidate, Position position, Status status)
@@ -192,12 +191,9 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
+  @Transactional(readOnly = false)
   public void updateCandidateStatusBulk(List<Candidate> candidates, Position position,
       Status status) throws Exception {
-    // TODO Auto-generated method stub
-    // for (Candidate candidate : candidates) {
-    // this.updateCandidateStatus(candidate, position, status);
-    // }
     candidates.stream().forEach(candidate -> {
       try {
         this.updateCandidateStatus(candidate, position, status);

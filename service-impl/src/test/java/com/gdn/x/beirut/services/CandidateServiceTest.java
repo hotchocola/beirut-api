@@ -321,4 +321,13 @@ public class CandidateServiceTest {
     verify(this.candidateDao, times(1)).save(testCandidate);
   }
 
+
+  // public void testUpdateCandidateStatusBulk(List<Candidate> candidates, Position position,
+  // Status status) throws Exception {
+  // @Test
+  // public void testUpdateCandidateStatusBulk(){
+  //
+  // }
+
+
 }
