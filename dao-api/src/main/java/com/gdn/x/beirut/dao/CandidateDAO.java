@@ -1,11 +1,11 @@
 package com.gdn.x.beirut.dao;
 
-import com.gdn.x.beirut.entities.Candidate;
+import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Date;
-import java.util.List;
+import com.gdn.x.beirut.entities.Candidate;
 
 public interface CandidateDAO extends JpaRepository<Candidate, String> {
 
@@ -24,4 +24,6 @@ public interface CandidateDAO extends JpaRepository<Candidate, String> {
   List<Candidate> findByPhoneNumber(String phoneNumber);
 
   List<Candidate> findByPhoneNumberLike(String phoneNumber);
+
+  Candidate findByStoreIdAndMarkForDelete(String string, boolean b);
 }
