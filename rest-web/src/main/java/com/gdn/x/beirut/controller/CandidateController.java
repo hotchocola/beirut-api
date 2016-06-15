@@ -7,6 +7,7 @@ import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,10 +23,12 @@ import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
+import com.gdn.x.beirut.dto.request.CandidatesPositionStatusDTOWrapper;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.Position;
+import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.services.CandidateService;
 import com.gdn.x.beirut.services.PositionService;
 import com.wordnik.swagger.annotations.Api;
@@ -149,10 +152,16 @@ public class CandidateController {
   @ApiOperation(value = "update candidate status",
       notes = "Update satu atau lebih Status Candidate dengan Position yang diberikan (Jika punya) menjadi status yang diberikan")
   @ResponseBody
-  public void updateCandidatesStatus(@RequestParam String clientId, @RequestParam String storeId,
-      @RequestParam String requestId, @RequestParam String channelId, @RequestParam String username,
-      @RequestParam List<Candidate> candidates) {
-
+  public GdnBaseRestResponse updateCandidatesStatus(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestBody CandidatesPositionStatusDTOWrapper objectWrapper)
+          throws Exception {
+    List<Candidate> candidates = new ArrayList<Candidate>();
+    Position position = new Position();
+    Status status = null;
+    CandidateMapper.map(candidates, position, status, objectWrapper, dozerMapper);
+    this.candidateService.updateCandidateStatusBulk(candidates, position, status);
+    return new GdnBaseRestResponse(true);
   }
 
 }
