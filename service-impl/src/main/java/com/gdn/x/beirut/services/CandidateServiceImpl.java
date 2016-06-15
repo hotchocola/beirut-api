@@ -1,6 +1,5 @@
 package com.gdn.x.beirut.services;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -54,15 +53,9 @@ public class CandidateServiceImpl implements CandidateService {
     candidatePosition.setCandidate(candidate);
     candidatePosition.setPosition(position);
     candidate.getCandidatePositions().add(candidatePosition);
+    // position.getCandidatePositions().add(candidatePosition);
     return candidateDAO.save(candidate);
   }
-
-  // public Candidate getAllCandidatePositionStatus(String id) {
-  // Candidate candidate = candidateDAO.findOne(id);
-  // Hibernate.initialize(candidate.getCandidatePositions());
-  //
-  // return candidate;
-  // }
 
   @Override
   public List<Candidate> getAllCandidates() {
@@ -99,24 +92,34 @@ public class CandidateServiceImpl implements CandidateService {
     return positionDAO;
   }
 
-  // ?
+  // Bulk Delete
   @Override
   @Transactional(readOnly = false)
   public void markForDelete(List<String> ids) throws Exception {
     System.out.println(ids.toString());
-    List<Position> positions = new ArrayList<Position>();
     for (int i = 0; i < ids.size(); i++) {
-      Candidate candi = getCandidateDAO().findByStoreIdAndMarkForDelete(ids.get(i), false);
-      Hibernate.initialize(candi.getCandidatePositions());
-      Iterator<CandidatePosition> iterator = candi.getCandidatePositions().iterator();
-      while (iterator.hasNext()) {
-        CandidatePosition candpos = iterator.next();
-        candpos.setMarkForDelete(true);
-      }
-      candi.setMarkForDelete(true);
-      // positions.add(candi);
+      markForDelete(ids.get(i));
     }
-    // this.getPositionDao().save(positions);
+  }
+
+  @Override
+  public void markForDelete(String id) throws Exception {
+    Candidate candidate = this.candidateDAO.findByIdAndMarkForDelete(id, false);
+    if (candidate == null) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "id not found in database");
+    }
+    Hibernate.initialize(candidate.getCandidatePositions());
+    Iterator<CandidatePosition> iterator = candidate.getCandidatePositions().iterator();
+    while (iterator.hasNext()) {
+      CandidatePosition candidatePositon = iterator.next();
+      candidatePositon.setMarkForDelete(true);
+      Hibernate.initialize(candidatePositon.getStatusLogs());
+      candidatePositon.getStatusLogs().stream().forEach(statusLog -> {
+        statusLog.setMarkForDelete(true);
+      });
+    }
+    candidate.setMarkForDelete(true);
+    this.candidateDAO.save(candidate);
   }
 
   @Override
@@ -125,7 +128,7 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
-  public List<Candidate> searchByFirstName(String firstname) {
+  public List<Candidate> searchByFirstNameLike(String firstname) {
     return candidateDAO.findByFirstNameLike(firstname);
   }
 
@@ -188,13 +191,12 @@ public class CandidateServiceImpl implements CandidateService {
     }
   }
 
-  // BULK ?
   @Override
   @Transactional(readOnly = false)
-  public void updateCandidateStatus(Candidate candidate, Position position, Status status)
+  public void updateCandidateStatus(Candidate candidate, String idPosition, Status status)
       throws Exception {
     Candidate existingCandidate = getCandidate(candidate.getId());
-    Position existingPosition = positionDAO.findOne(position.getId());
+    Position existingPosition = positionDAO.findOne(idPosition);
     Hibernate.initialize(existingCandidate.getCandidatePositions());
     existingCandidate.getCandidatePositions().stream()
         .filter(candidatePosition -> candidatePosition.getPosition().equals(existingPosition))
@@ -206,12 +208,18 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
-  public void updateCandidateStatusBulk(List<Candidate> candidates, Position position,
-      Status status) throws Exception {
-    // TODO Auto-generated method stub
-    for (Candidate candidate : candidates) {
-      this.updateCandidateStatus(candidate, position, status);
-    }
+  @Transactional(readOnly = false)
+  public void updateCandidateStatusBulk(List<String> idCandidates, String idPosition, Status status)
+      throws Exception {
+    idCandidates.stream().forEach(idCandidate -> {
+      Candidate candidate = this.candidateDAO.findOne(idCandidate);
+      try {
+        this.updateCandidateStatus(candidate, idPosition, status);
+      } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    });
   }
 
 

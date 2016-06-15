@@ -27,9 +27,11 @@ public interface CandidateService {
 
   void markForDelete(List<String> ids) throws Exception;
 
+  void markForDelete(String id) throws Exception;
+
   List<Candidate> searchByCreatedDateBetween(Date start, Date end);
 
-  List<Candidate> searchByFirstName(String firstname);
+  List<Candidate> searchByFirstNameLike(String firstname);
 
   List<Candidate> searchByLastName(String lastname);
 
@@ -41,9 +43,9 @@ public interface CandidateService {
 
   void updateCandidateDetail(Candidate candidate) throws Exception;
 
-  void updateCandidateStatus(Candidate candidate, Position position, Status status)
+  void updateCandidateStatus(Candidate candidate, String idPosition, Status status)
       throws Exception;
 
-  void updateCandidateStatusBulk(List<Candidate> candidates, Position position, Status status)
+  void updateCandidateStatusBulk(List<String> idCandidates, String idPosition, Status status)
       throws Exception;
 }
