@@ -253,26 +253,6 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
-  @RequestMapping(value = "insertNewCandidate", method = RequestMethod.POST,
-      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
-      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "Menemukan detail status kandidat", notes = "")
-  @ResponseBody
-  public GdnRestListResponse<CandidateDTOResponse> getAllCandidateDetailStatus(
-      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
-      @RequestParam String channelId, @RequestParam String username) throws Exception {
-    List<Candidate> candidates = this.candidateService.getAllCandidates();
-    List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
-    for (Candidate candidate : candidates) {
-      CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
-      System.out.println(candidate);
-      CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
-      candidateResponse.add(newCandidateDTORes);
-    }
-    return new GdnRestListResponse<>(candidateResponse,
-        new PageMetaData(50, 0, candidateResponse.size()), requestId);
-  }
-
   public ObjectMapper getObjectMapper() {
     return objectMapper;
   }
@@ -297,6 +277,7 @@ public class CandidateController {
     CandidateDTORequest candidateDTORequest =
         objectMapper.readValue(candidateDTORequestString, CandidateDTORequest.class);
     Candidate newCandidate = new Candidate();
+    CandidateMapper.map(candidateDTORequest, newCandidate, dozerMapper);
     Position position = positionService.getPosition(candidateDTORequest.getPositionId());
     CandidateDetail candidateDetail = new CandidateDetail();
     candidateDetail.setContent(file.getBytes());
@@ -322,20 +303,27 @@ public class CandidateController {
     this.positionService = positionService;
   }
 
-  @RequestMapping(value = "updateCandidateDetail", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
+  @RequestMapping(value = "updateCandidateDetail", method = RequestMethod.POST,
+      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Update candidate detail", notes = "")
   @ResponseBody
   public GdnBaseRestResponse updateCandidateDetail(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody Candidate candidate) throws Exception {
-    Candidate newCandidate = this.candidateService.getCandidate(candidate.getId());
-    dozerMapper.map(candidate, newCandidate);
-    newCandidate.setStoreId(storeId);
-    this.candidateService.updateCandidateDetail(newCandidate);
-
-    return new GdnBaseRestResponse(requestId);
+      @RequestParam String username, @RequestParam String idCandidate,
+      @RequestPart MultipartFile file) throws Exception {
+    if (file == null || file.getBytes().length == 0) {
+      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER,
+          "file content mustbe present");
+    }
+    Candidate candidate = this.candidateService.getCandidate(idCandidate);
+    candidate.getCandidateDetail().setContent(file.getBytes());
+    try {
+      this.candidateService.updateCandidateDetail(candidate);
+      return new GdnBaseRestResponse(true);
+    } catch (Exception e) {
+      return new GdnBaseRestResponse(requestId);
+    }
   }
 
   @RequestMapping(value = "updateCandidateStatus", method = RequestMethod.POST,
