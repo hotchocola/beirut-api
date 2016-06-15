@@ -26,6 +26,4 @@ public interface CandidateDAO extends JpaRepository<Candidate, String> {
   List<Candidate> findByPhoneNumber(String phoneNumber);
 
   List<Candidate> findByPhoneNumberLike(String phoneNumber);
-
-  Candidate findByStoreIdAndMarkForDelete(String string, boolean b);
 }

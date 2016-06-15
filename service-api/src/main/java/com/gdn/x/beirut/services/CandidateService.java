@@ -31,7 +31,7 @@ public interface CandidateService {
 
   List<Candidate> searchByCreatedDateBetween(Date start, Date end);
 
-  List<Candidate> searchByFirstName(String firstname);
+  List<Candidate> searchByFirstNameLike(String firstname);
 
   List<Candidate> searchByLastName(String lastname);
 

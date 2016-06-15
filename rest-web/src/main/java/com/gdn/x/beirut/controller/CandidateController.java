@@ -111,13 +111,13 @@ public class CandidateController {
     Date endDate = new Date(end);
     List<Candidate> candidates =
         this.candidateService.searchByCreatedDateBetween(startDate, endDate);
-    List<CandidateDTOResponse> candreses = new ArrayList<CandidateDTOResponse>();
+    List<CandidateDTOResponse> res = new ArrayList<CandidateDTOResponse>();
     for (Candidate candidate : candidates) {
-      CandidateDTOResponse canres = new CandidateDTOResponse();
-      CandidateMapper.map(candidate, canres, dozerMapper);
-      candreses.add(canres);
+      CandidateDTOResponse candidateDTOResponse = new CandidateDTOResponse();
+      CandidateMapper.mapLazy(candidate, candidateDTOResponse, dozerMapper);
+      res.add(candidateDTOResponse);
     }
-    return new GdnRestListResponse<>(candreses, new PageMetaData(50, 0, candreses.size()),
+    return new GdnRestListResponse<CandidateDTOResponse>(res, new PageMetaData(50, 0, res.size()),
         requestId);
   }
 
@@ -134,30 +134,29 @@ public class CandidateController {
     List<CandidateDTOResponse> candreses = new ArrayList<CandidateDTOResponse>();
     for (Candidate candidate : candidates) {
       CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
-      CandidateMapper.map(candidate, newCandidateDTORes, dozerMapper);
+      CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
       candreses.add(newCandidateDTORes);
     }
-    return new GdnRestListResponse<>(candreses, new PageMetaData(50, 0, candreses.size()),
-        requestId);
+    return new GdnRestListResponse<CandidateDTOResponse>(candreses,
+        new PageMetaData(50, 0, candreses.size()), requestId);
   }
 
-  @RequestMapping(value = "findCandidateByFirstName", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
+  @RequestMapping(value = "findCandidateByFirstNameLike", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Find candidate by their first name", notes = "")
   @ResponseBody
-  public GdnRestListResponse<CandidateDTOResponse> findCandidateByFirstName(
+  public GdnRestListResponse<CandidateDTOResponse> findCandidateByFirstNameLike(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username, @RequestParam String firstName)
           throws Exception {
-    List<Candidate> candidates = this.candidateService.searchByFirstName(firstName);
+    List<Candidate> candidates = this.candidateService.searchByFirstNameLike(firstName);
     List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
     for (Candidate candidate : candidates) {
       CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
-      CandidateMapper.map(candidate, newCandidateDTORes, dozerMapper);
+      CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
       candidateResponse.add(newCandidateDTORes);
     }
-    return new GdnRestListResponse<>(candidateResponse,
+    return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
@@ -172,12 +171,11 @@ public class CandidateController {
           throws Exception {
     Candidate candidate = this.candidateService.getCandidate(id);
     CandidateDTOResponse candres = new CandidateDTOResponse();
-    CandidateMapper.map(candidate, candres, dozerMapper);
+    CandidateMapper.mapLazy(candidate, candres, dozerMapper);
     return new GdnRestSingleResponse<CandidateDTOResponse>(candres, requestId);
   }
 
   @RequestMapping(value = "findCandidateByLastName", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Find candidate by their last name", notes = "")
   @ResponseBody
@@ -189,10 +187,10 @@ public class CandidateController {
     List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
     for (Candidate candidate : candidates) {
       CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
-      CandidateMapper.map(candidate, newCandidateDTORes, dozerMapper);
+      CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
       candidateResponse.add(newCandidateDTORes);
     }
-    return new GdnRestListResponse<>(candidateResponse,
+    return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
@@ -209,10 +207,10 @@ public class CandidateController {
     List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
     for (Candidate candidate : candidates) {
       CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
-      CandidateMapper.map(candidate, newCandidateDTORes, dozerMapper);
+      CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
       candidateResponse.add(newCandidateDTORes);
     }
-    return new GdnRestListResponse<>(candidateResponse,
+    return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
@@ -229,10 +227,10 @@ public class CandidateController {
     List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
     for (Candidate candidate : candidates) {
       CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
-      CandidateMapper.map(candidate, newCandidateDTORes, dozerMapper);
+      CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
       candidateResponse.add(newCandidateDTORes);
     }
-    return new GdnRestListResponse<>(candidateResponse,
+    return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
@@ -248,10 +246,10 @@ public class CandidateController {
     CandidateDetail candidate = this.candidateService.getCandidateDetail(id);
     CandidateDetailDTOResponse candetres = new CandidateDetailDTOResponse();
     this.dozerMapper.map(candidate, candetres);
-    return new GdnRestSingleResponse<>(candetres, requestId);
+    return new GdnRestSingleResponse(candetres, requestId);
   }
 
-  @RequestMapping(value = "getAllCandidate", method = RequestMethod.GET,
+  @RequestMapping(value = " Candidate", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Get all Candidates", notes = "Mengambil semua kandidat")
   @ResponseBody
@@ -266,9 +264,10 @@ public class CandidateController {
       CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
       candidateResponse.add(newCandidateDTORes);
     }
-    return new GdnRestListResponse<>(candidateResponse,
+    return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
+
 
 
   @RequestMapping(value = "getAllCandidatesWithPageable", method = RequestMethod.GET,
@@ -287,7 +286,7 @@ public class CandidateController {
       CandidateMapper.mapLazy(candidate, newCandidateDTOResponse, dozerMapper);
     }
     GdnRestListResponse<CandidateDTOResponse> pageresponse =
-        new GdnRestListResponse<>(toShow, new PageMetaData(50, 0, toShow.size()), requestId);
+        new GdnRestListResponse(toShow, new PageMetaData(50, 0, toShow.size()), requestId);
     return pageresponse;
   }
 
@@ -311,7 +310,6 @@ public class CandidateController {
     CandidateDTORequest candidateDTORequest =
         objectMapper.readValue(candidateDTORequestString, CandidateDTORequest.class);
     Candidate newCandidate = new Candidate();
-    CandidateMapper.map(candidateDTORequest, newCandidate, dozerMapper);
     Position position = positionService.getPosition(candidateDTORequest.getPositionId());
     CandidateDetail candidateDetail = new CandidateDetail();
     candidateDetail.setContent(file.getBytes());
@@ -325,12 +323,12 @@ public class CandidateController {
     return new GdnBaseRestResponse(requestId);
   }
 
-  @RequestMapping(value = "markForDeleteBulk", method = RequestMethod.POST,
+  @RequestMapping(value = "markForDelete", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Delete Id yang ada", notes = "Semua yang ada di list akan di hapus")
   @ResponseBody
-  public GdnBaseRestResponse markForDeleteBulk(@RequestParam String clientId,
+  public GdnBaseRestResponse markForDelete(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestBody ListStringRequest idsRequest) throws Exception {
     try {
@@ -350,10 +348,10 @@ public class CandidateController {
     this.objectMapper = objectMapper;
   }
 
+
   public void setPositionService(PositionService positionService) {
     this.positionService = positionService;
   }
-
 
   @RequestMapping(value = "updateCandidateDetail", method = RequestMethod.POST,
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
@@ -395,5 +393,6 @@ public class CandidateController {
 
     return new GdnBaseRestResponse(true);
   }
+
 
 }

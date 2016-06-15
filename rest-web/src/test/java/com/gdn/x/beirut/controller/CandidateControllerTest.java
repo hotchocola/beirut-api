@@ -80,6 +80,69 @@ public class CandidateControllerTest {
   @InjectMocks
   private CandidateController candidateController;
 
+  @Test
+  public void findCandidateByIdTest() throws Exception {
+    String uri = "/api/candidate/getAllCandidate";
+    Mockito.when(this.candidateService.getAllCandidates()).thenReturn(candidates);
+    this.mockMVC.perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
+        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+        .param("username", USERNAME)).andExpect(status().isOk());
+    GdnRestListResponse<CandidateDTOResponse> res = this.candidateController
+        .getAllCandidate(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME);
+    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
+        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
+    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
+      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
+    }
+    Mockito.verify(this.candidateService, Mockito.times(2)).getAllCandidates();
+  }
+
+  @Test
+  public void findCandidateByPhoneNumberLikeTest() throws Exception {
+    String uri = "/api/candidate/findCandidateByPhoneNumberLike";
+
+    Mockito.when(this.candidateService.searchCandidateByPhoneNumberLike(PHONENUM))
+        .thenReturn(candidates);
+    this.mockMVC
+        .perform(
+            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
+                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+                .param("username", USERNAME).param("phoneNumber", PHONENUM))
+        .andExpect(status().isOk());
+    GdnRestListResponse<CandidateDTOResponse> res =
+        this.candidateController.findCandidateByPhoneNumberLike(CLIENT_ID, STORE_ID, REQUEST_ID,
+            CHANNEL_ID, USERNAME, PHONENUM);
+    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
+        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
+    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
+      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
+    }
+    Mockito.verify(this.candidateService, Mockito.times(2))
+        .searchCandidateByPhoneNumberLike(PHONENUM);
+  }
+
+  @Test
+  public void getAllCandidateWithPageableTest() throws Exception {
+    String uri = "/api/candidate/getAllCandidatesWithPageable";
+    Mockito.when(this.candidateService.getAllCandidatesWithPageable(pageable))
+        .thenReturn(pageCandidate);
+    this.mockMVC
+        .perform(
+            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
+                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+                .param("username", USERNAME).param("page", page).param("size", size))
+        .andExpect(status().isOk());
+    GdnRestListResponse<CandidateDTOResponse> res =
+        this.candidateController.getAllCandidateWithPageable(CLIENT_ID, STORE_ID, REQUEST_ID,
+            CHANNEL_ID, USERNAME, Integer.parseInt(page), Integer.parseInt(size));
+    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
+        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
+    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
+      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
+    }
+    Mockito.verify(this.candidateService, Mockito.times(2)).getAllCandidatesWithPageable(pageable);
+  }
+
   @Before
   public void initialize() throws Exception {
     initMocks(this);
@@ -106,7 +169,7 @@ public class CandidateControllerTest {
 
   }
 
-
+  @Test
   public void searchByCreatedDateBetweenTest() throws Exception {
     String uri = "/api/candidate/findCandidateByCreatedDateBetween";
     Date startDate = new Date(start);
@@ -241,8 +304,8 @@ public class CandidateControllerTest {
   }
 
   @Test
-  public void testMarkForDeleteBulk() throws Exception {
-    String uri = "/api/candidate/markForDeleteBulk";
+  public void testMarkForDelete() throws Exception {
+    String uri = "/api/candidate/markForDelete";
     String json =
         FileUtils.readFileToString(new File("src/test/resources/JSON/markForDeleteJSON.json"));
     ListStringRequest listStringIds = objectMapper.readValue(json, ListStringRequest.class);
@@ -285,10 +348,10 @@ public class CandidateControllerTest {
   }
 
 
-  // @Test
+  @Test
   public void testUpdateCandidatesStatus() throws Exception {
     String uri = "/api/candidate/updateCandidateStatus";
-    String content = "{1}";
+    String content = "{  \"values\": [    \"1\" ]}";
     // CandidatesPositionDTOWrapper contentWrapper = new CandidatesPositionDTOWrapper();
     List<String> idCandidates = new ArrayList<String>();
     idCandidates.add("1");
@@ -299,7 +362,7 @@ public class CandidateControllerTest {
     newListStringRequest.setValues(idCandidates);
     this.mockMVC
         .perform(MockMvcRequestBuilders.post(uri).accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON_VALUE).param("clientId", CLIENT_ID)
+            .contentType(MediaType.APPLICATION_JSON).param("clientId", CLIENT_ID)
             .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
             .param("channelId", CHANNEL_ID).param("username", USERNAME).param("status", "APPLY")
             .param("idPosition", idPosition).content(content))

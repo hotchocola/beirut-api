@@ -275,7 +275,7 @@ public class CandidateServiceTest {
     Assert
         .assertTrue(this.candidateDao.findByFirstNameLike(LIKE_FIRST_NAME).equals(this.candidates));
     // White Box Test
-    this.candidateService.searchByFirstName(LIKE_FIRST_NAME);
+    this.candidateService.searchByFirstNameLike(LIKE_FIRST_NAME);
     verify(this.candidateDao, times(2)).findByFirstNameLike(LIKE_FIRST_NAME);
   }
 
