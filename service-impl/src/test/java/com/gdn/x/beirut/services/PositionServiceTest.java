@@ -60,12 +60,6 @@ public class PositionServiceTest {
   }
 
   @Test
-  public void getAllPosition() {
-    this.service.getAllPosition();
-    verify(this.repository, Mockito.times(1)).findAll();
-  }
-
-  @Test
   public void getPositionByTitle() {
     this.service.getPositionByTitle("Cho", "Store");
     verify(this.repository).findByTitleContainingAndStoreIdAndMarkForDelete("Cho", "Store", false);
@@ -86,6 +80,12 @@ public class PositionServiceTest {
     Mockito.when(this.repository.save(this.position)).thenReturn(this.position);
     List<String> aa = new ArrayList<String>();
     aa.add("1");
+  }
+
+  @Test
+  public void testGetAllPosition() {
+    this.service.getAllPosition();
+    verify(this.repository, Mockito.times(1)).getAllPositionByStoreId(STORE_ID);
   }
 
   @Test
@@ -126,8 +126,6 @@ public class PositionServiceTest {
     Assert.assertTrue(result.equals(shouldBeReturned));
   }
 
-
-
   @Test
   public void testGetPositionDetailByIdAndStoreIdAndReturnException() throws Exception {
     Mockito.when(repository.findByIdAndStoreIdAndMarkForDelete(DEFAULT_ID, STORE_ID, false))
@@ -148,5 +146,10 @@ public class PositionServiceTest {
 
   }
 
+  @Test
+  public void testInsertNewPosition() {
+    this.service.insertNewPosition(position);
+    verify(this.repository, Mockito.times(2)).save(position);
+  }
 
 }

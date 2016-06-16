@@ -9,8 +9,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -29,7 +27,6 @@ import com.gdn.x.beirut.entities.Position;
     DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class})
 @Transactional(readOnly = false)
 public class PositionDAOTest {
-  private static final Logger LOG = LoggerFactory.getLogger(PositionDAO.class);
   private static final String AUTHOR = "unit-test";
   private static final String STORE_ID_1 = "store1";
   private static final String STORE_ID_2 = "store2";
@@ -87,6 +84,12 @@ public class PositionDAOTest {
         .findByTitleContainingAndStoreIdAndMarkForDelete("1", STORE_ID_1, false).size() == 7);
     assertTrue(this.positionDao
         .findByTitleContainingAndStoreIdAndMarkForDelete("2", STORE_ID_2, false).size() == 2);
+  }
+
+  @Test
+  public void testGetAllPositionByStoreId() {
+    assertTrue(this.positionDao.getAllPositionByStoreId(STORE_ID_1).size() > 0);
+    assertTrue(this.positionDao.getAllPositionByStoreId(STORE_ID_2).size() > 0);
   }
 
 }
