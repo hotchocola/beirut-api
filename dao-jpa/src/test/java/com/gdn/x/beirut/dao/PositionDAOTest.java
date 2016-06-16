@@ -18,6 +18,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gdn.common.web.param.PageableHelper;
 import com.gdn.x.beirut.entities.Position;
 
 
@@ -68,6 +69,32 @@ public class PositionDAOTest {
     Position positionToCheck2 = allPositionsStoreId2.get(0);
     Assert.assertNull(this.positionDao.findByIdAndStoreIdAndMarkForDelete(positionToCheck.getId(),
         positionToCheck2.getStoreId(), false));
+  }
+
+  @Test
+  public void testFindByStoreId() {
+    assertTrue(!this.positionDao.findByStoreId(STORE_ID_1).isEmpty());
+    assertTrue(this.positionDao.findByStoreId(STORE_ID_1).size() == 15);
+    assertTrue(!this.positionDao.findByStoreId(STORE_ID_2).isEmpty());
+    assertTrue(this.positionDao.findByStoreId(STORE_ID_2).size() == 15);
+    assertTrue(this.positionDao.findByStoreId(STORE_ID_1, PageableHelper.generatePageable(0, 8))
+        .getContent().size() == 8);
+    assertTrue(this.positionDao.findByStoreId(STORE_ID_1, PageableHelper.generatePageable(1, 8))
+        .getContent().size() == 7);
+    assertTrue(this.positionDao.findByStoreId(STORE_ID_2, PageableHelper.generatePageable(0, 8))
+        .getContent().size() == 8);
+    assertTrue(this.positionDao.findByStoreId(STORE_ID_2, PageableHelper.generatePageable(1, 8))
+        .getContent().size() == 7);
+  }
+
+  @Test
+  public void testFindByStoreIdAndId() {
+    List<Position> positions = this.positionDao.findByStoreId(STORE_ID_1);
+    List<Position> positions2 = this.positionDao.findByStoreId(STORE_ID_2);
+    assertTrue(this.positionDao.findByStoreIdAndId(STORE_ID_1, positions.get(0).getId()) != null);
+    assertTrue(this.positionDao.findByStoreIdAndId(STORE_ID_1, positions2.get(0).getId()) == null);
+
+
   }
 
   @Test

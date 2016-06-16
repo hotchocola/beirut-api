@@ -30,18 +30,18 @@ public class PositionServiceImpl implements PositionService {
   private PositionDAO positionDAO;
 
   @Override
-  public List<Position> getAllPosition() {
-    return positionDAO.findAll();
+  public List<Position> getAllPosition(String storeId) {
+    return positionDAO.findByStoreId(storeId);
   }
 
   @Override
-  public Page<Position> getAllPositionWithPageable(Pageable pageable) {
-    return positionDAO.findAll(pageable);
+  public Page<Position> getAllPositionWithPageable(String storeId, Pageable pageable) {
+    return positionDAO.findByStoreId(storeId, pageable);
   }
 
   @Override
-  public Position getPosition(String positionId) throws Exception {
-    Position existingPosition = getPositionDao().findOne(positionId);
+  public Position getPosition(String storeId, String positionId) throws Exception {
+    Position existingPosition = getPositionDao().findByStoreIdAndId(storeId, positionId);
     if (existingPosition == null) {
       throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
           "no position id = " + positionId);
@@ -92,11 +92,15 @@ public class PositionServiceImpl implements PositionService {
 
   @Override
   @Transactional(readOnly = false)
-  public void markForDeletePosition(List<String> ids) {
-    System.out.println(ids.toString());
+  public void markForDeletePosition(String storeId, List<String> ids) throws Exception {
+    // System.out.println(ids.toString());
     List<Position> positions = new ArrayList<Position>();
     for (int i = 0; i < ids.size(); i++) {
       Position posi = this.getPositionDao().findOne(ids.get(i));
+      if (!posi.getStoreId().equals(storeId)) {
+        throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+            "position exist but storeId not match");
+      }
       Hibernate.initialize(posi.getCandidatePositions());
       Iterator<CandidatePosition> iterator = posi.getCandidatePositions().iterator();
       while (iterator.hasNext()) {
@@ -111,9 +115,13 @@ public class PositionServiceImpl implements PositionService {
 
   @Override
   @Transactional(readOnly = false)
-  public boolean updatePositionTitle(String id, String title) {
+  public boolean updatePositionTitle(String storeId, String id, String title) throws Exception {
     Position posi = this.positionDAO.findOne(id);
     if (posi != null) {
+      if (!posi.getStoreId().equals(storeId)) {
+        throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+            "position exist but storeId not match");
+      }
       posi.setTitle(title);
       this.positionDAO.save(posi);
       return true;

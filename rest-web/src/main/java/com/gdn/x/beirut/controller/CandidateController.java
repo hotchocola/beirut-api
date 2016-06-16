@@ -75,7 +75,7 @@ public class CandidateController {
     List<Candidate> cands =
         this.candidateService.searchCandidateByEmailAddress(candidateDTORequest.getEmailAddress());
     Candidate newCandidate = cands.get(0);
-    Position position = positionService.getPosition(candidateDTORequest.getPositionId());
+    Position position = positionService.getPosition(storeId, candidateDTORequest.getPositionId());
     CandidatePosition candPos = new CandidatePosition();
     candPos.setPosition(position);
     candPos.setCandidate(newCandidate);
@@ -311,7 +311,7 @@ public class CandidateController {
     CandidateDTORequest candidateDTORequest =
         objectMapper.readValue(candidateDTORequestString, CandidateDTORequest.class);
     Candidate newCandidate = new Candidate();
-    Position position = positionService.getPosition(candidateDTORequest.getPositionId());
+    Position position = positionService.getPosition(storeId, candidateDTORequest.getPositionId());
     CandidateDetail candidateDetail = new CandidateDetail();
     candidateDetail.setContent(file.getBytes());
     candidateDetail.setCandidate(newCandidate);

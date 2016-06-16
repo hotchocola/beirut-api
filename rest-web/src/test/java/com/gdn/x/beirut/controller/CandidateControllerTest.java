@@ -265,7 +265,7 @@ public class CandidateControllerTest {
     candidatePosition.setPosition(newPosition);
     newCandidate.getCandidatePositions().add(candidatePosition);
     newPosition.getCandidatePositions().add(candidatePosition);
-    Mockito.when(this.positionService.getPosition(POSITION_ID)).thenReturn(newPosition);
+    Mockito.when(this.positionService.getPosition(STORE_ID, POSITION_ID)).thenReturn(newPosition);
     Mockito.when(this.candidateService.createNew(newCandidate, newPosition))
         .thenReturn(newCandidate);
 
@@ -280,7 +280,7 @@ public class CandidateControllerTest {
         USERNAME, candidateDTORequestString, file);
 
     Mockito.verify(candidateService, Mockito.times(2)).createNew(newCandidate, newPosition);
-    Mockito.verify(positionService, Mockito.times(2)).getPosition(POSITION_ID);
+    Mockito.verify(positionService, Mockito.times(2)).getPosition(STORE_ID, POSITION_ID);
   }
 
   @Test
@@ -289,7 +289,8 @@ public class CandidateControllerTest {
     String json =
         FileUtils.readFileToString(new File("src/test/resources/JSON/markForDeleteJSON.json"));
     ListStringRequest listStringIds = objectMapper.readValue(json, ListStringRequest.class);
-    Mockito.doNothing().when(this.positionService).markForDeletePosition(Mockito.anyList());
+    Mockito.doNothing().when(this.positionService).markForDeletePosition(Mockito.matches(STORE_ID),
+        Mockito.anyList());
     this.mockMVC
         .perform(MockMvcRequestBuilders.post(uri).param("clientId", CLIENT_ID)
             .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
