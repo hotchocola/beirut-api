@@ -6,11 +6,13 @@ import com.gdn.x.beirut.entities.Position;
 
 public interface PositionService {
 
-  List<Position> getAllPosition();
+  List<Position> getAllPosition(String storeId);
 
   Position getPosition(String positionId) throws Exception;
 
   List<Position> getPositionByTitle(String title, String storeId);
+
+  Position getPositionDetailByIdAndStoreId(String id, String storeId) throws Exception;
 
   boolean insertNewPosition(Position position);
 

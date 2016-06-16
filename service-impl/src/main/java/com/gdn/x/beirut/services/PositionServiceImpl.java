@@ -3,6 +3,7 @@ package com.gdn.x.beirut.services;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -26,9 +27,10 @@ public class PositionServiceImpl implements PositionService {
   @Autowired
   private PositionDAO positionDAO;
 
+
   @Override
-  public List<Position> getAllPosition() {
-    return positionDAO.findAll();
+  public List<Position> getAllPosition(String storeId) {
+    return positionDAO.getAllPositionByStoreId(storeId);
   }
 
   @Override
@@ -49,6 +51,22 @@ public class PositionServiceImpl implements PositionService {
   public PositionDAO getPositionDao() {
     return this.positionDAO;
   }
+
+  @Override
+  public Position getPositionDetailByIdAndStoreId(String id, String storeId) throws Exception {
+    Position position = this.positionDAO.findByIdAndStoreIdAndMarkForDelete(id, storeId, false);
+    if (position == null) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "no such id");
+    }
+    Hibernate.initialize(position.getCandidatePositions());
+    Set<CandidatePosition> candidatePositions = position.getCandidatePositions();
+    for (CandidatePosition candidatePosition : candidatePositions) {
+      Hibernate.initialize(candidatePosition.getCandidate());
+    }
+
+    return position;
+  }
+
 
   @Override
   @Transactional(readOnly = false)
