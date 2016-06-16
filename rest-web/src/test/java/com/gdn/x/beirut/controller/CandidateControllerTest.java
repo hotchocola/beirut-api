@@ -81,6 +81,30 @@ public class CandidateControllerTest {
   private CandidateController candidateController;
 
 
+  @Test
+  public void findCandidateByPhoneNumberLikeTest() throws Exception {
+    String uri = "/api/candidate/findCandidateByPhoneNumberLike";
+
+    Mockito.when(this.candidateService.searchCandidateByPhoneNumberLike(PHONENUM))
+        .thenReturn(candidates);
+    this.mockMVC
+        .perform(
+            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
+                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+                .param("username", USERNAME).param("phoneNumber", PHONENUM))
+        .andExpect(status().isOk());
+    GdnRestListResponse<CandidateDTOResponse> res =
+        this.candidateController.findCandidateByPhoneNumberLike(CLIENT_ID, STORE_ID, REQUEST_ID,
+            CHANNEL_ID, USERNAME, PHONENUM);
+    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
+        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
+    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
+      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
+    }
+    Mockito.verify(this.candidateService, Mockito.times(2))
+        .searchCandidateByPhoneNumberLike(PHONENUM);
+  }
+
   @Before
   public void initialize() throws Exception {
     initMocks(this);
@@ -194,9 +218,8 @@ public class CandidateControllerTest {
   }
 
   @Test
-  public void testGetAllCandidateWithPageableTest() throws Exception {
+  public void testGetAllCandidateWithPageable() throws Exception {
     String uri = "/api/candidate/getAllCandidatesWithPageable";
-
     Mockito.when(this.candidateService.getAllCandidatesWithPageable(pageable))
         .thenReturn(pageCandidate);
     this.mockMVC
@@ -205,7 +228,6 @@ public class CandidateControllerTest {
                 .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
                 .param("username", USERNAME).param("page", page).param("size", size))
         .andExpect(status().isOk());
-
     GdnRestListResponse<CandidateDTOResponse> res =
         this.candidateController.getAllCandidateWithPageable(CLIENT_ID, STORE_ID, REQUEST_ID,
             CHANNEL_ID, USERNAME, Integer.parseInt(page), Integer.parseInt(size));

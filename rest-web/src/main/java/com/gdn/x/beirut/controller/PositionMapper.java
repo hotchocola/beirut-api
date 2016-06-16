@@ -22,6 +22,7 @@ public class PositionMapper {
           .setCandidateFirstName(candidatePosition.getCandidate().getFirstName());
       positionDetailDTOResponse
           .setCandidateLastName(candidatePosition.getCandidate().getLastName());
+      positionDetailDTOResponses.add(positionDetailDTOResponse);
     }
   }
 }

@@ -284,6 +284,7 @@ public class CandidateController {
     for (Candidate candidate : pages) {
       CandidateDTOResponse newCandidateDTOResponse = new CandidateDTOResponse();
       CandidateMapper.mapLazy(candidate, newCandidateDTOResponse, dozerMapper);
+      toShow.add(newCandidateDTOResponse);
     }
     GdnRestListResponse<CandidateDTOResponse> pageresponse =
         new GdnRestListResponse(toShow, new PageMetaData(50, 0, toShow.size()), requestId);
