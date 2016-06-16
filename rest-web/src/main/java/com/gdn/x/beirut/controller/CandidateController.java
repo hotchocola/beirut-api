@@ -1,12 +1,16 @@
 package com.gdn.x.beirut.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,15 +21,22 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
+import com.gdn.common.web.param.PageableHelper;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
+import com.gdn.x.beirut.dto.request.ListStringRequest;
+import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
+import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
+import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
+import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
+import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.services.CandidateService;
 import com.gdn.x.beirut.services.PositionService;
 import com.wordnik.swagger.annotations.Api;
@@ -48,8 +59,109 @@ public class CandidateController {
   @Autowired
   private ObjectMapper objectMapper;
 
+  @RequestMapping(value = "applyNewPosition", method = RequestMethod.POST,
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Apply new Position", notes = "melamar posisi baru.")
+  @ResponseBody
+  public GdnBaseRestResponse applyNewPosition(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestParam String candidateDTORequestString,
+      @RequestParam String positionDTORequestString) throws Exception {
+    CandidateDTORequest candidateDTORequest =
+        objectMapper.readValue(candidateDTORequestString, CandidateDTORequest.class);
+    PositionDTORequest positionDTORequest =
+        objectMapper.readValue(positionDTORequestString, PositionDTORequest.class);
+    List<Candidate> cands =
+        this.candidateService.searchCandidateByEmailAddress(candidateDTORequest.getEmailAddress());
+    Candidate newCandidate = cands.get(0);
+    Position position = positionService.getPosition(candidateDTORequest.getPositionId());
+    CandidatePosition candPos = new CandidatePosition();
+    candPos.setPosition(position);
+    candPos.setCandidate(newCandidate);
+    CandidatePositionDTOResponse canRes = new CandidatePositionDTOResponse();
+    this.dozerMapper.map(candPos, canRes);
+    candPos.setStoreId(storeId);
+    return new GdnBaseRestResponse(true);
+  }
+
+  @RequestMapping(value = "deleteCandidate", method = RequestMethod.POST,
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Delete Candidate by Id", notes = "delete kandidat berdasarkan id")
+  @ResponseBody
+  public GdnBaseRestResponse deleteCandidate(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestParam String id) throws Exception {
+    Candidate candidate = this.candidateService.getCandidate(id);
+
+    return new GdnBaseRestResponse();
+  }
+
+  @RequestMapping(value = "findCandidateByCreatedDateBetween", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Find candidate which created between day x and day y",
+      notes = "mencari kandidat yang dibuat pada periode tertentu.")
+  @ResponseBody
+  public GdnRestListResponse<CandidateDTOResponse> findCandidateByCreatedDateBetween(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam Long start,
+      @RequestParam Long end) throws Exception {
+    Date startDate = new Date(start);
+    Date endDate = new Date(end);
+    List<Candidate> candidates =
+        this.candidateService.searchByCreatedDateBetween(startDate, endDate);
+    List<CandidateDTOResponse> res = new ArrayList<CandidateDTOResponse>();
+    for (Candidate candidate : candidates) {
+      CandidateDTOResponse candidateDTOResponse = new CandidateDTOResponse();
+      CandidateMapper.mapLazy(candidate, candidateDTOResponse, dozerMapper);
+      res.add(candidateDTOResponse);
+    }
+    return new GdnRestListResponse<CandidateDTOResponse>(res, new PageMetaData(50, 0, res.size()),
+        requestId);
+  }
+
+  @RequestMapping(value = "findCandidateByEmailAddress", method = RequestMethod.GET,
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Find candidate by their email address", notes = "")
+  @ResponseBody
+  public GdnRestListResponse<CandidateDTOResponse> findCandidateByEmailAddress(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username,
+      @RequestParam String emailAddress) throws Exception {
+    List<Candidate> candidates = this.candidateService.searchCandidateByEmailAddress(emailAddress);
+    List<CandidateDTOResponse> candreses = new ArrayList<CandidateDTOResponse>();
+    for (Candidate candidate : candidates) {
+      CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
+      CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
+      candreses.add(newCandidateDTORes);
+    }
+    return new GdnRestListResponse<CandidateDTOResponse>(candreses,
+        new PageMetaData(50, 0, candreses.size()), requestId);
+  }
+
+  @RequestMapping(value = "findCandidateByFirstNameLike", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Find candidate by their first name", notes = "")
+  @ResponseBody
+  public GdnRestListResponse<CandidateDTOResponse> findCandidateByFirstNameLike(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam String firstName)
+          throws Exception {
+    List<Candidate> candidates = this.candidateService.searchByFirstNameLike(firstName);
+    List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
+    for (Candidate candidate : candidates) {
+      CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
+      CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
+      candidateResponse.add(newCandidateDTORes);
+    }
+    return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
+        new PageMetaData(50, 0, candidateResponse.size()), requestId);
+  }
+
   @RequestMapping(value = "findCandidateById", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "mencari kandidat berdasarkan ID",
       notes = "mengeluarkan kandidat dengan ID tersebut.")
   @ResponseBody
@@ -59,12 +171,31 @@ public class CandidateController {
           throws Exception {
     Candidate candidate = this.candidateService.getCandidate(id);
     CandidateDTOResponse candres = new CandidateDTOResponse();
-    CandidateMapper.map(candidate, candres, dozerMapper);
+    CandidateMapper.mapLazy(candidate, candres, dozerMapper);
     return new GdnRestSingleResponse<CandidateDTOResponse>(candres, requestId);
   }
 
+  @RequestMapping(value = "findCandidateByLastName", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Find candidate by their last name", notes = "")
+  @ResponseBody
+  public GdnRestListResponse<CandidateDTOResponse> findCandidateByLastName(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam String lastName)
+          throws Exception {
+    List<Candidate> candidates = this.candidateService.searchByLastName(lastName);
+    List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
+    for (Candidate candidate : candidates) {
+      CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
+      CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
+      candidateResponse.add(newCandidateDTORes);
+    }
+    return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
+        new PageMetaData(50, 0, candidateResponse.size()), requestId);
+  }
+
   @RequestMapping(value = "findCandidateByPhoneNumber", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "mencari kandidat berdasarkan nomor telepon",
       notes = "mengeluarkan kandidat dengan nomor telepon tersebut.")
   @ResponseBody
@@ -76,11 +207,46 @@ public class CandidateController {
     List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
     for (Candidate candidate : candidates) {
       CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
-      CandidateMapper.map(candidate, newCandidateDTORes, dozerMapper);
+      CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
       candidateResponse.add(newCandidateDTORes);
     }
-    return new GdnRestListResponse<>(candidateResponse,
+    return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
+  }
+
+  @RequestMapping(value = "findCandidateByPhoneNumberLike", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Find candidate by their phone number that much alike", notes = "")
+  @ResponseBody
+  public GdnRestListResponse<CandidateDTOResponse> findCandidateByPhoneNumberLike(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username,
+      @RequestParam String phoneNumber) throws Exception {
+    List<Candidate> candidates =
+        this.candidateService.searchCandidateByPhoneNumberLike(phoneNumber);
+    List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
+    for (Candidate candidate : candidates) {
+      CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
+      CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
+      candidateResponse.add(newCandidateDTORes);
+    }
+    return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
+        new PageMetaData(50, 0, candidateResponse.size()), requestId);
+  }
+
+  @RequestMapping(value = "findCandidateDetail", method = RequestMethod.GET,
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Mencari detail kandidat", notes = "")
+  @ResponseBody
+  public GdnRestSingleResponse<CandidateDetailDTOResponse> findCandidateDetail(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
+          throws Exception {
+    CandidateDetail candidate = this.candidateService.getCandidateDetail(id);
+    CandidateDetailDTOResponse candetres = new CandidateDetailDTOResponse();
+    this.dozerMapper.map(candidate, candetres);
+    return new GdnRestSingleResponse(candetres, requestId);
   }
 
   @RequestMapping(value = "getAllCandidate", method = RequestMethod.GET,
@@ -98,12 +264,35 @@ public class CandidateController {
       CandidateMapper.mapLazy(candidate, newCandidateDTORes, dozerMapper);
       candidateResponse.add(newCandidateDTORes);
     }
-    return new GdnRestListResponse<>(candidateResponse,
+    return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
-  public PositionService getPositionService() {
-    return positionService;
+
+
+  @RequestMapping(value = "getAllCandidatesWithPageable", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Getting all candidates with pageable", notes = "")
+  @ResponseBody
+  public GdnRestListResponse<CandidateDTOResponse> getAllCandidateWithPageable(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam int page,
+      @RequestParam int size) throws Exception {
+    Pageable pageable = PageableHelper.generatePageable(page, size);
+    Page<Candidate> pages = this.candidateService.getAllCandidatesWithPageable(pageable);
+    List<CandidateDTOResponse> toShow = new ArrayList<>();
+    for (Candidate candidate : pages) {
+      CandidateDTOResponse newCandidateDTOResponse = new CandidateDTOResponse();
+      CandidateMapper.mapLazy(candidate, newCandidateDTOResponse, dozerMapper);
+      toShow.add(newCandidateDTOResponse);
+    }
+    GdnRestListResponse<CandidateDTOResponse> pageresponse =
+        new GdnRestListResponse(toShow, new PageMetaData(50, 0, toShow.size()), requestId);
+    return pageresponse;
+  }
+
+  public ObjectMapper getObjectMapper() {
+    return objectMapper;
   }
 
   @RequestMapping(value = "insertNewCandidate", method = RequestMethod.POST,
@@ -135,11 +324,76 @@ public class CandidateController {
     return new GdnBaseRestResponse(requestId);
   }
 
+  @RequestMapping(value = "markForDelete", method = RequestMethod.POST,
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Delete Id yang ada", notes = "Semua yang ada di list akan di hapus")
+  @ResponseBody
+  public GdnBaseRestResponse markForDelete(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestBody ListStringRequest idsRequest) throws Exception {
+    try {
+      this.candidateService.markForDelete(idsRequest.getValues());
+      return new GdnBaseRestResponse(requestId);
+    } catch (Exception e) {
+      return new GdnBaseRestResponse(e.getMessage(), "", false, requestId);
+    }
+
+  }
+
   public void setDozerMapper(Mapper dm) {
     this.dozerMapper = dm;
   }
 
+  public void setObjectMapper(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
+  }
+
+
   public void setPositionService(PositionService positionService) {
     this.positionService = positionService;
   }
+
+  @RequestMapping(value = "updateCandidateDetail", method = RequestMethod.POST,
+      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Update candidate detail", notes = "")
+  @ResponseBody
+  public GdnBaseRestResponse updateCandidateDetail(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestParam String idCandidate,
+      @RequestPart MultipartFile file) throws Exception {
+    if (file == null || file.getBytes().length == 0) {
+      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER,
+          "file content mustbe present");
+    }
+    Candidate candidate = this.candidateService.getCandidate(idCandidate);
+    candidate.getCandidateDetail().setContent(file.getBytes());
+    try {
+      this.candidateService.updateCandidateDetail(candidate);
+      return new GdnBaseRestResponse(true);
+    } catch (Exception e) {
+      return new GdnBaseRestResponse(requestId);
+    }
+  }
+
+  @RequestMapping(value = "updateCandidateStatus", method = RequestMethod.POST,
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "update candidate status",
+      notes = "Update satu atau lebih Status Candidate dengan Position yang diberikan (Jika punya) menjadi status yang diberikan")
+  @ResponseBody
+  public GdnBaseRestResponse updateCandidatesStatus(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestParam Status status, @RequestParam String idPosition,
+      @RequestBody ListStringRequest idCandidates) throws Exception {
+    // CandidateMapper.map(idCandidates, position, objectWrapper, dozerMapper);
+    // System.out.println(objectWrapper.toString());
+    // System.out.println(idCandidates.get(0)); // DEBUG
+    this.candidateService.updateCandidateStatusBulk(idCandidates.getValues(), idPosition, status);
+
+    return new GdnBaseRestResponse(true);
+  }
+
+
 }

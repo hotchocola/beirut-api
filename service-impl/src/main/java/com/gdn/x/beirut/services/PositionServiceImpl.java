@@ -3,11 +3,14 @@ package com.gdn.x.beirut.services;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,11 @@ public class PositionServiceImpl implements PositionService {
   }
 
   @Override
+  public Page<Position> getAllPositionWithPageable(Pageable pageable) {
+    return positionDAO.findAll(pageable);
+  }
+
+  @Override
   public Position getPosition(String positionId) throws Exception {
     Position existingPosition = getPositionDao().findOne(positionId);
     if (existingPosition == null) {
@@ -42,12 +50,34 @@ public class PositionServiceImpl implements PositionService {
   }
 
   @Override
+  public List<Position> getPositionByStoreIdAndMarkForDelete(String storeId,
+      boolean markForDelete) {
+    return this.positionDAO.findByStoreIdAndMarkForDelete(storeId, markForDelete);
+  }
+
+  @Override
   public List<Position> getPositionByTitle(String title, String storeId) {
     return positionDAO.findByTitleContainingAndStoreIdAndMarkForDelete(title, storeId, false);
   }
 
   public PositionDAO getPositionDao() {
     return this.positionDAO;
+  }
+
+  @Override
+  public Position getPositionDetailByIdAndStoreId(String id, String storeId) throws Exception {
+    Position position = this.positionDAO.findByIdAndStoreIdAndMarkForDelete(id, storeId, false);
+    if (position == null) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+          "no such id = " + id + " and storeId = " + storeId);
+    }
+    Hibernate.initialize(position.getCandidatePositions());
+
+    Set<CandidatePosition> candidatePositions = position.getCandidatePositions();
+    for (CandidatePosition candidatePosition : candidatePositions) {
+      Hibernate.initialize(candidatePosition.getCandidate());
+    }
+    return position;
   }
 
   @Override
@@ -66,8 +96,7 @@ public class PositionServiceImpl implements PositionService {
     System.out.println(ids.toString());
     List<Position> positions = new ArrayList<Position>();
     for (int i = 0; i < ids.size(); i++) {
-      Position posi =
-          (Position) this.getPositionDao().findByStoreIdAndMarkForDelete(ids.get(i), false);
+      Position posi = this.getPositionDao().findOne(ids.get(i));
       Hibernate.initialize(posi.getCandidatePositions());
       Iterator<CandidatePosition> iterator = posi.getCandidatePositions().iterator();
       while (iterator.hasNext()) {

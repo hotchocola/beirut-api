@@ -1,10 +1,7 @@
 package com.gdn.x.beirut.entities;
 
-import com.gdn.common.base.entity.GdnBaseEntity;
-
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,6 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.gdn.common.base.entity.GdnBaseEntity;
 
 @Entity
 @Table(name = Candidate.TABLE_NAME)
@@ -43,8 +42,8 @@ public class Candidate extends GdnBaseEntity {
   private Set<CandidatePosition> candidatePositions = new HashSet<CandidatePosition>();
 
   public Candidate() {
-    //nothing to do here
-//    setId(UUID.randomUUID().toString());
+    // nothing to do here
+    // setId(UUID.randomUUID().toString());
   }
 
   public CandidateDetail getCandidateDetail() {

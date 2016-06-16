@@ -1,7 +1,11 @@
 package com.gdn.x.beirut.dao;
 
-import com.gdn.x.beirut.entities.Position;
+import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,11 +20,8 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.gdn.x.beirut.entities.Position;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
@@ -58,6 +59,21 @@ public class PositionDAOTest {
   }
 
   @Test
+  public void testFindByIdAndStoreIdAndMarkForDelete() {
+    List<Position> allPositionsStoreId1 =
+        this.positionDao.findByStoreIdAndMarkForDelete(STORE_ID_1, false);
+    Position positionToCheck = allPositionsStoreId1.get(0);
+    assertTrue(this.positionDao.findByIdAndStoreIdAndMarkForDelete(positionToCheck.getId(),
+        positionToCheck.getStoreId(), false).getCreatedBy().equals(AUTHOR));
+
+    List<Position> allPositionsStoreId2 =
+        this.positionDao.findByStoreIdAndMarkForDelete(STORE_ID_2, false);
+    Position positionToCheck2 = allPositionsStoreId2.get(0);
+    Assert.assertNull(this.positionDao.findByIdAndStoreIdAndMarkForDelete(positionToCheck.getId(),
+        positionToCheck2.getStoreId(), false));
+  }
+
+  @Test
   public void testFindByStoreIdMarkForDelete() {
     assertTrue(this.positionDao.findByStoreIdAndMarkForDelete(STORE_ID_1, true).isEmpty());
     assertTrue(this.positionDao.findByStoreIdAndMarkForDelete(STORE_ID_1, false).size() == 15);
@@ -67,8 +83,10 @@ public class PositionDAOTest {
 
   @Test
   public void testFindByTitleContainingAndStoreIdAndMarkForDelete() {
-    assertTrue(this.positionDao.findByTitleContainingAndStoreIdAndMarkForDelete("1", STORE_ID_1, false).size() == 7);
-    assertTrue(this.positionDao.findByTitleContainingAndStoreIdAndMarkForDelete("2", STORE_ID_2, false).size() == 2);
+    assertTrue(this.positionDao
+        .findByTitleContainingAndStoreIdAndMarkForDelete("1", STORE_ID_1, false).size() == 7);
+    assertTrue(this.positionDao
+        .findByTitleContainingAndStoreIdAndMarkForDelete("2", STORE_ID_2, false).size() == 2);
   }
 
 }
