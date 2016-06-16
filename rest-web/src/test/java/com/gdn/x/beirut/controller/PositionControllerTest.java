@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -24,7 +25,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
+import com.gdn.x.beirut.entities.Candidate;
+import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
+import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.services.PositionService;
 
 public class PositionControllerTest {
@@ -67,8 +71,20 @@ public class PositionControllerTest {
 
   private final Position position = new Position();
 
+  @Before
+  public void initialize() throws Exception {
+    initMocks(this);
+    this.mockMVC = standaloneSetup(this.positionController).build();
+    this.positionController.setDozerMapper(dm);
+    this.position.setId(ID);
+    this.position.setTitle(TITLE);
+    this.positions.add(this.position);
+    this.positionDTORequest.setTitle("title");
+    this.positionDTORequests.add(positionDTORequest);
+  }
+
   @Test
-  public void deletePositionTest() throws Exception {
+  public void testDeletePosition() throws Exception {
     String uri = "deletePosition";
     String json =
         FileUtils.readFileToString(new File("src/test/resources/JSON/markForDeleteJSON.json"));
@@ -85,28 +101,6 @@ public class PositionControllerTest {
         listStringIds);
     Mockito.verify(this.positionService, Mockito.times(2)).markForDeletePosition(Mockito.anyList());
   }
-
-  // (@RequestParam String clientId,
-  // @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-  // @RequestParam String username)
-
-  @Before
-  public void initialize() throws Exception {
-    initMocks(this);
-    this.mockMVC = standaloneSetup(this.positionController).build();
-    this.positionController.setDozerMapper(dm);
-    this.position.setId(ID);
-    this.position.setTitle(TITLE);
-    this.positions.add(this.position);
-    this.positionDTORequest.setTitle("title");
-    this.positionDTORequests.add(positionDTORequest);
-  }
-
-  // @RequestParam String clientId,
-  // @RequestParam String storeId,
-  // @RequestParam String requestId,
-  // @RequestParam String channelId,
-  // @RequestParam String username
 
   @Test
   public void testGetAllPosition() throws Exception {
@@ -136,6 +130,51 @@ public class PositionControllerTest {
     this.positionController.getPositionByTitle(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
         USERNAME, TITLE);
     Mockito.verify(this.positionService, Mockito.times(2)).getPositionByTitle(TITLE, STORE_ID);
+  }
+
+  @Test
+  public void testGetPositionDetailById() throws Exception {
+    Candidate candidate = new Candidate();
+    candidate.setFirstName("John Doe");
+    candidate.setLastName("John Doe");
+    CandidatePosition candidatePosition = new CandidatePosition();
+    candidatePosition.setCandidate(candidate);
+    candidatePosition.setStatus(Status.APPLY);
+    Position shouldBeReturned = new Position();
+    shouldBeReturned.setId(ID);
+    shouldBeReturned.setStoreId(STORE_ID);
+    shouldBeReturned.setCreatedBy("dummy");
+    shouldBeReturned.setCandidatePositions(new HashSet<CandidatePosition>());
+    shouldBeReturned.getCandidatePositions().add(candidatePosition);
+    shouldBeReturned.setMarkForDelete(false);
+    shouldBeReturned.setTitle("This is a dummy");
+    String uri = "getPositionDetail";
+    Mockito.when(this.positionService.getPositionDetailByIdAndStoreId(ID, STORE_ID))
+        .thenReturn(shouldBeReturned);
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.get(UriBasePath + uri).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("id", ID))
+        .andExpect(status().isOk());
+    this.positionController.getPositionDetailById(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
+        USERNAME, ID);
+    Mockito.verify(positionService, Mockito.times(2)).getPositionDetailByIdAndStoreId(ID, STORE_ID);
+  }
+
+  @Test
+  public void testGetPositionDetailByIdAndThrowException() throws Exception {
+    String uri = "getPositionDetail";
+    Mockito.when(this.positionService.getPositionDetailByIdAndStoreId(ID, STORE_ID))
+        .thenThrow(new Exception());
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.get(UriBasePath + uri).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("id", ID))
+        .andExpect(status().isOk());
+    this.positionController.getPositionDetailById(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
+        USERNAME, ID);
+    Mockito.verify(positionService, Mockito.times(2)).getPositionDetailByIdAndStoreId(ID, STORE_ID);
+
   }
 
   @Test

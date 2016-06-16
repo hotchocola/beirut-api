@@ -55,14 +55,23 @@ public class PositionServiceImpl implements PositionService {
   public Position getPositionDetailByIdAndStoreId(String id, String storeId) throws Exception {
     Position position = this.positionDAO.findByIdAndStoreIdAndMarkForDelete(id, storeId, false);
     if (position == null) {
-      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "no such id");
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+          "no such id = " + id + " and storeId = " + storeId);
     }
     Hibernate.initialize(position.getCandidatePositions());
+    // System.out.println(position.getCandidatePositions() + " : Candidate Position List
+    // dsasdasdas");
+
     Set<CandidatePosition> candidatePositions = position.getCandidatePositions();
     for (CandidatePosition candidatePosition : candidatePositions) {
       Hibernate.initialize(candidatePosition.getCandidate());
-    }
 
+      // System.out.println(candidatePosition + " : Candidate Position dsasdasdas");
+      // System.out.println(candidatePosition.getStatus() + " : test Status");
+      // System.out.println(candidatePosition.getCandidate() + " : Candidate dsasdasdas");
+      // System.out.println(candidatePosition.getCandidate().getFirstName() + "test First Name");
+      // System.out.println(candidatePosition.getCandidate().getLastName() + "test Last Name");
+    }
     return position;
   }
 

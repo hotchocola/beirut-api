@@ -97,11 +97,15 @@ public class PositionController {
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
           throws Exception {
-    Position result = this.positionService.getPositionDetailByIdAndStoreId(id, storeId);
-    List<PositionDetailDTOResponse> positionDetailDTOResponses = new ArrayList<>();
-    PositionMapper.map(result, positionDetailDTOResponses);
-    return new GdnRestListResponse<>(positionDetailDTOResponses,
-        new PageMetaData(50, 0, positionDetailDTOResponses.size()), requestId);
+    try {
+      Position result = this.positionService.getPositionDetailByIdAndStoreId(id, storeId);
+      List<PositionDetailDTOResponse> positionDetailDTOResponses = new ArrayList<>();
+      PositionMapper.map(result, positionDetailDTOResponses);
+      return new GdnRestListResponse<>(positionDetailDTOResponses,
+          new PageMetaData(50, 0, positionDetailDTOResponses.size()), requestId);
+    } catch (Exception e) {
+      return new GdnRestListResponse<>(e.getMessage(), "", false, requestId);
+    }
   }
 
   @RequestMapping(value = "insertNewPosition", method = RequestMethod.POST,

@@ -80,22 +80,6 @@ public class CandidateControllerTest {
   @InjectMocks
   private CandidateController candidateController;
 
-  @Test
-  public void findCandidateByIdTest() throws Exception {
-    String uri = "/api/candidate/getAllCandidate";
-    Mockito.when(this.candidateService.getAllCandidates()).thenReturn(candidates);
-    this.mockMVC.perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
-        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-        .param("username", USERNAME)).andExpect(status().isOk());
-    GdnRestListResponse<CandidateDTOResponse> res = this.candidateController
-        .getAllCandidate(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME);
-    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
-        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
-    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
-      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
-    }
-    Mockito.verify(this.candidateService, Mockito.times(2)).getAllCandidates();
-  }
 
   @Test
   public void findCandidateByPhoneNumberLikeTest() throws Exception {
@@ -119,28 +103,6 @@ public class CandidateControllerTest {
     }
     Mockito.verify(this.candidateService, Mockito.times(2))
         .searchCandidateByPhoneNumberLike(PHONENUM);
-  }
-
-  @Test
-  public void getAllCandidateWithPageableTest() throws Exception {
-    String uri = "/api/candidate/getAllCandidatesWithPageable";
-    Mockito.when(this.candidateService.getAllCandidatesWithPageable(pageable))
-        .thenReturn(pageCandidate);
-    this.mockMVC
-        .perform(
-            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
-                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-                .param("username", USERNAME).param("page", page).param("size", size))
-        .andExpect(status().isOk());
-    GdnRestListResponse<CandidateDTOResponse> res =
-        this.candidateController.getAllCandidateWithPageable(CLIENT_ID, STORE_ID, REQUEST_ID,
-            CHANNEL_ID, USERNAME, Integer.parseInt(page), Integer.parseInt(size));
-    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
-        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
-    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
-      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
-    }
-    Mockito.verify(this.candidateService, Mockito.times(2)).getAllCandidatesWithPageable(pageable);
   }
 
   @Before
@@ -257,6 +219,28 @@ public class CandidateControllerTest {
       expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
     }
     Mockito.verify(this.candidateService, Mockito.times(2)).getAllCandidates();
+  }
+
+  @Test
+  public void testGetAllCandidateWithPageable() throws Exception {
+    String uri = "/api/candidate/getAllCandidatesWithPageable";
+    Mockito.when(this.candidateService.getAllCandidatesWithPageable(pageable))
+        .thenReturn(pageCandidate);
+    this.mockMVC
+        .perform(
+            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
+                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+                .param("username", USERNAME).param("page", page).param("size", size))
+        .andExpect(status().isOk());
+    GdnRestListResponse<CandidateDTOResponse> res =
+        this.candidateController.getAllCandidateWithPageable(CLIENT_ID, STORE_ID, REQUEST_ID,
+            CHANNEL_ID, USERNAME, Integer.parseInt(page), Integer.parseInt(size));
+    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
+        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
+    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
+      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
+    }
+    Mockito.verify(this.candidateService, Mockito.times(2)).getAllCandidatesWithPageable(pageable);
   }
 
   @Test
