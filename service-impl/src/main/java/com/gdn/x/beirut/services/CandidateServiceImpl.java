@@ -255,7 +255,7 @@ public class CandidateServiceImpl implements CandidateService {
   public void updateCandidateDetail(String storeId, Candidate candidate) throws Exception {
     if (candidate.getId() != null) {
       Candidate existingCandidate = getCandidate(candidate.getId());
-      if (existingCandidate.getStoreId().equals(storeId)) {
+      if (!existingCandidate.getStoreId().equals(storeId)) {
         throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
             "data found but no store id match expected = " + existingCandidate.getStoreId()
                 + " but was = " + storeId);
@@ -280,7 +280,7 @@ public class CandidateServiceImpl implements CandidateService {
   public void updateCandidateStatus(String storeId, Candidate candidate, String idPosition,
       Status status) throws Exception {
     Candidate existingCandidate = getCandidate(candidate.getId());
-    if (existingCandidate.getStoreId().equals(storeId)) {
+    if (!existingCandidate.getStoreId().equals(storeId)) {
       throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
           "data found but no store id match expected = " + existingCandidate.getStoreId()
               + " but was = " + storeId);
