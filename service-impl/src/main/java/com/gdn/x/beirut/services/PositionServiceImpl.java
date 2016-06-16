@@ -9,6 +9,8 @@ import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,11 @@ public class PositionServiceImpl implements PositionService {
   @Override
   public List<Position> getAllPosition() {
     return positionDAO.findAll();
+  }
+
+  @Override
+  public Page<Position> getAllPositionWithPageable(Pageable pageable) {
+    return positionDAO.findAll(pageable);
   }
 
   @Override
@@ -59,18 +66,10 @@ public class PositionServiceImpl implements PositionService {
           "no such id = " + id + " and storeId = " + storeId);
     }
     Hibernate.initialize(position.getCandidatePositions());
-    // System.out.println(position.getCandidatePositions() + " : Candidate Position List
-    // dsasdasdas");
 
     Set<CandidatePosition> candidatePositions = position.getCandidatePositions();
     for (CandidatePosition candidatePosition : candidatePositions) {
       Hibernate.initialize(candidatePosition.getCandidate());
-
-      // System.out.println(candidatePosition + " : Candidate Position dsasdasdas");
-      // System.out.println(candidatePosition.getStatus() + " : test Status");
-      // System.out.println(candidatePosition.getCandidate() + " : Candidate dsasdasdas");
-      // System.out.println(candidatePosition.getCandidate().getFirstName() + "test First Name");
-      // System.out.println(candidatePosition.getCandidate().getLastName() + "test Last Name");
     }
     return position;
   }

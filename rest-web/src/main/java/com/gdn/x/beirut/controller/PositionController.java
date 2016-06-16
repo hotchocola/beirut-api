@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.gdn.common.web.param.PageableHelper;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
@@ -68,8 +70,28 @@ public class PositionController {
         new PageMetaData(5, 5, positions.size()), requestId);
   }
 
+  @RequestMapping(value = "getAllPositionWithPageable", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  @ApiOperation(value = "get all Candidate restricted with Pagination",
+      notes = "mengambil semua posisi with pagination")
+  @ResponseBody
+  public GdnRestListResponse<PositionDTOResponse> getAllPositionWithPageable(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam int page,
+      @RequestParam int size) {
+    Page<Position> positions = this.positionService
+        .getAllPositionWithPageable(PageableHelper.generatePageable(page, size));
+    List<PositionDTOResponse> res = new ArrayList<>();
+    for (Position position : positions) {
+      PositionDTOResponse positionDTOResponse = new PositionDTOResponse();
+      dozerMapper.map(position, positionDTOResponse);
+      res.add(positionDTOResponse);
+    }
+    return new GdnRestListResponse<>(res, new PageMetaData(50, 0, res.size()), requestId);
+  }
+
   @RequestMapping(value = "getPositionByTitle", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "get position by title", notes = "mengambil semua posisi dengan nama.")
   @ResponseBody
   public GdnRestListResponse<PositionDTOResponse> getPositionByTitle(@RequestParam String clientId,

@@ -2,11 +2,16 @@ package com.gdn.x.beirut.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.gdn.x.beirut.entities.Position;
 
 public interface PositionService {
 
   List<Position> getAllPosition();
+
+  Page<Position> getAllPositionWithPageable(Pageable pageable);
 
   Position getPosition(String positionId) throws Exception;
 

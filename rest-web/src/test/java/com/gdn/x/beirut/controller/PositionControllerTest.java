@@ -17,12 +17,15 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gdn.common.web.param.PageableHelper;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.entities.Candidate;
@@ -117,6 +120,28 @@ public class PositionControllerTest {
   }
 
   @Test
+  public void testGetAllPositionWithPageable() throws Exception {
+    List<Position> content = new ArrayList<>();
+    content.add(position);
+    Page<Position> shouldBeReturned =
+        new PageImpl<>(content, PageableHelper.generatePageable(0, 2), content.size());
+    String uri = "getAllPositionWithPageable";
+    Mockito
+        .when(
+            this.positionService.getAllPositionWithPageable(PageableHelper.generatePageable(0, 2)))
+        .thenReturn(shouldBeReturned);
+    this.mockMVC.perform(MockMvcRequestBuilders.get(UriBasePath + uri).param("clientId", CLIENT_ID)
+        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+        .param("username", USERNAME).param("page", "0").param("size", "2"))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+    this.positionController.getAllPositionWithPageable(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
+        USERNAME, 0, 2);
+    Mockito.verify(this.positionService, Mockito.times(2))
+        .getAllPositionWithPageable(PageableHelper.generatePageable(0, 2));
+
+  }
+
+  @Test
   public void testGetPositionByTitle() throws Exception {
     String uri = "getPositionByTitle";
     Mockito.when(this.positionService.getPositionByTitle(TITLE, STORE_ID))
@@ -174,7 +199,6 @@ public class PositionControllerTest {
     this.positionController.getPositionDetailById(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
         USERNAME, ID);
     Mockito.verify(positionService, Mockito.times(2)).getPositionDetailByIdAndStoreId(ID, STORE_ID);
-
   }
 
   @Test
