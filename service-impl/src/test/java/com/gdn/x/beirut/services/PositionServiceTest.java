@@ -126,6 +126,8 @@ public class PositionServiceTest {
     Assert.assertTrue(result.equals(shouldBeReturned));
   }
 
+
+
   @Test
   public void testGetPositionDetailByIdAndStoreIdAndReturnException() throws Exception {
     Mockito.when(repository.findByIdAndStoreIdAndMarkForDelete(DEFAULT_ID, STORE_ID, false))

@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.dozer.DozerBeanMapper;
 import org.dozer.Mapper;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -26,8 +27,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdn.common.web.param.PageableHelper;
+import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
+import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
@@ -142,6 +145,22 @@ public class PositionControllerTest {
   }
 
   @Test
+  public void testGetPositionByStoreIdAndMarkForDelete() throws Exception {
+    String uri = "getPositionByStoreIdAndMarkForDelete";
+    Mockito.when(this.positionService.getPositionByStoreIdAndMarkForDelete(STORE_ID, false))
+        .thenReturn(positions);
+    this.mockMVC.perform(MockMvcRequestBuilders.get(UriBasePath + uri).param("clientId", CLIENT_ID)
+        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+        .param("username", USERNAME).param("markForDelete", "false")).andExpect(status().isOk());
+    GdnRestListResponse<PositionDTOResponse> res =
+        this.positionController.getPositionByStoreIdAndMarkForDelete(CLIENT_ID, STORE_ID,
+            REQUEST_ID, CHANNEL_ID, USERNAME, false);
+    Mockito.verify(this.positionService, Mockito.times(2))
+        .getPositionByStoreIdAndMarkForDelete(STORE_ID, false);
+    Assert.assertTrue(res.getContent().get(0).getId().equals(positions.get(0).getId()));
+  }
+
+  @Test
   public void testGetPositionByTitle() throws Exception {
     String uri = "getPositionByTitle";
     Mockito.when(this.positionService.getPositionByTitle(TITLE, STORE_ID))
@@ -234,5 +253,4 @@ public class PositionControllerTest {
     Mockito.verify(this.positionService, Mockito.times(2)).updatePositionTitle(ID,
         this.positionDTORequest.getTitle());
   }
-
 }

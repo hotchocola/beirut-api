@@ -90,6 +90,28 @@ public class PositionController {
     return new GdnRestListResponse<>(res, new PageMetaData(50, 0, res.size()), requestId);
   }
 
+  @RequestMapping(value = "getPositionByStoreIdAndMarkForDelete", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  @ApiOperation(value = "get position by storeid and markForDelete",
+      notes = "mengambil semua posisi dengan StoreId dengan markForDelete.")
+  @ResponseBody
+  public GdnRestListResponse<PositionDTOResponse> getPositionByStoreIdAndMarkForDelete(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username,
+      @RequestParam boolean markForDelete) {
+
+    List<Position> positions =
+        this.positionService.getPositionByStoreIdAndMarkForDelete(storeId, markForDelete);
+    List<PositionDTOResponse> positionDTOResponses = new ArrayList<>();
+    for (Position position : positions) {
+      PositionDTOResponse positionDTOResponse = new PositionDTOResponse();
+      dozerMapper.map(position, positionDTOResponse);
+      positionDTOResponses.add(positionDTOResponse);
+    }
+    return new GdnRestListResponse<>(positionDTOResponses,
+        new PageMetaData(50, 0, positionDTOResponses.size()), requestId);
+  }
+
   @RequestMapping(value = "getPositionByTitle", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "get position by title", notes = "mengambil semua posisi dengan nama.")
