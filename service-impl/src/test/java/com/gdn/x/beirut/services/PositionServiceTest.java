@@ -24,6 +24,8 @@ public class PositionServiceTest {
 
   private static final String DEFAULT_ID = "ID";
 
+  private static final String STORE_ID = "STORE_ID";
+
   @Mock
   private PositionDAO repository;
 
@@ -106,6 +108,22 @@ public class PositionServiceTest {
       }
     }
     verify(this.repository).findOne(DEFAULT_ID);
+  }
+
+  @Test
+  public void testGetPositionDetailByIdAndStoreId() throws Exception {
+    Position shouldBeReturned = new Position();
+    shouldBeReturned.setId(DEFAULT_ID);
+    shouldBeReturned.setStoreId(STORE_ID);
+    shouldBeReturned.setCreatedBy("dummy");
+    shouldBeReturned.setMarkForDelete(false);
+    shouldBeReturned.setTitle("This is a dummy");
+    Mockito.when(repository.findByIdAndStoreIdAndMarkForDelete(DEFAULT_ID, STORE_ID, false))
+        .thenReturn(shouldBeReturned);
+    Position result = this.service.getPositionDetailByIdAndStoreId(DEFAULT_ID, STORE_ID);
+    Mockito.verify(repository, Mockito.times(1)).findByIdAndStoreIdAndMarkForDelete(DEFAULT_ID,
+        STORE_ID, false);
+    Assert.assertTrue(result.equals(shouldBeReturned));
   }
 
 }

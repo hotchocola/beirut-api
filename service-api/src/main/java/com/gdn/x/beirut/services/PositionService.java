@@ -12,6 +12,8 @@ public interface PositionService {
 
   List<Position> getPositionByTitle(String title, String storeId);
 
+  Position getPositionDetailByIdAndStoreId(String id, String storeId) throws Exception;
+
   boolean insertNewPosition(Position position);
 
   void markForDeletePosition(List<String> id);
