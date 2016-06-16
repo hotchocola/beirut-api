@@ -22,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -31,6 +30,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gdn.common.web.param.PageableHelper;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
@@ -56,7 +56,7 @@ public class CandidateControllerTest {
   private static final String POSITION_ID = "22bf3cdb-d49e-4534-af52-9ce28064e7f3";
   private static final String POSITION_TITLE = "POS_TITLE";
   private static final String PHONENUM = "123";
-  private static final Pageable pageable = new PageRequest(1, 4);
+  private static final Pageable pageable = PageableHelper.generatePageable(1, 4);
   private ObjectMapper objectMapper;
 
   private Mapper beanMapper;
@@ -80,68 +80,6 @@ public class CandidateControllerTest {
   @InjectMocks
   private CandidateController candidateController;
 
-  @Test
-  public void findCandidateByIdTest() throws Exception {
-    String uri = "/api/candidate/getAllCandidate";
-    Mockito.when(this.candidateService.getAllCandidates()).thenReturn(candidates);
-    this.mockMVC.perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
-        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-        .param("username", USERNAME)).andExpect(status().isOk());
-    GdnRestListResponse<CandidateDTOResponse> res = this.candidateController
-        .getAllCandidate(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME);
-    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
-        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
-    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
-      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
-    }
-    Mockito.verify(this.candidateService, Mockito.times(2)).getAllCandidates();
-  }
-
-  @Test
-  public void findCandidateByPhoneNumberLikeTest() throws Exception {
-    String uri = "/api/candidate/findCandidateByPhoneNumberLike";
-
-    Mockito.when(this.candidateService.searchCandidateByPhoneNumberLike(PHONENUM))
-        .thenReturn(candidates);
-    this.mockMVC
-        .perform(
-            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
-                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-                .param("username", USERNAME).param("phoneNumber", PHONENUM))
-        .andExpect(status().isOk());
-    GdnRestListResponse<CandidateDTOResponse> res =
-        this.candidateController.findCandidateByPhoneNumberLike(CLIENT_ID, STORE_ID, REQUEST_ID,
-            CHANNEL_ID, USERNAME, PHONENUM);
-    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
-        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
-    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
-      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
-    }
-    Mockito.verify(this.candidateService, Mockito.times(2))
-        .searchCandidateByPhoneNumberLike(PHONENUM);
-  }
-
-  @Test
-  public void getAllCandidateWithPageableTest() throws Exception {
-    String uri = "/api/candidate/getAllCandidatesWithPageable";
-    Mockito.when(this.candidateService.getAllCandidatesWithPageable(pageable))
-        .thenReturn(pageCandidate);
-    this.mockMVC
-        .perform(
-            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
-                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-                .param("username", USERNAME).param("page", page).param("size", size))
-        .andExpect(status().isOk());
-    GdnRestListResponse<CandidateDTOResponse> res =
-        this.candidateController.getAllCandidateWithPageable(CLIENT_ID, STORE_ID, REQUEST_ID,
-            CHANNEL_ID, USERNAME, Integer.parseInt(page), Integer.parseInt(size));
-    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
-        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
-    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
-      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
-    }
-    Mockito.verify(this.candidateService, Mockito.times(2)).getAllCandidatesWithPageable(pageable);
-  }
 
   @Before
   public void initialize() throws Exception {
@@ -167,36 +105,6 @@ public class CandidateControllerTest {
       candidateResponse.add(newCandidateDTORes);
     }
 
-  }
-
-  @Test
-  public void searchByCreatedDateBetweenTest() throws Exception {
-    String uri = "/api/candidate/findCandidateByCreatedDateBetween";
-    Date startDate = new Date(start);
-    Date endDate = new Date(end);
-    String startString = start.toString();
-    String endString = end.toString();
-
-    GdnRestListResponse<CandidateDTOResponse> res =
-        this.candidateController.findCandidateByCreatedDateBetween(CLIENT_ID, STORE_ID, REQUEST_ID,
-            CHANNEL_ID, USERNAME, start, end);
-
-    Mockito.when(this.candidateService.searchByCreatedDateBetween(startDate, endDate))
-        .thenReturn(candidates);
-    this.mockMVC
-        .perform(
-            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
-                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-                .param("username", USERNAME).param("start", startString).param("end", endString))
-        .andExpect(status().isOk()).andReturn().equals(res);
-
-    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
-        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
-    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
-      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
-    }
-    Mockito.verify(this.candidateService, Mockito.times(2)).searchByCreatedDateBetween(startDate,
-        endDate);
   }
 
   @Test
@@ -242,8 +150,34 @@ public class CandidateControllerTest {
   }
 
   @Test
+  public void testFindCandidateByPhoneNumberLike() throws Exception {
+    String uri = "/api/candidate/findCandidateByPhoneNumberLike";
+
+    Mockito.when(this.candidateService.searchCandidateByPhoneNumberLike(PHONENUM))
+        .thenReturn(candidates);
+    this.mockMVC
+        .perform(
+            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
+                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+                .param("username", USERNAME).param("phoneNumber", PHONENUM))
+        .andExpect(status().isOk());
+    GdnRestListResponse<CandidateDTOResponse> res =
+        this.candidateController.findCandidateByPhoneNumberLike(CLIENT_ID, STORE_ID, REQUEST_ID,
+            CHANNEL_ID, USERNAME, PHONENUM);
+    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
+        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
+    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
+      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
+    }
+    Mockito.verify(this.candidateService, Mockito.times(2))
+        .searchCandidateByPhoneNumberLike(PHONENUM);
+  }
+
+  @Test
   public void testGetAllCandidate() throws Exception {
     String uri = "/api/candidate/getAllCandidate";
+
+
     Mockito.when(this.candidateService.getAllCandidates()).thenReturn(candidates);
 
     this.mockMVC.perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
@@ -257,6 +191,30 @@ public class CandidateControllerTest {
       expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
     }
     Mockito.verify(this.candidateService, Mockito.times(2)).getAllCandidates();
+  }
+
+  @Test
+  public void testGetAllCandidateWithPageableTest() throws Exception {
+    String uri = "/api/candidate/getAllCandidatesWithPageable";
+
+    Mockito.when(this.candidateService.getAllCandidatesWithPageable(pageable))
+        .thenReturn(pageCandidate);
+    this.mockMVC
+        .perform(
+            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
+                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+                .param("username", USERNAME).param("page", page).param("size", size))
+        .andExpect(status().isOk());
+
+    GdnRestListResponse<CandidateDTOResponse> res =
+        this.candidateController.getAllCandidateWithPageable(CLIENT_ID, STORE_ID, REQUEST_ID,
+            CHANNEL_ID, USERNAME, Integer.parseInt(page), Integer.parseInt(size));
+    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
+        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
+    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
+      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
+    }
+    Mockito.verify(this.candidateService, Mockito.times(2)).getAllCandidatesWithPageable(pageable);
   }
 
   @Test
@@ -319,6 +277,36 @@ public class CandidateControllerTest {
 
     this.candidateService.markForDelete(listStringIds.getValues());
     Mockito.verify(this.candidateService, Mockito.times(2)).markForDelete(Mockito.anyList());
+  }
+
+  @Test
+  public void testSearchByCreatedDateBetween() throws Exception {
+    String uri = "/api/candidate/findCandidateByCreatedDateBetween";
+    Date startDate = new Date(start);
+    Date endDate = new Date(end);
+    String startString = start.toString();
+    String endString = end.toString();
+
+    GdnRestListResponse<CandidateDTOResponse> res =
+        this.candidateController.findCandidateByCreatedDateBetween(CLIENT_ID, STORE_ID, REQUEST_ID,
+            CHANNEL_ID, USERNAME, start, end);
+
+    Mockito.when(this.candidateService.searchByCreatedDateBetween(startDate, endDate))
+        .thenReturn(candidates);
+    this.mockMVC
+        .perform(
+            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
+                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+                .param("username", USERNAME).param("start", startString).param("end", endString))
+        .andExpect(status().isOk()).andReturn().equals(res);
+
+    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
+        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
+    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
+      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
+    }
+    Mockito.verify(this.candidateService, Mockito.times(2)).searchByCreatedDateBetween(startDate,
+        endDate);
   }
 
   @Test

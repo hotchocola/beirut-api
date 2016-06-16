@@ -27,9 +27,10 @@ public class PositionServiceImpl implements PositionService {
   @Autowired
   private PositionDAO positionDAO;
 
+
   @Override
-  public List<Position> getAllPosition() {
-    return positionDAO.findAll();
+  public List<Position> getAllPosition(String storeId) {
+    return positionDAO.getAllPositionByStoreId(storeId);
   }
 
   @Override
@@ -65,6 +66,7 @@ public class PositionServiceImpl implements PositionService {
 
     return position;
   }
+
 
   @Override
   @Transactional(readOnly = false)

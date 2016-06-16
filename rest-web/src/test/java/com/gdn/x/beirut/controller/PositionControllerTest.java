@@ -111,7 +111,7 @@ public class PositionControllerTest {
   @Test
   public void testGetAllPosition() throws Exception {
     String uri = "getAllPosition";
-    Mockito.when(this.positionService.getAllPosition()).thenReturn(this.positions);
+    Mockito.when(this.positionService.getAllPosition(STORE_ID)).thenReturn(this.positions);
     this.mockMVC
         .perform(MockMvcRequestBuilders.get(UriBasePath + uri).accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON).param("clientId", CLIENT_ID)
@@ -119,7 +119,7 @@ public class PositionControllerTest {
             .param("channelId", CHANNEL_ID).param("username", USERNAME))
         .andExpect(MockMvcResultMatchers.status().isOk());
     this.positionController.getAllPosition(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME);
-    Mockito.verify(this.positionService, Mockito.times(2)).getAllPosition();
+    Mockito.verify(this.positionService, Mockito.times(2)).getAllPosition(STORE_ID);
   }
 
   @Test

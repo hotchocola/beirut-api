@@ -56,7 +56,7 @@ public class PositionController {
   public GdnRestListResponse<PositionDTOResponse> getAllPosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username) {
-    List<Position> positions = this.positionService.getAllPosition();
+    List<Position> positions = this.positionService.getAllPosition(storeId);
     List<PositionDTOResponse> positionDTOResponses = new ArrayList<PositionDTOResponse>();
     for (Position positiones : positions) {
       PositionDTOResponse positionDTOResponse = new PositionDTOResponse();

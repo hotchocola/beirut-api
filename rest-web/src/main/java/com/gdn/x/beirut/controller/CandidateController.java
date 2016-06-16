@@ -249,7 +249,7 @@ public class CandidateController {
     return new GdnRestSingleResponse(candetres, requestId);
   }
 
-  @RequestMapping(value = " Candidate", method = RequestMethod.GET,
+  @RequestMapping(value = "getAllCandidate", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Get all Candidates", notes = "Mengambil semua kandidat")
   @ResponseBody
