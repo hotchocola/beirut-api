@@ -19,6 +19,7 @@ import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
+import com.gdn.x.beirut.dto.response.PositionDetailDTOResponse;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.services.PositionService;
 import com.wordnik.swagger.annotations.Api;
@@ -85,6 +86,22 @@ public class PositionController {
 
     return new GdnRestListResponse<PositionDTOResponse>(positionDTOResponses,
         new PageMetaData(5, 5, positions.size()), requestId);
+  }
+
+  @RequestMapping(value = "getPositionDetail", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  @ApiOperation(value = "Mendapatkan semua posisi dengan detil",
+      notes = "Menampilkan Candidate-kandidate yang mendaftare posisi-posisi tersebut termulti-tenant dengan masing2 storeID")
+  @ResponseBody
+  public GdnRestListResponse<PositionDetailDTOResponse> getPositionDetailById(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
+          throws Exception {
+    Position result = this.positionService.getPositionDetailByIdAndStoreId(id, storeId);
+    List<PositionDetailDTOResponse> positionDetailDTOResponses = new ArrayList<>();
+    PositionMapper.map(result, positionDetailDTOResponses);
+    return new GdnRestListResponse<>(positionDetailDTOResponses,
+        new PageMetaData(50, 0, positionDetailDTOResponses.size()), requestId);
   }
 
   @RequestMapping(value = "insertNewPosition", method = RequestMethod.POST,
