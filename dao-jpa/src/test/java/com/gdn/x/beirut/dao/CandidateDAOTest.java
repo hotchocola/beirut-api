@@ -1,7 +1,8 @@
 package com.gdn.x.beirut.dao;
 
-import com.gdn.x.beirut.entities.Candidate;
-import com.gdn.x.beirut.entities.CandidateDetail;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,8 +17,8 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.GregorianCalendar;
-import java.util.List;
+import com.gdn.x.beirut.entities.Candidate;
+import com.gdn.x.beirut.entities.CandidateDetail;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
@@ -60,12 +61,12 @@ public class CandidateDAOTest {
   @Test
   public void testFindByCreatedDateBetween() {
     GregorianCalendar start = new GregorianCalendar(2016, 1, 1);
-    GregorianCalendar end = new GregorianCalendar(2016, 6, 1);
-    List<Candidate> res =
-        this.candidateDAO.findByCreatedDateBetween(start.getTime(), end.getTime());
+    Date end = new Date(System.currentTimeMillis());
+    List<Candidate> res = this.candidateDAO.findByCreatedDateBetween(start.getTime(), end);
     for (Candidate candidate : res) {
       Assert.assertTrue(start.getTime().getTime() <= candidate.getCreatedDate().getTime()
-          && end.getTime().getTime() >= candidate.getCreatedDate().getTime());
+          && end.getTime() >= candidate.getCreatedDate().getTime());
+      System.out.println(candidate.getCreatedDate().getTime() + "Time");
     }
   }
 
