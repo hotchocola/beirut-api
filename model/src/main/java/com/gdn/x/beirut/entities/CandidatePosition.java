@@ -1,7 +1,5 @@
 package com.gdn.x.beirut.entities;
 
-import com.gdn.common.base.entity.GdnBaseEntity;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.gdn.common.base.entity.GdnBaseEntity;
 
 @Entity
 @Table(name = CandidatePosition.TABLE_NAME)
@@ -81,5 +81,10 @@ public class CandidatePosition extends GdnBaseEntity {
   public void setStatusLogs(Set<StatusLog> statusLogs) {
     this.statusLogs = statusLogs;
   }
+
+  // public String toStringz() {
+  // return "CandidatePosition [status=" + status + ", position=" + position + ", candidate="
+  // + candidate + ", statusLogs=" + statusLogs + "]";
+  // }
 
 }

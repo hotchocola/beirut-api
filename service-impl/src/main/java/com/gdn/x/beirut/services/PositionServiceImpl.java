@@ -9,6 +9,8 @@ import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,20 +29,30 @@ public class PositionServiceImpl implements PositionService {
   @Autowired
   private PositionDAO positionDAO;
 
-
   @Override
   public List<Position> getAllPosition(String storeId) {
-    return positionDAO.getAllPositionByStoreId(storeId);
+    return positionDAO.findByStoreId(storeId);
   }
 
   @Override
-  public Position getPosition(String positionId) throws Exception {
-    Position existingPosition = getPositionDao().findOne(positionId);
+  public Page<Position> getAllPositionWithPageable(String storeId, Pageable pageable) {
+    return positionDAO.findByStoreId(storeId, pageable);
+  }
+
+  @Override
+  public Position getPosition(String storeId, String positionId) throws Exception {
+    Position existingPosition = getPositionDao().findByStoreIdAndId(storeId, positionId);
     if (existingPosition == null) {
       throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
           "no position id = " + positionId);
     }
     return existingPosition;
+  }
+
+  @Override
+  public List<Position> getPositionByStoreIdAndMarkForDelete(String storeId,
+      boolean markForDelete) {
+    return this.positionDAO.findByStoreIdAndMarkForDelete(storeId, markForDelete);
   }
 
   @Override
@@ -56,17 +68,17 @@ public class PositionServiceImpl implements PositionService {
   public Position getPositionDetailByIdAndStoreId(String id, String storeId) throws Exception {
     Position position = this.positionDAO.findByIdAndStoreIdAndMarkForDelete(id, storeId, false);
     if (position == null) {
-      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "no such id");
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+          "no such id = " + id + " and storeId = " + storeId);
     }
     Hibernate.initialize(position.getCandidatePositions());
+
     Set<CandidatePosition> candidatePositions = position.getCandidatePositions();
     for (CandidatePosition candidatePosition : candidatePositions) {
       Hibernate.initialize(candidatePosition.getCandidate());
     }
-
     return position;
   }
-
 
   @Override
   @Transactional(readOnly = false)
@@ -80,12 +92,15 @@ public class PositionServiceImpl implements PositionService {
 
   @Override
   @Transactional(readOnly = false)
-  public void markForDeletePosition(List<String> ids) {
-    System.out.println(ids.toString());
+  public void markForDeletePosition(String storeId, List<String> ids) throws Exception {
+    // System.out.println(ids.toString());
     List<Position> positions = new ArrayList<Position>();
     for (int i = 0; i < ids.size(); i++) {
-      Position posi =
-          (Position) this.getPositionDao().findByStoreIdAndMarkForDelete(ids.get(i), false);
+      Position posi = this.getPositionDao().findOne(ids.get(i));
+      if (!posi.getStoreId().equals(storeId)) {
+        throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+            "position exist but storeId not match");
+      }
       Hibernate.initialize(posi.getCandidatePositions());
       Iterator<CandidatePosition> iterator = posi.getCandidatePositions().iterator();
       while (iterator.hasNext()) {
@@ -100,9 +115,13 @@ public class PositionServiceImpl implements PositionService {
 
   @Override
   @Transactional(readOnly = false)
-  public boolean updatePositionTitle(String id, String title) {
+  public boolean updatePositionTitle(String storeId, String id, String title) throws Exception {
     Position posi = this.positionDAO.findOne(id);
     if (posi != null) {
+      if (!posi.getStoreId().equals(storeId)) {
+        throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+            "position exist but storeId not match");
+      }
       posi.setTitle(title);
       this.positionDAO.save(posi);
       return true;

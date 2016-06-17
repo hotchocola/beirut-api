@@ -6,25 +6,35 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.dozer.DozerBeanMapper;
 import org.dozer.Mapper;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gdn.common.web.param.PageableHelper;
+import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
+import com.gdn.x.beirut.dto.response.PositionDTOResponse;
+import com.gdn.x.beirut.entities.Candidate;
+import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
+import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.services.PositionService;
 
 public class PositionControllerTest {
@@ -67,29 +77,6 @@ public class PositionControllerTest {
 
   private final Position position = new Position();
 
-  @Test
-  public void deletePositionTest() throws Exception {
-    String uri = "deletePosition";
-    String json =
-        FileUtils.readFileToString(new File("src/test/resources/JSON/markForDeleteJSON.json"));
-    Mockito.doNothing().when(this.positionService).markForDeletePosition(Mockito.anyList());
-    ListStringRequest listStringIds = OBJECT_MAPPER.readValue(json, ListStringRequest.class);
-
-    this.mockMVC
-        .perform(MockMvcRequestBuilders.post(UriBasePath + uri).param("clientId", CLIENT_ID)
-            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
-            .param("channelId", CHANNEL_ID).param("username", USERNAME).content(json)
-            .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk());
-    this.positionController.deletePosition(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME,
-        listStringIds);
-    Mockito.verify(this.positionService, Mockito.times(2)).markForDeletePosition(Mockito.anyList());
-  }
-
-  // (@RequestParam String clientId,
-  // @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-  // @RequestParam String username)
-
   @Before
   public void initialize() throws Exception {
     initMocks(this);
@@ -102,11 +89,26 @@ public class PositionControllerTest {
     this.positionDTORequests.add(positionDTORequest);
   }
 
-  // @RequestParam String clientId,
-  // @RequestParam String storeId,
-  // @RequestParam String requestId,
-  // @RequestParam String channelId,
-  // @RequestParam String username
+  @Test
+  public void testDeletePosition() throws Exception {
+    String uri = "deletePosition";
+    String json =
+        FileUtils.readFileToString(new File("src/test/resources/JSON/markForDeleteJSON.json"));
+    Mockito.doNothing().when(this.positionService).markForDeletePosition(Mockito.matches(STORE_ID),
+        Mockito.anyList());
+    ListStringRequest listStringIds = OBJECT_MAPPER.readValue(json, ListStringRequest.class);
+
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.post(UriBasePath + uri).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).content(json)
+            .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+    this.positionController.deletePosition(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME,
+        listStringIds);
+    Mockito.verify(this.positionService, Mockito.times(2))
+        .markForDeletePosition(Mockito.matches(STORE_ID), Mockito.anyList());
+  }
 
   @Test
   public void testGetAllPosition() throws Exception {
@@ -123,6 +125,42 @@ public class PositionControllerTest {
   }
 
   @Test
+  public void testGetAllPositionWithPageable() throws Exception {
+    List<Position> content = new ArrayList<>();
+    content.add(position);
+    Page<Position> shouldBeReturned =
+        new PageImpl<>(content, PageableHelper.generatePageable(0, 2), content.size());
+    String uri = "getAllPositionWithPageable";
+    Mockito.when(this.positionService.getAllPositionWithPageable(STORE_ID,
+        PageableHelper.generatePageable(0, 2))).thenReturn(shouldBeReturned);
+    this.mockMVC.perform(MockMvcRequestBuilders.get(UriBasePath + uri).param("clientId", CLIENT_ID)
+        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+        .param("username", USERNAME).param("page", "0").param("size", "2"))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+    this.positionController.getAllPositionWithPageable(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
+        USERNAME, 0, 2);
+    Mockito.verify(this.positionService, Mockito.times(2)).getAllPositionWithPageable(STORE_ID,
+        PageableHelper.generatePageable(0, 2));
+
+  }
+
+  @Test
+  public void testGetPositionByStoreIdAndMarkForDelete() throws Exception {
+    String uri = "getPositionByStoreIdAndMarkForDelete";
+    Mockito.when(this.positionService.getPositionByStoreIdAndMarkForDelete(STORE_ID, false))
+        .thenReturn(positions);
+    this.mockMVC.perform(MockMvcRequestBuilders.get(UriBasePath + uri).param("clientId", CLIENT_ID)
+        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+        .param("username", USERNAME).param("markForDelete", "false")).andExpect(status().isOk());
+    GdnRestListResponse<PositionDTOResponse> res =
+        this.positionController.getPositionByStoreIdAndMarkForDelete(CLIENT_ID, STORE_ID,
+            REQUEST_ID, CHANNEL_ID, USERNAME, false);
+    Mockito.verify(this.positionService, Mockito.times(2))
+        .getPositionByStoreIdAndMarkForDelete(STORE_ID, false);
+    Assert.assertTrue(res.getContent().get(0).getId().equals(positions.get(0).getId()));
+  }
+
+  @Test
   public void testGetPositionByTitle() throws Exception {
     String uri = "getPositionByTitle";
     Mockito.when(this.positionService.getPositionByTitle(TITLE, STORE_ID))
@@ -136,6 +174,50 @@ public class PositionControllerTest {
     this.positionController.getPositionByTitle(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
         USERNAME, TITLE);
     Mockito.verify(this.positionService, Mockito.times(2)).getPositionByTitle(TITLE, STORE_ID);
+  }
+
+  @Test
+  public void testGetPositionDetailById() throws Exception {
+    Candidate candidate = new Candidate();
+    candidate.setFirstName("John Doe");
+    candidate.setLastName("John Doe");
+    CandidatePosition candidatePosition = new CandidatePosition();
+    candidatePosition.setCandidate(candidate);
+    candidatePosition.setStatus(Status.APPLY);
+    Position shouldBeReturned = new Position();
+    shouldBeReturned.setId(ID);
+    shouldBeReturned.setStoreId(STORE_ID);
+    shouldBeReturned.setCreatedBy("dummy");
+    shouldBeReturned.setCandidatePositions(new HashSet<CandidatePosition>());
+    shouldBeReturned.getCandidatePositions().add(candidatePosition);
+    shouldBeReturned.setMarkForDelete(false);
+    shouldBeReturned.setTitle("This is a dummy");
+    String uri = "getPositionDetail";
+    Mockito.when(this.positionService.getPositionDetailByIdAndStoreId(ID, STORE_ID))
+        .thenReturn(shouldBeReturned);
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.get(UriBasePath + uri).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("id", ID))
+        .andExpect(status().isOk());
+    this.positionController.getPositionDetailById(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
+        USERNAME, ID);
+    Mockito.verify(positionService, Mockito.times(2)).getPositionDetailByIdAndStoreId(ID, STORE_ID);
+  }
+
+  @Test
+  public void testGetPositionDetailByIdAndThrowException() throws Exception {
+    String uri = "getPositionDetail";
+    Mockito.when(this.positionService.getPositionDetailByIdAndStoreId(ID, STORE_ID))
+        .thenThrow(new Exception());
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.get(UriBasePath + uri).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("id", ID))
+        .andExpect(status().isOk());
+    this.positionController.getPositionDetailById(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
+        USERNAME, ID);
+    Mockito.verify(positionService, Mockito.times(2)).getPositionDetailByIdAndStoreId(ID, STORE_ID);
   }
 
   @Test
@@ -159,7 +241,8 @@ public class PositionControllerTest {
   public void testUpdatePosition() throws Exception {
     String uri = "updatePosition";
     String positionDTORequestJson = "{\"id\":\"id\",\"title\":\"title\"}";
-    Mockito.when(this.positionService.updatePositionTitle(ID, this.positionDTORequest.getTitle()))
+    Mockito.when(
+        this.positionService.updatePositionTitle(STORE_ID, ID, this.positionDTORequest.getTitle()))
         .thenReturn(true);
     this.mockMVC.perform(MockMvcRequestBuilders.post(UriBasePath + uri)
         .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
@@ -168,8 +251,7 @@ public class PositionControllerTest {
         .content(positionDTORequestJson)).andExpect(MockMvcResultMatchers.status().isOk());
     this.positionController.updatePosition(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME,
         ID, this.positionDTORequest);
-    Mockito.verify(this.positionService, Mockito.times(2)).updatePositionTitle(ID,
+    Mockito.verify(this.positionService, Mockito.times(2)).updatePositionTitle(STORE_ID, ID,
         this.positionDTORequest.getTitle());
   }
-
 }
