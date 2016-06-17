@@ -270,7 +270,6 @@ public class CandidateServiceTest {
   @Test
   public void testMarkForDelete() throws Exception {
     Mockito.when(this.candidateDao.findByIdAndMarkForDelete(ID, false)).thenReturn(candidate);
-
     this.candidateService.markForDelete(ID);
     verify(this.candidateDao, times(1)).findByIdAndMarkForDelete(Mockito.anyString(),
         Mockito.eq(false));
@@ -416,5 +415,4 @@ public class CandidateServiceTest {
     //
     verify(this.candidateDao, times(1)).save(testCandidate);
   }
-
 }

@@ -1,5 +1,6 @@
 package com.gdn.x.beirut.dao;
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -68,12 +69,13 @@ public class CandidateDAOTest {
   @Test
   public void testFindByCreatedDateBetween() {
     GregorianCalendar start = new GregorianCalendar(2016, 1, 1);
-    GregorianCalendar end = new GregorianCalendar(2016, 6, 1);
+    Date end = new Date(System.currentTimeMillis());
     List<Candidate> res = this.candidateDAO.findByCreatedDateBetweenAndStoreId(start.getTime(),
-        end.getTime(), STORE_ID);
+        new Date(end.getTime()), STORE_ID);
     for (Candidate candidate : res) {
       Assert.assertTrue(start.getTime().getTime() <= candidate.getCreatedDate().getTime()
-          && end.getTime().getTime() >= candidate.getCreatedDate().getTime());
+          && end.getTime() >= candidate.getCreatedDate().getTime());
+      System.out.println(candidate.getCreatedDate().getTime() + "Time");
     }
   }
 

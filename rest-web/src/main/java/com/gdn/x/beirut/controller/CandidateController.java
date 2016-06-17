@@ -76,7 +76,7 @@ public class CandidateController {
     List<Candidate> cands = this.candidateService
         .searchCandidateByEmailAddressAndStoreId(candidateDTORequest.getEmailAddress(), storeId);
     Candidate newCandidate = cands.get(0);
-    Position position = positionService.getPosition(candidateDTORequest.getPositionId());
+    Position position = positionService.getPosition(storeId, candidateDTORequest.getPositionId());
     CandidatePosition candPos = new CandidatePosition();
     candPos.setPosition(position);
     candPos.setCandidate(newCandidate);
@@ -198,8 +198,8 @@ public class CandidateController {
   }
 
   @RequestMapping(value = "findCandidateByIdAndStoreIdLazy", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+
   @ApiOperation(value = "get candidate by id and store id lazy",
       notes = "mengambil candidate berdasarkan id dan store id yang diberikan tanpa megambil child/relasi dengan objek lainnya (hanya summary-nya)")
   @ResponseBody
@@ -274,10 +274,13 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
+
+
   @RequestMapping(value = "findCandidateDetailAndStoreId", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Mencari detail kandidat", notes = "")
+
   @ResponseBody
   public GdnRestSingleResponse<CandidateDetailDTOResponse> findCandidateDetailAndStoreId(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
@@ -310,6 +313,7 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
+
   @RequestMapping(value = "getAllCandidateByStoreId", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -332,6 +336,7 @@ public class CandidateController {
   @RequestMapping(value = "getAllCandidatesWithPageable", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Getting all candidates with pageable", notes = "")
+
   @ResponseBody
   public GdnRestListResponse<CandidateDTOResponse> getAllCandidateWithPageable(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
@@ -343,6 +348,7 @@ public class CandidateController {
     for (Candidate candidate : pages) {
       CandidateDTOResponse newCandidateDTOResponse = new CandidateDTOResponse();
       CandidateMapper.mapLazy(candidate, newCandidateDTOResponse, dozerMapper);
+      toShow.add(newCandidateDTOResponse);
     }
     GdnRestListResponse<CandidateDTOResponse> pageresponse =
         new GdnRestListResponse(toShow, new PageMetaData(50, 0, toShow.size()), requestId);
@@ -397,7 +403,7 @@ public class CandidateController {
     CandidateDTORequest candidateDTORequest =
         objectMapper.readValue(candidateDTORequestString, CandidateDTORequest.class);
     Candidate newCandidate = new Candidate();
-    Position position = positionService.getPosition(candidateDTORequest.getPositionId());
+    Position position = positionService.getPosition(storeId, candidateDTORequest.getPositionId());
     CandidateDetail candidateDetail = new CandidateDetail();
     candidateDetail.setContent(file.getBytes());
     candidateDetail.setCandidate(newCandidate);
@@ -410,7 +416,6 @@ public class CandidateController {
     }
     return new GdnBaseRestResponse(requestId);
   }
-
 
   @RequestMapping(value = "markForDelete", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
@@ -436,6 +441,7 @@ public class CandidateController {
   public void setObjectMapper(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
   }
+
 
   public void setPositionService(PositionService positionService) {
     this.positionService = positionService;

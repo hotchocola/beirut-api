@@ -205,6 +205,7 @@ public class CandidateServiceImpl implements CandidateService {
   // return false;
   // }
 
+
   @Override
   public List<Candidate> searchByFirstNameContainAndStoreId(String firstname, String storeId)
       throws Exception {

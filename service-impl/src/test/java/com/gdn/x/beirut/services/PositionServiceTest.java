@@ -24,6 +24,8 @@ public class PositionServiceTest {
 
   private static final String DEFAULT_ID = "ID";
 
+  private static final String STORE_ID = "STORE_ID";
+
   @Mock
   private PositionDAO repository;
 
@@ -51,16 +53,10 @@ public class PositionServiceTest {
 
 
   @Test
-  public void checkUpdatePositionTitle() {
-    this.service.updatePositionTitle(this.position.getId(), "Emporio Ivankov");
+  public void checkUpdatePositionTitle() throws Exception {
+    this.service.updatePositionTitle(STORE_ID, this.position.getId(), "Emporio Ivankov");
     verify(this.repository).findOne(this.position.getId());
     verify(this.repository).save(position);
-  }
-
-  @Test
-  public void getAllPosition() {
-    this.service.getAllPosition();
-    verify(this.repository, Mockito.times(1)).findAll();
   }
 
   @Test
@@ -87,17 +83,23 @@ public class PositionServiceTest {
   }
 
   @Test
+  public void testGetAllPosition() {
+    this.service.getAllPosition(STORE_ID);
+    verify(this.repository, Mockito.times(1)).findByStoreId(STORE_ID);
+  }
+
+  @Test
   public void testGetPosition() throws Exception {
-    Mockito.when(repository.findOne(DEFAULT_ID)).thenReturn(position);
-    this.service.getPosition(DEFAULT_ID);
-    verify(this.repository).findOne(DEFAULT_ID);
+    Mockito.when(repository.findByStoreIdAndId(STORE_ID, DEFAULT_ID)).thenReturn(position);
+    this.service.getPosition(STORE_ID, DEFAULT_ID);
+    verify(this.repository).findByStoreIdAndId(STORE_ID, DEFAULT_ID);
   }
 
   @Test
   public void testGetPositionAndReturnException() throws Exception {
-    Mockito.when(repository.findOne(DEFAULT_ID)).thenReturn(null);
+    Mockito.when(repository.findByStoreIdAndId(STORE_ID, DEFAULT_ID)).thenReturn(null);
     try {
-      this.service.getPosition(DEFAULT_ID);
+      this.service.getPosition(STORE_ID, DEFAULT_ID);
     } catch (Exception e) {
       if (e instanceof ApplicationException) {
         Assert.assertEquals("Can not find data :no position id = " + DEFAULT_ID, e.getMessage());
@@ -105,7 +107,55 @@ public class PositionServiceTest {
         Assert.assertTrue(false);
       }
     }
-    verify(this.repository).findOne(DEFAULT_ID);
+    verify(this.repository).findByStoreIdAndId(STORE_ID, DEFAULT_ID);
   }
 
+  @Test
+  public void testGetPositionDetailByIdAndStoreId() throws Exception {
+    Position shouldBeReturned = new Position();
+    shouldBeReturned.setId(DEFAULT_ID);
+    shouldBeReturned.setStoreId(STORE_ID);
+    shouldBeReturned.setCreatedBy("dummy");
+    shouldBeReturned.setMarkForDelete(false);
+    shouldBeReturned.setTitle("This is a dummy");
+    Mockito.when(repository.findByIdAndStoreIdAndMarkForDelete(DEFAULT_ID, STORE_ID, false))
+        .thenReturn(shouldBeReturned);
+    Position result = this.service.getPositionDetailByIdAndStoreId(DEFAULT_ID, STORE_ID);
+    Mockito.verify(repository, Mockito.times(1)).findByIdAndStoreIdAndMarkForDelete(DEFAULT_ID,
+        STORE_ID, false);
+    Assert.assertTrue(result.equals(shouldBeReturned));
+  }
+
+  @Test
+  public void testGetPositionDetailByIdAndStoreIdAndReturnException() throws Exception {
+    Mockito.when(repository.findByIdAndStoreIdAndMarkForDelete(DEFAULT_ID, STORE_ID, false))
+        .thenReturn(null);
+    try {
+      Position result = this.service.getPositionDetailByIdAndStoreId(DEFAULT_ID, STORE_ID);
+    } catch (Exception e) {
+      if (e instanceof ApplicationException) {
+        Assert.assertEquals(
+            "Can not find data :no such id = " + DEFAULT_ID + " and storeId = " + STORE_ID,
+            e.getMessage());
+      } else {
+        Assert.assertTrue(false);
+      }
+    }
+    Mockito.verify(repository, Mockito.times(1)).findByIdAndStoreIdAndMarkForDelete(DEFAULT_ID,
+        STORE_ID, false);
+  }
+
+  @Test
+  public void testInsertNewPosition() {
+    Position testSavePosition = new Position();
+    testSavePosition.setId(DEFAULT_ID);
+    testSavePosition.setStoreId(STORE_ID);
+    testSavePosition.setTitle("Choa");
+    testSavePosition.setId("122");
+    testSavePosition.setStoreId("Store");
+    Mockito.when(repository.save(position)).thenReturn(testSavePosition);
+    boolean isSaved = this.service.insertNewPosition(position);
+    Mockito.verify(repository, Mockito.times(2)).save(position);
+    Assert.assertTrue(position.equals(testSavePosition));
+  }
 }
