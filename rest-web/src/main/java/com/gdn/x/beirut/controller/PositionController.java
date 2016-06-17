@@ -47,7 +47,6 @@ public class PositionController {
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestBody ListStringRequest idsToDelete) throws Exception {
     this.positionService.markForDeletePosition(storeId, idsToDelete.getValues());
-
     return new GdnBaseRestResponse(true);
   }
 
@@ -162,6 +161,8 @@ public class PositionController {
       @RequestParam String username, @RequestBody PositionDTORequest positionDTORequest) {
     Position temp = new Position();
     dozerMapper.map(positionDTORequest, temp);
+    // System.out.println("DTO : " + positionDTORequest.toString());
+    // System.out.println(temp.toString());
     temp.setStoreId(storeId);
     return new GdnBaseRestResponse(this.positionService.insertNewPosition(temp));
   }
