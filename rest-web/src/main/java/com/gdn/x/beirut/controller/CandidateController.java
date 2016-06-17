@@ -1,6 +1,7 @@
 package com.gdn.x.beirut.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.dozer.Mapper;
@@ -98,9 +99,6 @@ public class CandidateController {
     return new GdnBaseRestResponse();
   }
 
-<<<<<<< HEAD
-  @RequestMapping(value = "findCandidateByEmailAddress", method = RequestMethod.GET,
-=======
   @RequestMapping(value = "findCandidateByCreatedDateBetweenAndStoreId", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Find candidate which created between day x and day y",
@@ -125,7 +123,6 @@ public class CandidateController {
   }
 
   @RequestMapping(value = "findCandidateByEmailAddressAndStoreId", method = RequestMethod.GET,
->>>>>>> eab6d17269eba37ec0ded3d44cd5e2ea7f03fa89
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Find candidate by their email address", notes = "")
