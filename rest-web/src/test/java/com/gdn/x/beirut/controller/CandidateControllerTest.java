@@ -64,8 +64,8 @@ public class CandidateControllerTest {
   private final Candidate candidate = new Candidate();
   private final List<Candidate> candidates = new LinkedList<>();
   private final Page<Candidate> pageCandidate = new PageImpl(candidates, pageable, 10);
-  private final Long start = (long) 1434323587;
-  private final Long end = (long) 1465945987;
+  private final Date start = new Date(14062016);
+  private final Date end = new Date(16062016);
   private final String page = "1";
   private final String size = "4";
 
@@ -299,36 +299,6 @@ public class CandidateControllerTest {
 
     this.candidateService.markForDelete(listStringIds.getValues());
     Mockito.verify(this.candidateService, Mockito.times(2)).markForDelete(Mockito.anyList());
-  }
-
-  @Test
-  public void testSearchByCreatedDateBetween() throws Exception {
-    String uri = "/api/candidate/findCandidateByCreatedDateBetween";
-    Date startDate = new Date(start);
-    Date endDate = new Date(end);
-    String startString = start.toString();
-    String endString = end.toString();
-
-    GdnRestListResponse<CandidateDTOResponse> res =
-        this.candidateController.findCandidateByCreatedDateBetween(CLIENT_ID, STORE_ID, REQUEST_ID,
-            CHANNEL_ID, USERNAME, start, end);
-
-    Mockito.when(this.candidateService.searchByCreatedDateBetween(startDate, endDate))
-        .thenReturn(candidates);
-    this.mockMVC
-        .perform(
-            MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
-                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-                .param("username", USERNAME).param("start", startString).param("end", endString))
-        .andExpect(status().isOk()).andReturn().equals(res);
-
-    GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
-        candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
-    for (CandidateDTOResponse candidateDTOResponse : candidateResponse) {
-      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
-    }
-    Mockito.verify(this.candidateService, Mockito.times(2)).searchByCreatedDateBetween(startDate,
-        endDate);
   }
 
   @Test

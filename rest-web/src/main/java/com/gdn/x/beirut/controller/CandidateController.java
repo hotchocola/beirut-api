@@ -1,7 +1,6 @@
 package com.gdn.x.beirut.controller;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.dozer.Mapper;
@@ -96,29 +95,6 @@ public class CandidateController {
     Candidate candidate = this.candidateService.getCandidate(id);
 
     return new GdnBaseRestResponse();
-  }
-
-  @RequestMapping(value = "findCandidateByCreatedDateBetween", method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "Find candidate which created between day x and day y",
-      notes = "mencari kandidat yang dibuat pada periode tertentu.")
-  @ResponseBody
-  public GdnRestListResponse<CandidateDTOResponse> findCandidateByCreatedDateBetween(
-      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
-      @RequestParam String channelId, @RequestParam String username, @RequestParam Long start,
-      @RequestParam Long end) throws Exception {
-    Date startDate = new Date(start);
-    Date endDate = new Date(end);
-    List<Candidate> candidates =
-        this.candidateService.searchByCreatedDateBetween(startDate, endDate);
-    List<CandidateDTOResponse> res = new ArrayList<CandidateDTOResponse>();
-    for (Candidate candidate : candidates) {
-      CandidateDTOResponse candidateDTOResponse = new CandidateDTOResponse();
-      CandidateMapper.mapLazy(candidate, candidateDTOResponse, dozerMapper);
-      res.add(candidateDTOResponse);
-    }
-    return new GdnRestListResponse<CandidateDTOResponse>(res, new PageMetaData(50, 0, res.size()),
-        requestId);
   }
 
   @RequestMapping(value = "findCandidateByEmailAddress", method = RequestMethod.GET,
