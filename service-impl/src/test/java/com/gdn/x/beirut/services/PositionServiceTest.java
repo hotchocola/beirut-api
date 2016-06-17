@@ -53,8 +53,8 @@ public class PositionServiceTest {
 
 
   @Test
-  public void checkUpdatePositionTitle() {
-    this.service.updatePositionTitle(this.position.getId(), "Emporio Ivankov");
+  public void checkUpdatePositionTitle() throws Exception {
+    this.service.updatePositionTitle(STORE_ID, this.position.getId(), "Emporio Ivankov");
     verify(this.repository).findOne(this.position.getId());
     verify(this.repository).save(position);
   }
@@ -85,21 +85,21 @@ public class PositionServiceTest {
   @Test
   public void testGetAllPosition() {
     this.service.getAllPosition(STORE_ID);
-    verify(this.repository, Mockito.times(1)).getAllPositionByStoreId(STORE_ID);
+    verify(this.repository, Mockito.times(1)).findByStoreId(STORE_ID);
   }
 
   @Test
   public void testGetPosition() throws Exception {
-    Mockito.when(repository.findOne(DEFAULT_ID)).thenReturn(position);
-    this.service.getPosition(DEFAULT_ID);
-    verify(this.repository).findOne(DEFAULT_ID);
+    Mockito.when(repository.findByStoreIdAndId(STORE_ID, DEFAULT_ID)).thenReturn(position);
+    this.service.getPosition(STORE_ID, DEFAULT_ID);
+    verify(this.repository).findByStoreIdAndId(STORE_ID, DEFAULT_ID);
   }
 
   @Test
   public void testGetPositionAndReturnException() throws Exception {
-    Mockito.when(repository.findOne(DEFAULT_ID)).thenReturn(null);
+    Mockito.when(repository.findByStoreIdAndId(STORE_ID, DEFAULT_ID)).thenReturn(null);
     try {
-      this.service.getPosition(DEFAULT_ID);
+      this.service.getPosition(STORE_ID, DEFAULT_ID);
     } catch (Exception e) {
       if (e instanceof ApplicationException) {
         Assert.assertEquals("Can not find data :no position id = " + DEFAULT_ID, e.getMessage());
@@ -107,7 +107,7 @@ public class PositionServiceTest {
         Assert.assertTrue(false);
       }
     }
-    verify(this.repository).findOne(DEFAULT_ID);
+    verify(this.repository).findByStoreIdAndId(STORE_ID, DEFAULT_ID);
   }
 
   @Test

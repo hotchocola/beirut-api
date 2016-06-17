@@ -45,9 +45,8 @@ public class PositionController {
   @ResponseBody
   public GdnBaseRestResponse deletePosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody ListStringRequest idsToDelete) {
-    this.positionService.markForDeletePosition(idsToDelete.getValues());
-
+      @RequestParam String username, @RequestBody ListStringRequest idsToDelete) throws Exception {
+    this.positionService.markForDeletePosition(storeId, idsToDelete.getValues());
     return new GdnBaseRestResponse(true);
   }
 
@@ -79,8 +78,8 @@ public class PositionController {
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username, @RequestParam int page,
       @RequestParam int size) {
-    Page<Position> positions = this.positionService
-        .getAllPositionWithPageable(PageableHelper.generatePageable(page, size));
+    Page<Position> positions = this.positionService.getAllPositionWithPageable(storeId,
+        PageableHelper.generatePageable(page, size));
     List<PositionDTOResponse> res = new ArrayList<>();
     for (Position position : positions) {
       PositionDTOResponse positionDTOResponse = new PositionDTOResponse();
@@ -162,6 +161,8 @@ public class PositionController {
       @RequestParam String username, @RequestBody PositionDTORequest positionDTORequest) {
     Position temp = new Position();
     dozerMapper.map(positionDTORequest, temp);
+    // System.out.println("DTO : " + positionDTORequest.toString());
+    // System.out.println(temp.toString());
     temp.setStoreId(storeId);
     return new GdnBaseRestResponse(this.positionService.insertNewPosition(temp));
   }
@@ -177,12 +178,12 @@ public class PositionController {
   public GdnBaseRestResponse updatePosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestParam(required = true) String id,
-      @RequestBody PositionDTORequest positionDTORequest) {
+      @RequestBody PositionDTORequest positionDTORequest) throws Exception {
     Position pos = new Position();
     dozerMapper.map(positionDTORequest, pos);
     pos.setStoreId(storeId);
 
     return new GdnBaseRestResponse(
-        this.positionService.updatePositionTitle(id, positionDTORequest.getTitle()));
+        this.positionService.updatePositionTitle(storeId, id, positionDTORequest.getTitle()));
   }
 }

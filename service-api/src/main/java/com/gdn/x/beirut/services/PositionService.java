@@ -11,9 +11,9 @@ public interface PositionService {
 
   List<Position> getAllPosition(String storeId);
 
-  Page<Position> getAllPositionWithPageable(Pageable pageable);
+  Page<Position> getAllPositionWithPageable(String storeId, Pageable pageable);
 
-  Position getPosition(String positionId) throws Exception;
+  Position getPosition(String storeId, String positionId) throws Exception;
 
   List<Position> getPositionByStoreIdAndMarkForDelete(String storeId, boolean markForDelete);
 
@@ -23,7 +23,7 @@ public interface PositionService {
 
   boolean insertNewPosition(Position position);
 
-  void markForDeletePosition(List<String> id);
+  void markForDeletePosition(String storeId, List<String> id) throws Exception;
 
-  boolean updatePositionTitle(String id, String title);
+  boolean updatePositionTitle(String storeId, String id, String title) throws Exception;
 }

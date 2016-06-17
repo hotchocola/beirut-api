@@ -94,7 +94,8 @@ public class PositionControllerTest {
     String uri = "deletePosition";
     String json =
         FileUtils.readFileToString(new File("src/test/resources/JSON/markForDeleteJSON.json"));
-    Mockito.doNothing().when(this.positionService).markForDeletePosition(Mockito.anyList());
+    Mockito.doNothing().when(this.positionService).markForDeletePosition(Mockito.matches(STORE_ID),
+        Mockito.anyList());
     ListStringRequest listStringIds = OBJECT_MAPPER.readValue(json, ListStringRequest.class);
 
     this.mockMVC
@@ -105,7 +106,8 @@ public class PositionControllerTest {
         .andExpect(status().isOk());
     this.positionController.deletePosition(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME,
         listStringIds);
-    Mockito.verify(this.positionService, Mockito.times(2)).markForDeletePosition(Mockito.anyList());
+    Mockito.verify(this.positionService, Mockito.times(2))
+        .markForDeletePosition(Mockito.matches(STORE_ID), Mockito.anyList());
   }
 
   @Test
@@ -129,18 +131,16 @@ public class PositionControllerTest {
     Page<Position> shouldBeReturned =
         new PageImpl<>(content, PageableHelper.generatePageable(0, 2), content.size());
     String uri = "getAllPositionWithPageable";
-    Mockito
-        .when(
-            this.positionService.getAllPositionWithPageable(PageableHelper.generatePageable(0, 2)))
-        .thenReturn(shouldBeReturned);
+    Mockito.when(this.positionService.getAllPositionWithPageable(STORE_ID,
+        PageableHelper.generatePageable(0, 2))).thenReturn(shouldBeReturned);
     this.mockMVC.perform(MockMvcRequestBuilders.get(UriBasePath + uri).param("clientId", CLIENT_ID)
         .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
         .param("username", USERNAME).param("page", "0").param("size", "2"))
         .andExpect(MockMvcResultMatchers.status().isOk());
     this.positionController.getAllPositionWithPageable(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
         USERNAME, 0, 2);
-    Mockito.verify(this.positionService, Mockito.times(2))
-        .getAllPositionWithPageable(PageableHelper.generatePageable(0, 2));
+    Mockito.verify(this.positionService, Mockito.times(2)).getAllPositionWithPageable(STORE_ID,
+        PageableHelper.generatePageable(0, 2));
 
   }
 
@@ -241,7 +241,8 @@ public class PositionControllerTest {
   public void testUpdatePosition() throws Exception {
     String uri = "updatePosition";
     String positionDTORequestJson = "{\"id\":\"id\",\"title\":\"title\"}";
-    Mockito.when(this.positionService.updatePositionTitle(ID, this.positionDTORequest.getTitle()))
+    Mockito.when(
+        this.positionService.updatePositionTitle(STORE_ID, ID, this.positionDTORequest.getTitle()))
         .thenReturn(true);
     this.mockMVC.perform(MockMvcRequestBuilders.post(UriBasePath + uri)
         .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
@@ -250,7 +251,7 @@ public class PositionControllerTest {
         .content(positionDTORequestJson)).andExpect(MockMvcResultMatchers.status().isOk());
     this.positionController.updatePosition(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME,
         ID, this.positionDTORequest);
-    Mockito.verify(this.positionService, Mockito.times(2)).updatePositionTitle(ID,
+    Mockito.verify(this.positionService, Mockito.times(2)).updatePositionTitle(STORE_ID, ID,
         this.positionDTORequest.getTitle());
   }
 }

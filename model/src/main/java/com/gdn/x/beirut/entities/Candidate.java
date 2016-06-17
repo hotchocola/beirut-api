@@ -93,4 +93,19 @@ public class Candidate extends GdnBaseEntity {
   public void setPhoneNumber(String phoneNumber) {
     this.phoneNumber = phoneNumber;
   }
+
+  // public String toStringz() {
+  // String res = "Candidate [candidateDetail=" + candidateDetail + ", emailAddress=" + emailAddress
+  // + ", firstName=" + firstName + ", lastName=" + lastName + ", phoneNumber=" + phoneNumber
+  // + ", candidatePositions=[";
+  // if (this.candidatePositions != null && this.candidatePositions.size() > 0) {
+  // for (CandidatePosition candidatePosition : candidatePositions) {
+  // res += candidatePosition.toStringz();
+  // }
+  // }
+  // String end = "], getId()=" + getId() + ", getStoreId()=" + getStoreId() + "]";
+  // return res + end;
+  // }
+
+
 }

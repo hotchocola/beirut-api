@@ -1,7 +1,8 @@
 package com.gdn.x.beirut.dao;
 
-import com.gdn.x.beirut.entities.Candidate;
-import com.gdn.x.beirut.entities.CandidateDetail;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,8 +17,9 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.GregorianCalendar;
-import java.util.List;
+import com.gdn.common.web.param.PageableHelper;
+import com.gdn.x.beirut.entities.Candidate;
+import com.gdn.x.beirut.entities.CandidateDetail;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
@@ -25,6 +27,10 @@ import java.util.List;
     DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class})
 @Transactional(readOnly = false)
 public class CandidateDAOTest {
+
+  private static final String ID = "id_ini";
+
+  private static final String STORE_ID = "store_id";
 
   @Autowired
   private CandidateDAO candidateDAO;
@@ -37,6 +43,7 @@ public class CandidateDAOTest {
       newCandidate.setFirstName("Ega");
       newCandidate.setLastName("Prianto");
       newCandidate.setPhoneNumber("123456789" + i);
+      newCandidate.setStoreId(STORE_ID);
       CandidateDetail candDetail = new CandidateDetail();
       candDetail.setContent(("ini PDF" + i).getBytes());
       newCandidate.setCandidateDetail(candDetail);
@@ -57,15 +64,18 @@ public class CandidateDAOTest {
     this.candidateDAO.save(newCandidate);
   }
 
+
+
   @Test
   public void testFindByCreatedDateBetween() {
     GregorianCalendar start = new GregorianCalendar(2016, 1, 1);
-    GregorianCalendar end = new GregorianCalendar(2016, 6, 1);
-    List<Candidate> res =
-        this.candidateDAO.findByCreatedDateBetween(start.getTime(), end.getTime());
+    Date end = new Date(System.currentTimeMillis());
+    List<Candidate> res = this.candidateDAO.findByCreatedDateBetweenAndStoreId(start.getTime(),
+        new Date(end.getTime()), STORE_ID);
     for (Candidate candidate : res) {
       Assert.assertTrue(start.getTime().getTime() <= candidate.getCreatedDate().getTime()
-          && end.getTime().getTime() >= candidate.getCreatedDate().getTime());
+          && end.getTime() >= candidate.getCreatedDate().getTime());
+      System.out.println(candidate.getCreatedDate().getTime() + "Time");
     }
   }
 
@@ -73,14 +83,15 @@ public class CandidateDAOTest {
   public void testFindByCreatedDateBetweenNoResult() {
     GregorianCalendar start = new GregorianCalendar(1900, 1, 1);
     GregorianCalendar end = new GregorianCalendar(1900, 6, 1);
-    List<Candidate> res =
-        this.candidateDAO.findByCreatedDateBetween(start.getTime(), end.getTime());
+    List<Candidate> res = this.candidateDAO.findByCreatedDateBetweenAndStoreId(start.getTime(),
+        end.getTime(), STORE_ID);
     res.get(0);
   }
 
   @Test
-  public void testFindByEmailAddress() {
-    List<Candidate> res = this.candidateDAO.findByEmailAddress("egaprianto1@asd.com");
+  public void testFindByEmailAddressAndStoreId() {
+    List<Candidate> res =
+        this.candidateDAO.findByEmailAddressAndStoreId("egaprianto1@asd.com", STORE_ID);
     Assert.assertNotNull(res.get(0).getFirstName());
     Assert.assertNotNull(res.get(0).getEmailAddress());
     Assert.assertNotNull(res.get(0).getLastName());
@@ -90,10 +101,12 @@ public class CandidateDAOTest {
   }
 
   @Test(expected = IndexOutOfBoundsException.class)
-  public void testFindByEmailAddressOnlyOneResult() {
-    List<Candidate> res = this.candidateDAO.findByEmailAddress("egaprianto1@asd.com");
+  public void testFindByEmailAddressAndStoreIdOnlyOneResult() {
+    List<Candidate> res =
+        this.candidateDAO.findByEmailAddressAndStoreId("egaprianto1@asd.com", STORE_ID);
     res.get(1);
   }
+
 
   @Test
   public void testFindByFirstName() {
@@ -150,6 +163,44 @@ public class CandidateDAOTest {
   public void testFindByPhoneNumberSupposedOnlyTwoResult() {
     List<Candidate> res = this.candidateDAO.findByPhoneNumber("1234567890");
     res.get(2);
+  }
+
+  @Test
+  public void testFindByStoreId() {
+    Candidate candidate = new Candidate();
+    candidate.setId(ID);
+    candidate.setStoreId(STORE_ID + "haha");
+    candidate.setMarkForDelete(false);
+    candidate.setFirstName("testFindByIdAndStoreId Firstname");
+    candidate.setLastName("testFindByIdAndStoreId Lastname");
+    this.candidateDAO.save(candidate);
+    Assert.assertTrue(this.candidateDAO.findByStoreId(STORE_ID + "haha").get(0).getFirstName()
+        .equals("testFindByIdAndStoreId Firstname"));
+  }
+
+  @Test
+  public void testFindByStoreIdAndMarkForDelete() {
+    Candidate candidate = new Candidate();
+    candidate.setId(ID);
+    candidate.setStoreId(STORE_ID + "12");
+    candidate.setMarkForDelete(false);
+    candidate.setFirstName("testFindByIdAndStoreId Firstname");
+    candidate.setLastName("testFindByIdAndStoreId Lastname");
+    this.candidateDAO.save(candidate);
+    Assert.assertTrue(this.candidateDAO.findByStoreIdAndMarkForDelete(STORE_ID + "12", false).get(0)
+        .getFirstName().equals("testFindByIdAndStoreId Firstname"));
+  }
+
+  @Test
+  public void testfindByStoreIdWithPageable() {
+    // System.out.println(this.candidateDAO
+    // .findByStoreId(STORE_ID, PageableHelper.generatePageable(0, 2000)).getContent().size());
+    // System.out.println(this.candidateDAO
+    // .findByStoreId(STORE_ID, PageableHelper.generatePageable(0, 4)).getContent().size());
+    Assert.assertTrue(this.candidateDAO
+        .findByStoreId(STORE_ID, PageableHelper.generatePageable(0, 4)).getContent().size() == 4);
+    Assert.assertTrue(this.candidateDAO
+        .findByStoreId(STORE_ID, PageableHelper.generatePageable(2, 4)).getContent().size() == 2);
   }
 
 }
