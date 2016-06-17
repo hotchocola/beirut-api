@@ -1,7 +1,5 @@
 package com.gdn.x.beirut.entities;
 
-import com.gdn.common.base.entity.GdnBaseEntity;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,6 +7,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.gdn.common.base.entity.GdnBaseEntity;
 
 
 @Entity
@@ -28,7 +28,7 @@ public class StatusLog extends GdnBaseEntity {
   private CandidatePosition candidatePosition;
 
   public StatusLog() {
-    //nothing to do here
+    // nothing to do here
   }
 
   public StatusLog(CandidatePosition candidatePosition, Status status) {
@@ -38,6 +38,10 @@ public class StatusLog extends GdnBaseEntity {
 
   public CandidatePosition getCandidatePosition() {
     return candidatePosition;
+  }
+
+  public Status getStatus() {
+    return status;
   }
 
   @Override

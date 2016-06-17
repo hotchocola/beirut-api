@@ -10,7 +10,6 @@ public class CandidateDTOResponse extends BaseResponse {
   private String lastName;
   private String phoneNumber;
   private boolean markForDelete;
-  // private Set<CandidatePositionDTOResponse> candidatePositions;
 
   public CandidateDetailDTOResponse getCandidateDetail() {
     return candidateDetail;

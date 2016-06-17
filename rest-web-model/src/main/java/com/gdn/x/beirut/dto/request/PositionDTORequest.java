@@ -13,4 +13,8 @@ public class PositionDTORequest extends BaseRequest {
   public void setTitle(String title) {
     this.title = title;
   }
+
+  public String toStringz() {
+    return "PositionDTORequest [title=" + title + "]";
+  }
 }
