@@ -10,13 +10,16 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.gdn.common.base.entity.GdnBaseEntity;
 
 @Entity
-@Table(name = Candidate.TABLE_NAME)
+@Table(name = Candidate.TABLE_NAME, uniqueConstraints = {
+    @UniqueConstraint(columnNames = {Candidate.COLUMN_EMAIL_ADDRESS, Candidate.STORE_ID})})
 public class Candidate extends GdnBaseEntity {
 
+  private static final long serialVersionUID = -2726880350978769752L;
   public static final String TABLE_NAME = "candidate";
   public static final String COLUMN_EMAIL_ADDRESS = "email_address";
   public static final String COLUMN_FIRST_NAME = "first_name";
