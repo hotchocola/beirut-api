@@ -51,7 +51,7 @@ public class PositionController {
   }
 
   @RequestMapping(value = "getAllPosition", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "get all position", notes = "mengambil semua posisi.")
   @ResponseBody
   public GdnRestListResponse<PositionDTOResponse> getAllPosition(@RequestParam String clientId,
