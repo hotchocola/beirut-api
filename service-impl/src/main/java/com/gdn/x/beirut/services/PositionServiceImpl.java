@@ -50,6 +50,11 @@ public class PositionServiceImpl implements PositionService {
   }
 
   @Override
+  public List<Position> getPositionByIds(List<String> positionIds) {
+    return this.positionDAO.findAll(positionIds);
+  }
+
+  @Override
   public List<Position> getPositionByStoreIdAndMarkForDelete(String storeId,
       boolean markForDelete) {
     return this.positionDAO.findByStoreIdAndMarkForDelete(storeId, markForDelete);

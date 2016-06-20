@@ -115,8 +115,7 @@ public class PositionControllerTest {
     String uri = "getAllPosition";
     Mockito.when(this.positionService.getAllPosition(STORE_ID)).thenReturn(this.positions);
     this.mockMVC
-        .perform(MockMvcRequestBuilders.get(UriBasePath + uri).accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON).param("clientId", CLIENT_ID)
+        .perform(MockMvcRequestBuilders.get(UriBasePath + uri).param("clientId", CLIENT_ID)
             .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
             .param("channelId", CHANNEL_ID).param("username", USERNAME))
         .andExpect(MockMvcResultMatchers.status().isOk());
