@@ -15,6 +15,7 @@ import com.gdn.common.base.entity.GdnBaseEntity;
 @Table(name = StatusLog.TABLE_NAME)
 public class StatusLog extends GdnBaseEntity {
 
+  private static final long serialVersionUID = 1950426766708644908L;
   public static final String TABLE_NAME = "status_log";
   public static final String COLUMN_STATUS = "status";
   public static final String COLUMN_CANDIDATE_POSITION_ID = "candidate_position_id";

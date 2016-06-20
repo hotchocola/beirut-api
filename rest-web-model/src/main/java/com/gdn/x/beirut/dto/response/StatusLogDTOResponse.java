@@ -4,6 +4,8 @@ import com.gdn.common.web.base.BaseResponse;
 
 public class StatusLogDTOResponse extends BaseResponse {
 
+  private static final long serialVersionUID = -1283231815109258028L;
+
   private StatusDTOResponse status;
 
   private CandidatePositionDTOResponse candidatePosition;

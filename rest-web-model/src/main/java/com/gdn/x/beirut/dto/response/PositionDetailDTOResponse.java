@@ -4,6 +4,7 @@ import com.gdn.common.web.base.BaseResponse;
 
 public class PositionDetailDTOResponse extends BaseResponse {
 
+  private static final long serialVersionUID = 3862586103531052338L;
   private String idPosition;
   private String positionTitle;
   private String candidateFirstName;

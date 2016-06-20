@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.gdn.common.base.domainevent.publisher.PublishDomainEvent;
+import com.gdn.common.base.domainevent.publisher.DomainEventPublisher;
 import com.gdn.x.beirut.domain.event.model.CandidateNewInsert;
 import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.entities.Candidate;
@@ -16,9 +17,11 @@ import com.gdn.x.beirut.entities.Position;
 
 @Service(value = "EventService")
 public class EventServiceImpl implements EventService {
+  @Autowired
+  private DomainEventPublisher domainEventPublisher;
 
   @Override
-  public Candidate insertNewCandidateDenormalized(Candidate candidate) {
+  public void insertNewCandidateDenormalized(Candidate candidate) {
     Set<CandidatePosition> candidatePositions = candidate.getCandidatePositions();
     List<CandidateNewInsert> candidateNewInserts = new ArrayList<>();
     for (CandidatePosition candidatePosition : candidatePositions) {
@@ -28,14 +31,14 @@ public class EventServiceImpl implements EventService {
       Position position = candidatePosition.getPosition();
       BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
       candidateNewInsert.setStatus(candidatePosition.getStatus().toString());
-      insertNewCandidateSingle(candidateNewInsert);
+      domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
+          CandidateNewInsert.class);
     }
-    return candidate;
   }
 
-  @PublishDomainEvent(publishEventClass = CandidateNewInsert.class,
-      domainEventName = DomainEventName.CANDIDATE_NEW_INSERT)
-  public CandidateNewInsert insertNewCandidateSingle(CandidateNewInsert candidateNewInsert) {
-    return candidateNewInsert;
-  }
+  // @PublishDomainEvent(publishEventClass = CandidateNewInsert.class,
+  // domainEventName = DomainEventName.CANDIDATE_NEW_INSERT)
+  // public CandidateNewInsert insertNewCandidateSingle(CandidateNewInsert candidateNewInsert) {
+  // return candidateNewInsert;
+  // }
 }

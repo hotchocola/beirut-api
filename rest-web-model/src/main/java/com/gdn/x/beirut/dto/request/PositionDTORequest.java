@@ -4,6 +4,7 @@ import com.gdn.common.web.base.BaseRequest;
 
 public class PositionDTORequest extends BaseRequest {
 
+  private static final long serialVersionUID = -8589947552434752350L;
   private String title;
 
   public String getTitle() {
