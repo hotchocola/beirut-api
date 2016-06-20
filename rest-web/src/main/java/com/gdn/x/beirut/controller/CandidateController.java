@@ -30,6 +30,7 @@ import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
+import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateWithPositionsDTOResponse;
@@ -152,6 +153,8 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
+  // DEPRECATED : Udah diganti sama findCandidateByIdAndStoreIdEager / Lazy
+  @Deprecated
   @RequestMapping(value = "findCandidateByIdDeprecated", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "mencari kandidat berdasarkan ID",
@@ -221,6 +224,8 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
+  // DEPRECATED : Diganti sama findCandidateByPhoneNumberContainAndStoreId
+  @Deprecated
   @RequestMapping(value = "findCandidateByPhoneNumber", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "mencari kandidat berdasarkan nomor telepon",
@@ -282,8 +287,9 @@ public class CandidateController {
   }
 
 
-
-  @RequestMapping(value = "getAllCandidate", method = RequestMethod.GET,
+  // DEPRECATED udah diganti pake getAllCandidateByStoreIdWithPageable
+  @Deprecated
+  @RequestMapping(value = "getAllCandidateDepr", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Get all Candidates", notes = "Mengambil semua kandidat")
   @ResponseBody
@@ -303,59 +309,61 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
+  // DEPRECATED udah diganti pake getAllCandidateByStoreIdWithPageable
+  // @RequestMapping(value = "getAllCandidateByStoreId", method = RequestMethod.GET,
+  // consumes = {MediaType.APPLICATION_JSON_VALUE},
+  // produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  // @ApiOperation(value = "get all candidate dengan store id yang diberikan",
+  // notes = "Mengembalikan semua kandidat pada store id tertentu")
+  // @ResponseBody
+  // public GdnRestListResponse<CandidateDTOResponse> getAllCandidateByStoreIdWithPageable(
+  // @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+  // @RequestParam String channelId, @RequestParam String username) throws Exception {
+  // List<CandidateDTOResponse> candidatesDTO = new ArrayList<CandidateDTOResponse>();
+  // Page<Candidate> candidates = this.candidateService.getAllCandidatesByStoreIdPageable(storeId,
+  // );
+  // for (Candidate candidate : candidates) {
+  // CandidateDTOResponse candidateDTOResponse =
+  // getGdnMapper().deepCopy(candidate, CandidateDTOResponse.class);
+  // candidatesDTO.add(candidateDTOResponse);
+  // }
+  // return new GdnRestListResponse<CandidateDTOResponse>(candidatesDTO,
+  // new PageMetaData(50, 0, candidatesDTO.size()), requestId);
+  // }
 
-  @RequestMapping(value = "getAllCandidateByStoreId", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
-      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "get all candidate dengan store id yang diberikan",
-      notes = "Mengembalikan semua kandidat pada store id tertentu")
-  @ResponseBody
-  public GdnRestListResponse<CandidateDTOResponse> getAllCandidateByStoreId(
-      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
-      @RequestParam String channelId, @RequestParam String username) throws Exception {
-    List<CandidateDTOResponse> candidatesDTO = new ArrayList<CandidateDTOResponse>();
-    List<Candidate> candidates = this.candidateService.getAllCandidatesByStoreId(storeId);
-    for (Candidate candidate : candidates) {
-      CandidateDTOResponse candidateDTOResponse =
-          getGdnMapper().deepCopy(candidate, CandidateDTOResponse.class);
-      candidatesDTO.add(candidateDTOResponse);
-    }
-    return new GdnRestListResponse<CandidateDTOResponse>(candidatesDTO,
-        new PageMetaData(50, 0, candidatesDTO.size()), requestId);
-  }
-
-  @RequestMapping(value = "getAllCandidatesWithPageable", method = RequestMethod.GET,
+  @RequestMapping(value = "getAllCandidatesByStoreIdWithPageable", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Getting all candidates with pageable", notes = "")
 
   @ResponseBody
-  public GdnRestListResponse<CandidateDTOResponse> getAllCandidateWithPageable(
+  public GdnRestListResponse<CandidateDTOResponseWithoutDetail> getAllCandidateByStoreIdWithPageable(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username, @RequestParam int page,
       @RequestParam int size) throws Exception {
     Pageable pageable = PageableHelper.generatePageable(page, size);
-    Page<Candidate> pages = this.candidateService.getAllCandidatesWithPageable(storeId, pageable);
-    List<CandidateDTOResponse> toShow = new ArrayList<>();
+    Page<Candidate> pages =
+        this.candidateService.getAllCandidatesByStoreIdPageable(storeId, pageable);
+    List<CandidateDTOResponseWithoutDetail> toShow = new ArrayList<>();
     for (Candidate candidate : pages.getContent()) {
-      CandidateDTOResponse newCandidateDTOResponse =
-          getGdnMapper().deepCopy(candidate, CandidateDTOResponse.class);
+      CandidateDTOResponseWithoutDetail newCandidateDTOResponse =
+          getGdnMapper().deepCopy(candidate, CandidateDTOResponseWithoutDetail.class);
       toShow.add(newCandidateDTOResponse);
     }
-    return new GdnRestListResponse<CandidateDTOResponse>(toShow,
+    return new GdnRestListResponse<CandidateDTOResponseWithoutDetail>(toShow,
         new PageMetaData(50, 0, toShow.size()), requestId);
   }
 
-  @RequestMapping(value = "getCandidatePositionDetailWithLogs", method = RequestMethod.GET,
+  @RequestMapping(value = "getCandidatePositionDetailByStoreIdWithLogs", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "get candidateposition with logs",
       notes = "Get candidate tertentu dengan history logs nya")
   @ResponseBody
-  public GdnRestSingleResponse<CandidatePositionDTOResponse> getCandidatePositionDetailWithLogs(
+  public GdnRestSingleResponse<CandidatePositionDTOResponse> getCandidatePositionDetailByStoreIdWithLogs(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username,
       @RequestParam String idCandidate, @RequestParam String idPosition) throws Exception {
-    CandidatePosition candidatePosition =
-        this.candidateService.getCandidatePositionWithLogs(idCandidate, idPosition);
+    CandidatePosition candidatePosition = this.candidateService
+        .getCandidatePositionByStoreIdWithLogs(idCandidate, idPosition, storeId);
     CandidatePositionDTOResponse candidatePositionResponse =
         getGdnMapper().deepCopy(candidatePosition, CandidatePositionDTOResponse.class);
 

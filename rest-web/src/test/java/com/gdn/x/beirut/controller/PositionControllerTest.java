@@ -113,14 +113,15 @@ public class PositionControllerTest {
   @Test
   public void testGetAllPosition() throws Exception {
     String uri = "getAllPosition";
-    Mockito.when(this.positionService.getAllPosition(STORE_ID)).thenReturn(this.positions);
+    Mockito.when(this.positionService.getAllPositionByStoreId(STORE_ID)).thenReturn(this.positions);
     this.mockMVC
         .perform(MockMvcRequestBuilders.get(UriBasePath + uri).param("clientId", CLIENT_ID)
             .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
             .param("channelId", CHANNEL_ID).param("username", USERNAME))
         .andExpect(MockMvcResultMatchers.status().isOk());
-    this.positionController.getAllPosition(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME);
-    Mockito.verify(this.positionService, Mockito.times(2)).getAllPosition(STORE_ID);
+    this.positionController.getAllPositionByStoreId(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
+        USERNAME);
+    Mockito.verify(this.positionService, Mockito.times(2)).getAllPositionByStoreId(STORE_ID);
   }
 
   @Test
@@ -130,7 +131,7 @@ public class PositionControllerTest {
     Page<Position> shouldBeReturned =
         new PageImpl<>(content, PageableHelper.generatePageable(0, 2), content.size());
     String uri = "getAllPositionWithPageable";
-    Mockito.when(this.positionService.getAllPositionWithPageable(STORE_ID,
+    Mockito.when(this.positionService.getAllPositionByStoreIdWithPageable(STORE_ID,
         PageableHelper.generatePageable(0, 2))).thenReturn(shouldBeReturned);
     this.mockMVC.perform(MockMvcRequestBuilders.get(UriBasePath + uri).param("clientId", CLIENT_ID)
         .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
@@ -138,8 +139,8 @@ public class PositionControllerTest {
         .andExpect(MockMvcResultMatchers.status().isOk());
     this.positionController.getAllPositionWithPageable(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
         USERNAME, 0, 2);
-    Mockito.verify(this.positionService, Mockito.times(2)).getAllPositionWithPageable(STORE_ID,
-        PageableHelper.generatePageable(0, 2));
+    Mockito.verify(this.positionService, Mockito.times(2))
+        .getAllPositionByStoreIdWithPageable(STORE_ID, PageableHelper.generatePageable(0, 2));
 
   }
 
