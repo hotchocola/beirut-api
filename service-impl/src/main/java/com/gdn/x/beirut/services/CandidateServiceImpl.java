@@ -65,16 +65,19 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
+  @Deprecated
   public List<Candidate> getAllCandidates() {
     return candidateDAO.findAll();
   }
 
   @Override
-  public List<Candidate> getAllCandidatesByStoreId(String storeId) throws Exception {
-    return this.candidateDAO.findByStoreId(storeId);
+  public Page<Candidate> getAllCandidatesByStoreIdPageable(String storeId, Pageable pageable)
+      throws Exception {
+    return this.candidateDAO.findByStoreId(storeId, pageable);
   }
 
   @Override
+  @Deprecated
   public Page<Candidate> getAllCandidatesWithPageable(String storeId, Pageable pageable) {
     return candidateDAO.findByStoreId(storeId, pageable);
   }
@@ -135,12 +138,20 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
-  public CandidatePosition getCandidatePositionWithLogs(String idCandidate, String idPosition)
-      throws Exception {
+  public CandidatePosition getCandidatePositionByStoreIdWithLogs(String idCandidate,
+      String idPosition, String storeId) throws Exception {
     Candidate candidate = this.getCandidate(idCandidate);
+    if (!candidate.getStoreId().equals(storeId)) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+          "candidate not found by store id");
+    }
     Position position = this.positionDAO.findOne(idPosition);
     if (position == null || position.equals(null)) {
       throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "position not found");
+    }
+    if (!position.getStoreId().equals(storeId)) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+          "position not found by store id");
     }
     System.out.println(candidate.getCandidatePositions());
     for (CandidatePosition candidatePosition : candidate.getCandidatePositions()) {
@@ -176,7 +187,7 @@ public class CandidateServiceImpl implements CandidateService {
   public void markForDelete(String id) throws Exception {
     Candidate candidate = this.candidateDAO.findByIdAndMarkForDelete(id, false);
     if (candidate == null) {
-      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "id not found");
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "candidate not found");
     }
     Hibernate.initialize(candidate.getCandidatePositions());
     Iterator<CandidatePosition> iterator = candidate.getCandidatePositions().iterator();
@@ -229,6 +240,7 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
+  @Deprecated
   public List<Candidate> searchCandidateByPhoneNumber(String phoneNumber) {
     return candidateDAO.findByPhoneNumber(phoneNumber);
   }
@@ -275,11 +287,11 @@ public class CandidateServiceImpl implements CandidateService {
   public void updateCandidateStatus(String storeId, String idCandidate, String idPosition,
       Status status) throws Exception {
     Candidate existingCandidate = getCandidate(idCandidate);
-    // if (!existingCandidate.getStoreId().equals(storeId)) {
-    // throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
-    // "data found but no store id match expected = " + existingCandidate.getStoreId()
-    // + " but was = " + storeId);
-    // }
+    if (!existingCandidate.getStoreId().equals(storeId)) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+          "data found but no store id match expected = " + existingCandidate.getStoreId()
+              + " but was = " + storeId);
+    }
     Position existingPosition = positionDAO.findOne(idPosition);
     // TODO: if existing position not exist
     Hibernate.initialize(existingCandidate.getCandidatePositions());

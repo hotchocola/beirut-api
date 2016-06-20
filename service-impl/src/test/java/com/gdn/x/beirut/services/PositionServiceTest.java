@@ -51,7 +51,6 @@ public class PositionServiceTest {
   // Mockito.verify(this.repository).findByIdAndMarkForDelete(this.position.getId(), false);
   // }
 
-
   @Test
   public void checkUpdatePositionTitle() throws Exception {
     this.service.updatePositionTitle(STORE_ID, this.position.getId(), "Emporio Ivankov");
