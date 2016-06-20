@@ -180,7 +180,7 @@ public class CandidateServiceTest {
 
     when(this.candidateDao.findByCreatedDateBetweenAndStoreId(start.getTime(), end.getTime(),
         STORE_ID, DEFAULT_PAGEABLE)).thenReturn(candidateRangePage);
-    when(this.eventService.insertNewCandidateDenormalized(candidate)).thenReturn(candidate);
+    // when(this.eventService.insertNewCandidateDenormalized(candidate)).thenReturn(candidate);
   }
 
   @After
