@@ -38,22 +38,29 @@ public class CandidateServiceImpl implements CandidateService {
   @Autowired
   private PositionDAO positionDAO;
 
+  @Autowired
+  private EventService eventService;
+
   @Override
   @Transactional(readOnly = false)
-  public void applyNewPosition(Candidate candidate, Position position) throws Exception {
-    Candidate existingCandidate = getCandidate(candidate.getId());
-    existingCandidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
-    candidateDAO.save(existingCandidate);
+  public Candidate applyNewPosition(String candidateId, List<String> positionIds) throws Exception {
+    Candidate existingCandidate = getCandidate(candidateId);
+    List<Position> positions = positionDAO.findAll(positionIds);
+    for (Position position : positions) {
+      existingCandidate.getCandidatePositions()
+          .add(new CandidatePosition(existingCandidate, position));
+    }
+    return candidateDAO.save(existingCandidate);
   }
 
   @Override
   @Transactional(readOnly = false)
-  public Candidate createNew(Candidate candidate, Position position) {
-    CandidatePosition candidatePosition = new CandidatePosition();
-    candidatePosition.setCandidate(candidate);
-    candidatePosition.setPosition(position);
-    candidate.getCandidatePositions().add(candidatePosition);
-    // position.getCandidatePositions().add(candidatePosition);
+  public Candidate createNew(Candidate candidate, List<String> positionIds) throws Exception {
+    List<Position> positions = positionDAO.findAll(positionIds);
+    for (Position position : positions) {
+      candidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
+    }
+    eventService.insertNewCandidateDenormalized(candidate);
     return candidateDAO.save(candidate);
   }
 
@@ -84,7 +91,6 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   public Candidate getCandidateByIdAndStoreIdEager(String id, String storeId) throws Exception {
-    // TODO Auto-generated method stub
     Candidate candidate = this.candidateDAO.findOne(id);
     if (candidate == null || candidate.equals(null)) {
       throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "id and storeId not found");
@@ -186,12 +192,6 @@ public class CandidateServiceImpl implements CandidateService {
     this.candidateDAO.save(candidate);
   }
 
-  @Override
-  public List<Candidate> searchByCreatedDateBetweenAndStoreId(Date start, Date end,
-      String storeId) {
-    return candidateDAO.findByCreatedDateBetweenAndStoreId(start, end, storeId);
-  }
-
   // @Override
   // public boolean setCandidatePositionStatus(String idCandidatePosition, Status newStatus) {
   // // TODO Auto-generated method stub
@@ -205,30 +205,26 @@ public class CandidateServiceImpl implements CandidateService {
   // return false;
   // }
 
-
   @Override
-  public List<Candidate> searchByFirstNameContainAndStoreId(String firstname, String storeId)
-      throws Exception {
-    List<Candidate> candidates = candidateDAO.findByFirstNameContaining(firstname);
-    for (Candidate candidate : candidates) {
-      if (!candidate.getStoreId().equals(storeId)) {
-        candidates.remove(candidate);
-      }
-    }
-    if (candidates == null || candidates.equals(null) || candidates.size() == 0) {
-      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND);
-    }
-    return candidates;
+  public Page<Candidate> searchByCreatedDateBetweenAndStoreId(Date start, Date end, String storeId,
+      Pageable pageable) {
+    return candidateDAO.findByCreatedDateBetweenAndStoreId(start, end, storeId, pageable);
   }
 
   @Override
-  public List<Candidate> searchByLastNameContainAndStoreId(String lastname, String storeId) {
-    return candidateDAO.findByLastNameContainingAndStoreId(lastname, storeId);
+  public Page<Candidate> searchByFirstNameContainAndStoreId(String firstName, String storeId,
+      Pageable pageable) throws Exception {
+    return candidateDAO.findByFirstNameContainingAndStoreId(firstName, storeId, pageable);
   }
 
   @Override
-  public List<Candidate> searchCandidateByEmailAddressAndStoreId(String emailAddress,
-      String storeId) {
+  public Page<Candidate> searchByLastNameContainAndStoreId(String lastName, String storeId,
+      Pageable pageable) {
+    return candidateDAO.findByLastNameContainingAndStoreId(lastName, storeId, pageable);
+  }
+
+  @Override
+  public Candidate searchCandidateByEmailAddressAndStoreId(String emailAddress, String storeId) {
     return candidateDAO.findByEmailAddressAndStoreId(emailAddress, storeId);
   }
 
@@ -238,9 +234,9 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
-  public List<Candidate> searchCandidateByPhoneNumberContainAndStoreId(String phoneNumber,
-      String storeId) {
-    return candidateDAO.findByPhoneNumberContainingAndStoreId(phoneNumber, storeId);
+  public Page<Candidate> searchCandidateByPhoneNumberContainAndStoreId(String phoneNumber,
+      String storeId, Pageable pageable) {
+    return candidateDAO.findByPhoneNumberContainingAndStoreId(phoneNumber, storeId, pageable);
   }
 
   public void setCandidateDAO(CandidateDAO candidateDAO) {
@@ -274,19 +270,18 @@ public class CandidateServiceImpl implements CandidateService {
     }
   }
 
-
-
   @Override
   @Transactional(readOnly = false)
-  public void updateCandidateStatus(String storeId, Candidate candidate, String idPosition,
+  public void updateCandidateStatus(String storeId, String idCandidate, String idPosition,
       Status status) throws Exception {
-    Candidate existingCandidate = getCandidate(candidate.getId());
-    if (!existingCandidate.getStoreId().equals(storeId)) {
-      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
-          "data found but no store id match expected = " + existingCandidate.getStoreId()
-              + " but was = " + storeId);
-    }
+    Candidate existingCandidate = getCandidate(idCandidate);
+    // if (!existingCandidate.getStoreId().equals(storeId)) {
+    // throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+    // "data found but no store id match expected = " + existingCandidate.getStoreId()
+    // + " but was = " + storeId);
+    // }
     Position existingPosition = positionDAO.findOne(idPosition);
+    // TODO: if existing position not exist
     Hibernate.initialize(existingCandidate.getCandidatePositions());
     existingCandidate.getCandidatePositions().stream()
         .filter(candidatePosition -> candidatePosition.getPosition().equals(existingPosition))
@@ -301,17 +296,9 @@ public class CandidateServiceImpl implements CandidateService {
   @Transactional(readOnly = false)
   public void updateCandidateStatusBulk(String storeId, List<String> idCandidates,
       String idPosition, Status status) throws Exception {
-    idCandidates.stream().forEach(idCandidate -> {
-      Candidate candidate = this.candidateDAO.findOne(idCandidate);
-      try {
-        this.updateCandidateStatus(storeId, candidate, idPosition, status);
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    });
+    for (String id : idCandidates) {
+      this.updateCandidateStatus(storeId, id, idPosition, status);
+    }
   }
-
-
 
 }

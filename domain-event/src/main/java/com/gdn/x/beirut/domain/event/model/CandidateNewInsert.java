@@ -1,18 +1,21 @@
-package com.gdn.x.beirut.dto.request;
+package com.gdn.x.beirut.domain.event.model;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.gdn.common.base.entity.GdnBaseDomainEventModel;
 
-import com.gdn.common.web.base.BaseRequest;
-
-public class CandidateDTORequest extends BaseRequest {
-
-  private static final long serialVersionUID = 3040418122981154523L;
-  private String id;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class CandidateNewInsert extends GdnBaseDomainEventModel {
   private String emailAddress;
+
   private String firstName;
+
   private String lastName;
+
   private String phoneNumber;
-  private List<String> positionIds;
+
+  private String title;
+
+  private String status;
 
   public String getEmailAddress() {
     return emailAddress;
@@ -20,10 +23,6 @@ public class CandidateDTORequest extends BaseRequest {
 
   public String getFirstName() {
     return firstName;
-  }
-
-  public String getId() {
-    return id;
   }
 
   public String getLastName() {
@@ -34,16 +33,20 @@ public class CandidateDTORequest extends BaseRequest {
     return phoneNumber;
   }
 
+  public String getStatus() {
+    return status;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
   public void setEmailAddress(String emailAddress) {
     this.emailAddress = emailAddress;
   }
 
   public void setFirstName(String firstName) {
     this.firstName = firstName;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public void setLastName(String lastName) {
@@ -54,13 +57,11 @@ public class CandidateDTORequest extends BaseRequest {
     this.phoneNumber = phoneNumber;
   }
 
-  public List<String> getPositionIds() {
-    return positionIds;
+  public void setStatus(String status) {
+    this.status = status;
   }
 
-  public void setPositionIds(List<String> positionIds) {
-    this.positionIds = positionIds;
+  public void setTitle(String title) {
+    this.title = title;
   }
-
-
 }

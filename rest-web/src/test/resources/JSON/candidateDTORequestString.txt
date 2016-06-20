@@ -1,1 +1,1 @@
-{"emailAddress": "a@mail.com","firstName": "ucup","lastName": "sanusi","phoneNumber": "111","positionId": "22bf3cdb-d49e-4534-af52-9ce28064e7f3"}	
+{"emailAddress": "a@mail.com","firstName": "ucup","lastName": "sanusi","phoneNumber": "111","positionIds": ["22bf3cdb-d49e-4534-af52-9ce28064e7f30","22bf3cdb-d49e-4534-af52-9ce28064e7f31"]}	
