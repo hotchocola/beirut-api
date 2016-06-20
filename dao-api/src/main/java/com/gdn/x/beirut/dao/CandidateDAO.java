@@ -11,28 +11,37 @@ import com.gdn.x.beirut.entities.Candidate;
 
 public interface CandidateDAO extends JpaRepository<Candidate, String> {
 
-  List<Candidate> findByCreatedDateBetweenAndStoreId(Date start, Date end, String storeId);
+  Page<Candidate> findByCreatedDateBetweenAndStoreId(Date start, Date end, String storeId,
+      Pageable pageable);
 
-  List<Candidate> findByEmailAddressAndStoreId(String emailAddress, String storeId);
+  Candidate findByEmailAddressAndStoreId(String emailAddress, String storeId);
 
+  @Deprecated
   List<Candidate> findByFirstName(String firstName);
 
-  List<Candidate> findByFirstNameContaining(String firstName);
+  Page<Candidate> findByFirstNameContainingAndStoreId(String firstName, String storeId,
+      Pageable pageable);
 
   Candidate findByIdAndMarkForDelete(String id, boolean markForDelete);
 
+  @Deprecated
   List<Candidate> findByLastName(String lastName);
 
-  List<Candidate> findByLastNameContainingAndStoreId(String lastName, String storeId);
+  Page<Candidate> findByLastNameContainingAndStoreId(String lastName, String storeId,
+      Pageable pageable);
 
+  @Deprecated
   List<Candidate> findByPhoneNumber(String phoneNumber);
 
-  List<Candidate> findByPhoneNumberContainingAndStoreId(String phoneNumber, String storeId);
+  Page<Candidate> findByPhoneNumberContainingAndStoreId(String phoneNumber, String storeId,
+      Pageable pageable);
 
+  @Deprecated
   List<Candidate> findByStoreId(String storeId);
 
   Page<Candidate> findByStoreId(String storeId, Pageable pageable);
 
-  List<Candidate> findByStoreIdAndMarkForDelete(String storeId, boolean markForDelete);
+  Page<Candidate> findByStoreIdAndMarkForDelete(String storeId, boolean markForDelete,
+      Pageable pageable);
 
 }

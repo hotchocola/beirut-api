@@ -2,13 +2,14 @@ package com.gdn.x.beirut.dao;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -31,6 +32,8 @@ public class CandidateDAOTest {
   private static final String ID = "id_ini";
 
   private static final String STORE_ID = "store_id";
+
+  private static final Pageable DEFAULT_PAGEABLE = PageableHelper.generatePageable(0, 100);
 
   @Autowired
   private CandidateDAO candidateDAO;
@@ -70,8 +73,8 @@ public class CandidateDAOTest {
   public void testFindByCreatedDateBetween() {
     GregorianCalendar start = new GregorianCalendar(2016, 1, 1);
     Date end = new Date(System.currentTimeMillis());
-    List<Candidate> res = this.candidateDAO.findByCreatedDateBetweenAndStoreId(start.getTime(),
-        new Date(end.getTime()), STORE_ID);
+    Page<Candidate> res = this.candidateDAO.findByCreatedDateBetweenAndStoreId(start.getTime(),
+        new Date(end.getTime()), STORE_ID, DEFAULT_PAGEABLE);
     for (Candidate candidate : res) {
       Assert.assertTrue(start.getTime().getTime() <= candidate.getCreatedDate().getTime()
           && end.getTime() >= candidate.getCreatedDate().getTime());
@@ -83,87 +86,72 @@ public class CandidateDAOTest {
   public void testFindByCreatedDateBetweenNoResult() {
     GregorianCalendar start = new GregorianCalendar(1900, 1, 1);
     GregorianCalendar end = new GregorianCalendar(1900, 6, 1);
-    List<Candidate> res = this.candidateDAO.findByCreatedDateBetweenAndStoreId(start.getTime(),
-        end.getTime(), STORE_ID);
-    res.get(0);
+    Page<Candidate> res = this.candidateDAO.findByCreatedDateBetweenAndStoreId(start.getTime(),
+        end.getTime(), STORE_ID, DEFAULT_PAGEABLE);
+    res.getContent().get(0);
   }
 
   @Test
   public void testFindByEmailAddressAndStoreId() {
-    List<Candidate> res =
-        this.candidateDAO.findByEmailAddressAndStoreId("egaprianto1@asd.com", STORE_ID);
-    Assert.assertNotNull(res.get(0).getFirstName());
-    Assert.assertNotNull(res.get(0).getEmailAddress());
-    Assert.assertNotNull(res.get(0).getLastName());
-    Assert.assertNotNull(res.get(0).getPhoneNumber());
-    Assert.assertNotNull(res.get(0).getCandidateDetail());
-    Assert.assertTrue(new String(res.get(0).getCandidateDetail().getContent()).equals("ini PDF1"));
-  }
-
-  @Test(expected = IndexOutOfBoundsException.class)
-  public void testFindByEmailAddressAndStoreIdOnlyOneResult() {
-    List<Candidate> res =
-        this.candidateDAO.findByEmailAddressAndStoreId("egaprianto1@asd.com", STORE_ID);
-    res.get(1);
-  }
-
-
-  @Test
-  public void testFindByFirstName() {
-    List<Candidate> res = this.candidateDAO.findByFirstName("Ega");
-    Assert.assertNotNull(res.get(0).getFirstName());
-    Assert.assertNotNull(res.get(0).getEmailAddress());
-    Assert.assertNotNull(res.get(0).getLastName());
-    Assert.assertNotNull(res.get(0).getPhoneNumber());
-    Assert.assertNotNull(res.get(0).getCandidateDetail());
-    Assert.assertFalse(new String(res.get(0).getCandidateDetail().getContent())
-        .equals(new String(res.get(1).getCandidateDetail().getContent())));
-    Assert.assertTrue(res.get(0).getFirstName().equals("Ega"));
-    Assert.assertTrue(res.get(0).getFirstName().equals(res.get(1).getFirstName()));
-  }
-
-  @Test(expected = IndexOutOfBoundsException.class)
-  public void testFindByFirstNameNoResult() {
-    List<Candidate> res = this.candidateDAO.findByFirstName("asd");
-    res.get(0);
+    Candidate res = this.candidateDAO.findByEmailAddressAndStoreId("egaprianto1@asd.com", STORE_ID);
+    Assert.assertNotNull(res.getFirstName());
+    Assert.assertNotNull(res.getEmailAddress());
+    Assert.assertNotNull(res.getLastName());
+    Assert.assertNotNull(res.getPhoneNumber());
+    Assert.assertNotNull(res.getCandidateDetail());
+    Assert.assertTrue(new String(res.getCandidateDetail().getContent()).equals("ini PDF1"));
   }
 
   @Test
-  public void testFindByLastName() {
-    List<Candidate> res = this.candidateDAO.findByLastName("Prianto");
-    Assert.assertNotNull(res.get(0).getFirstName());
-    Assert.assertNotNull(res.get(0).getEmailAddress());
-    Assert.assertNotNull(res.get(0).getLastName());
-    Assert.assertNotNull(res.get(0).getPhoneNumber());
-    Assert.assertNotNull(res.get(0).getCandidateDetail());
-    Assert.assertFalse(new String(res.get(0).getCandidateDetail().getContent())
-        .equals(new String(res.get(1).getCandidateDetail().getContent())));
-    Assert.assertTrue(res.get(0).getLastName().equals("Prianto"));
-    Assert.assertTrue(res.get(0).getLastName().equals(res.get(1).getLastName()));
-  }
-
-  @Test(expected = IndexOutOfBoundsException.class)
-  public void testFindByLastNameNoResult() {
-    List<Candidate> res = this.candidateDAO.findByLastName("asd");
-    res.get(0);
+  public void testFindByFirstNameContaingAndStoreId() {
+    Page<Candidate> res =
+        this.candidateDAO.findByFirstNameContainingAndStoreId("Ega", STORE_ID, DEFAULT_PAGEABLE);
+    Assert.assertNotNull(res.getContent().get(0).getFirstName());
+    Assert.assertNotNull(res.getContent().get(0).getEmailAddress());
+    Assert.assertNotNull(res.getContent().get(0).getLastName());
+    Assert.assertNotNull(res.getContent().get(0).getPhoneNumber());
+    Assert.assertNotNull(res.getContent().get(0).getCandidateDetail());
+    Assert.assertFalse(new String(res.getContent().get(0).getCandidateDetail().getContent())
+        .equals(new String(res.getContent().get(1).getCandidateDetail().getContent())));
+    Assert.assertTrue(res.getContent().get(0).getFirstName().equals("Ega"));
+    Assert.assertTrue(
+        res.getContent().get(0).getFirstName().equals(res.getContent().get(1).getFirstName()));
   }
 
   @Test
-  public void testFindByPhoneNumber() {
-    List<Candidate> res = this.candidateDAO.findByPhoneNumber("1234567890");
-    Assert.assertNotNull(res.get(0).getFirstName());
-    Assert.assertNotNull(res.get(0).getEmailAddress());
-    Assert.assertNotNull(res.get(0).getLastName());
-    Assert.assertNotNull(res.get(0).getPhoneNumber());
-    Assert.assertNotNull(res.get(0).getCandidateDetail());
-    Assert.assertTrue(res.get(0).getPhoneNumber().equals("1234567890"));
+  public void testFindByLastNameContainingAndStoreId() {
+    Page<Candidate> res =
+        this.candidateDAO.findByLastNameContainingAndStoreId("Prianto", STORE_ID, DEFAULT_PAGEABLE);
+    Assert.assertNotNull(res.getContent().get(0).getFirstName());
+    Assert.assertNotNull(res.getContent().get(0).getEmailAddress());
+    Assert.assertNotNull(res.getContent().get(0).getLastName());
+    Assert.assertNotNull(res.getContent().get(0).getPhoneNumber());
+    Assert.assertNotNull(res.getContent().get(0).getCandidateDetail());
+    Assert.assertFalse(new String(res.getContent().get(0).getCandidateDetail().getContent())
+        .equals(new String(res.getContent().get(1).getCandidateDetail().getContent())));
+    Assert.assertTrue(res.getContent().get(0).getLastName().equals("Prianto"));
+    Assert.assertTrue(
+        res.getContent().get(0).getLastName().equals(res.getContent().get(1).getLastName()));
   }
 
-  @Test(expected = IndexOutOfBoundsException.class)
-  public void testFindByPhoneNumberSupposedOnlyTwoResult() {
-    List<Candidate> res = this.candidateDAO.findByPhoneNumber("1234567890");
-    res.get(2);
+  // @Test(expected = IndexOutOfBoundsException.class)
+  // public void testFindByLastNameNoResult() {
+  // List<Candidate> res = this.candidateDAO.findByLastName("asd");
+  // res.get(0);
+  // }
+
+  @Test
+  public void testFindByPhoneNumberContainingAndStoreId() {
+    Page<Candidate> res = this.candidateDAO.findByPhoneNumberContainingAndStoreId("1234567890",
+        STORE_ID, DEFAULT_PAGEABLE);
+    Assert.assertNotNull(res.getContent().get(0).getFirstName());
+    Assert.assertNotNull(res.getContent().get(0).getEmailAddress());
+    Assert.assertNotNull(res.getContent().get(0).getLastName());
+    Assert.assertNotNull(res.getContent().get(0).getPhoneNumber());
+    Assert.assertNotNull(res.getContent().get(0).getCandidateDetail());
+    Assert.assertTrue(res.getContent().get(0).getPhoneNumber().equals("1234567890"));
   }
+
 
   @Test
   public void testFindByStoreId() {
@@ -174,21 +162,22 @@ public class CandidateDAOTest {
     candidate.setFirstName("testFindByIdAndStoreId Firstname");
     candidate.setLastName("testFindByIdAndStoreId Lastname");
     this.candidateDAO.save(candidate);
-    Assert.assertTrue(this.candidateDAO.findByStoreId(STORE_ID + "haha").get(0).getFirstName()
-        .equals("testFindByIdAndStoreId Firstname"));
+    Assert.assertTrue(this.candidateDAO.findByStoreId(STORE_ID + "haha", DEFAULT_PAGEABLE)
+        .getContent().get(0).getFirstName().equals("testFindByIdAndStoreId Firstname"));
   }
 
   @Test
   public void testFindByStoreIdAndMarkForDelete() {
-    Candidate candidate = new Candidate();
-    candidate.setId(ID);
-    candidate.setStoreId(STORE_ID + "12");
-    candidate.setMarkForDelete(false);
-    candidate.setFirstName("testFindByIdAndStoreId Firstname");
-    candidate.setLastName("testFindByIdAndStoreId Lastname");
-    this.candidateDAO.save(candidate);
-    Assert.assertTrue(this.candidateDAO.findByStoreIdAndMarkForDelete(STORE_ID + "12", false).get(0)
-        .getFirstName().equals("testFindByIdAndStoreId Firstname"));
+    Candidate deletedCandidate = new Candidate();
+    // deletedCandidate.setId(ID);
+    deletedCandidate.setStoreId(STORE_ID + "12");
+    deletedCandidate.setMarkForDelete(true);
+    deletedCandidate.setFirstName("testFindByIdAndStoreId Firstname");
+    deletedCandidate.setLastName("testFindByIdAndStoreId Lastname");
+    this.candidateDAO.save(deletedCandidate);
+    Assert.assertTrue(
+        this.candidateDAO.findByStoreIdAndMarkForDelete(STORE_ID + "12", true, DEFAULT_PAGEABLE)
+            .getContent().get(0).getFirstName().equals("testFindByIdAndStoreId Firstname"));
   }
 
   @Test
