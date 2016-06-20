@@ -34,6 +34,10 @@ public class CandidateDTORequest extends BaseRequest {
     return phoneNumber;
   }
 
+  public List<String> getPositionIds() {
+    return positionIds;
+  }
+
   public void setEmailAddress(String emailAddress) {
     this.emailAddress = emailAddress;
   }
@@ -52,10 +56,6 @@ public class CandidateDTORequest extends BaseRequest {
 
   public void setPhoneNumber(String phoneNumber) {
     this.phoneNumber = phoneNumber;
-  }
-
-  public List<String> getPositionIds() {
-    return positionIds;
   }
 
   public void setPositionIds(List<String> positionIds) {

@@ -180,7 +180,7 @@ public class CandidateServiceTest {
 
     when(this.candidateDao.findByCreatedDateBetweenAndStoreId(start.getTime(), end.getTime(),
         STORE_ID, DEFAULT_PAGEABLE)).thenReturn(candidateRangePage);
-    when(this.eventService.insertNewCandidateDenormalized(candidate)).thenReturn(candidate);
+    // when(this.eventService.insertNewCandidateDenormalized(candidate)).thenReturn(candidate);
   }
 
   @After
@@ -190,23 +190,23 @@ public class CandidateServiceTest {
   }
 
 
-  @Test
-  public void testApplyNewPosition() throws Exception {
-    Mockito.when(this.candidateDao.findOne(ID)).thenReturn(candidate);
-    List<Position> positions = new ArrayList<>();
-    List<String> positionIds = new ArrayList<>();
-    for (int i = 0; i < 10; i++) {
-      Position position = new Position();
-      position.setTitle("Title : " + i);
-      position.setId(POSITION_ID + i);
-      position.setStoreId(STORE_ID);
-      positions.add(position);
-      positionIds.add(POSITION_ID + i);
-    }
-    this.candidateService.applyNewPosition(ID, positionIds);
-    Mockito.when(this.positionDao.findAll(positionIds)).thenReturn(positions);
-
-  }
+  // @Test
+  // public void testApplyNewPosition() throws Exception {
+  // Mockito.when(this.candidateDao.findOne(ID)).thenReturn(candidate);
+  // List<Position> positions = new ArrayList<>();
+  // List<String> positionIds = new ArrayList<>();
+  // for (int i = 0; i < 10; i++) {
+  // Position position = new Position();
+  // position.setTitle("Title : " + i);
+  // position.setId(POSITION_ID + i);
+  // position.setStoreId(STORE_ID);
+  // positions.add(position);
+  // positionIds.add(POSITION_ID + i);
+  // }
+  // this.candidateService.applyNewPosition(ID, positionIds);
+  // Mockito.when(this.positionDao.findAll(positionIds)).thenReturn(positions);
+  //
+  // }
 
   @Test
   public void testGetAllCandidates() {
@@ -378,6 +378,44 @@ public class CandidateServiceTest {
   }
 
   @Test
+  public void testSearchByPhoneNumberContainingAndStoreId() {
+    List<Candidate> res = new ArrayList<>();
+    for (Candidate candidate : candidates) {
+      if (candidate.getPhoneNumber() != null && candidate.getPhoneNumber().contains("123456789")) {
+        res.add(candidate);
+      }
+    }
+    when(this.candidateDao.findByPhoneNumberContainingAndStoreId("123456789", STORE_ID,
+        DEFAULT_PAGEABLE)).thenReturn(candidatePage);
+    Page<Candidate> result = this.candidateService
+        .searchCandidateByPhoneNumberContainAndStoreId("123456789", STORE_ID, DEFAULT_PAGEABLE);
+    // Black Box Test
+    Assert.assertTrue(result.getContent().size() == 1);
+    // White Box Test
+    verify(this.candidateDao, times(1)).findByPhoneNumberContainingAndStoreId("123456789", STORE_ID,
+        DEFAULT_PAGEABLE);
+  }
+
+  // @Test
+  // public void testSearchCandidateByPhoneNumber() {
+  // List<Candidate> res = new ArrayList<>();
+  // for (Candidate candidate : candidates) {
+  // if (candidate.getPhoneNumber() != null && candidate.getPhoneNumber().equals("1234567890")) {
+  // res.add(candidate);
+  // }
+  // }
+  // Page<Candidate> pageRes = new PageImpl<>(res, DEFAULT_PAGEABLE, res.size());
+  // when(this.candidateDao.findByPhoneNumberContainingAndStoreId("1234567890", STORE_ID,
+  // DEFAULT_PAGEABLE)).thenReturn(pageRes);
+  // List<Candidate> result = this.candidateService.searchCandidateByPhoneNumber("1234567890");
+  // // Black Box Test
+  // Assert.assertTrue(result.equals(res));
+  // // White Box Test
+  // verify(this.candidateDao, times(1)).findByPhoneNumberContainingAndStoreId("1234567890",
+  // STORE_ID, DEFAULT_PAGEABLE);
+  // }
+
+  @Test
   public void testSearchCandidateByEmailAddress() {
     // List<Candidate> res = new ArrayList<>();
     // for (Candidate candidate : candidateRanges) {
@@ -395,44 +433,6 @@ public class CandidateServiceTest {
     // White Box Test
     verify(this.candidateDao, times(1)).findByEmailAddressAndStoreId("egaprianto@asd.com",
         STORE_ID);
-  }
-
-  @Test
-  public void testSearchCandidateByPhoneNumber() {
-    List<Candidate> res = new ArrayList<>();
-    for (Candidate candidate : candidates) {
-      if (candidate.getPhoneNumber() != null && candidate.getPhoneNumber().equals("1234567890")) {
-        res.add(candidate);
-      }
-    }
-    Page<Candidate> pageRes = new PageImpl<>(res, DEFAULT_PAGEABLE, res.size());
-    when(this.candidateDao.findByPhoneNumberContainingAndStoreId("1234567890", STORE_ID,
-        DEFAULT_PAGEABLE)).thenReturn(pageRes);
-    List<Candidate> result = this.candidateService.searchCandidateByPhoneNumber("1234567890");
-    // Black Box Test
-    Assert.assertTrue(result.equals(res));
-    // White Box Test
-    verify(this.candidateDao, times(1)).findByPhoneNumberContainingAndStoreId("1234567890",
-        STORE_ID, DEFAULT_PAGEABLE);
-  }
-
-  @Test
-  public void testSearchCandidateByPhoneNumberLike() {
-    List<Candidate> res = new ArrayList<>();
-    for (Candidate candidate : candidates) {
-      if (candidate.getPhoneNumber() != null && candidate.getPhoneNumber().contains("123456789")) {
-        res.add(candidate);
-      }
-    }
-    when(this.candidateDao.findByPhoneNumberContainingAndStoreId("123456789", STORE_ID,
-        DEFAULT_PAGEABLE)).thenReturn(candidatePage);
-    Page<Candidate> result = this.candidateService
-        .searchCandidateByPhoneNumberContainAndStoreId("123456789", STORE_ID, DEFAULT_PAGEABLE);
-    // Black Box Test
-    Assert.assertTrue(result.getContent().size() == 1);
-    // White Box Test
-    verify(this.candidateDao, times(1)).findByPhoneNumberContainingAndStoreId("123456789", STORE_ID,
-        DEFAULT_PAGEABLE);
   }
 
   // getCandidatePositionWithLogs(String idCandidate, String idPosition)

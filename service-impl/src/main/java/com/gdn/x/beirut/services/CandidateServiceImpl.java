@@ -7,16 +7,20 @@ import java.util.List;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gdn.common.base.domainevent.publisher.DomainEventPublisher;
 import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.CandidateDAO;
 import com.gdn.x.beirut.dao.PositionDAO;
+import com.gdn.x.beirut.domain.event.model.CandidateNewInsert;
+import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.CandidatePosition;
@@ -39,7 +43,7 @@ public class CandidateServiceImpl implements CandidateService {
   private PositionDAO positionDAO;
 
   @Autowired
-  private EventService eventService;
+  private DomainEventPublisher domainEventPublisher;
 
   @Override
   @Transactional(readOnly = false)
@@ -59,8 +63,27 @@ public class CandidateServiceImpl implements CandidateService {
     List<Position> positions = positionDAO.findAll(positionIds);
     for (Position position : positions) {
       candidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
+      CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
+      BeanUtils.copyProperties(candidate, candidateNewInsert, "candidateDetail",
+          "candidatePositions");
+      // Position position = candidatePosition.getPosition();
+      BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
+      // candidateNewInsert.setStatus(candidatePosition.getStatus().toString());
+      domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
+          CandidateNewInsert.class);
     }
-    eventService.insertNewCandidateDenormalized(candidate);
+    // Set<CandidatePosition> candidatePositions = candidate.getCandidatePositions();
+    // List<CandidateNewInsert> candidateNewInserts = new ArrayList<>();
+    // for (CandidatePosition candidatePosition : candidatePositions) {
+    // CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
+    // BeanUtils.copyProperties(candidate, candidateNewInsert, "candidateDetail",
+    // "candidatePositions");
+    // Position position = candidatePosition.getPosition();
+    // BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
+    // // candidateNewInsert.setStatus(candidatePosition.getStatus().toString());
+    // domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
+    // CandidateNewInsert.class);
+    // }
     return candidateDAO.save(candidate);
   }
 
