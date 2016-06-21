@@ -20,6 +20,7 @@ import com.gdn.common.base.entity.GdnBaseEntity;
 @Table(name = CandidatePosition.TABLE_NAME)
 public class CandidatePosition extends GdnBaseEntity {
 
+  private static final long serialVersionUID = -7151188804914001010L;
   public static final String TABLE_NAME = "candidate_position";
   public static final String COLUMN_STATUS = "status";
   public static final String COLUMN_POSITION_ID = "position_id";
