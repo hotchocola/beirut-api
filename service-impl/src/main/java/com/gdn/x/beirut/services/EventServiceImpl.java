@@ -17,7 +17,6 @@ import com.gdn.x.beirut.entities.Position;
 
 @Service(value = "EventService")
 public class EventServiceImpl implements EventService {
-
   @Autowired
   private DomainEventPublisher domainEventPublisher;
 

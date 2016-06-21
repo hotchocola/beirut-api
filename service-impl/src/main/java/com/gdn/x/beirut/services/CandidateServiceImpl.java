@@ -257,6 +257,7 @@ public class CandidateServiceImpl implements CandidateService {
     return candidateDAO.findByEmailAddressAndStoreId(emailAddress, storeId);
   }
 
+
   @Override
   @Deprecated
   public List<Candidate> searchCandidateByPhoneNumber(String phoneNumber) {
