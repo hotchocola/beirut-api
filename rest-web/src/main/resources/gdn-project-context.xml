@@ -10,7 +10,8 @@
   <import resource="classpath:gdn-jpa-configuration.xml" />
   <import resource="classpath:*domain-event-publisher-context.xml" />
   <import resource="classpath:*gdn-dozer-configuration.xml" />
-  <import resource="classpath:*domain-event-subscriber-context.xml"/>
+  <import resource="classpath:*domain-event-subscriber-context.xml" />
+  
   
   <bean id="objectMapper" class ="com.fasterxml.jackson.databind.ObjectMapper"/>  
   

@@ -631,5 +631,4 @@ public class CandidateControllerTest {
     Mockito.verify(this.candidateService, Mockito.times(2)).updateCandidateStatusBulk(STORE_ID,
         idCandidates, idPosition, Status.APPLY);
   }
-
 }

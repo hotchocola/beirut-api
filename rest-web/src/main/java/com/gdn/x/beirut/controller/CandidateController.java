@@ -299,8 +299,10 @@ public class CandidateController {
     List<Candidate> candidates = this.candidateService.getAllCandidates();
     List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
     for (Candidate candidate : candidates) {
-      CandidateDTOResponse newCandidateDTORes =
-          getGdnMapper().deepCopy(candidate, CandidateDTOResponse.class);
+      CandidateDTOResponse newCandidateDTORes = new CandidateDTOResponse();
+
+      BeanUtils.copyProperties(candidate, newCandidateDTORes, "candidateDetail",
+          "candidatePositions");
       candidateResponse.add(newCandidateDTORes);
     }
     return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,

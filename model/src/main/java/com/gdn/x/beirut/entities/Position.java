@@ -16,6 +16,7 @@ import com.gdn.common.base.entity.GdnBaseEntity;
 @Table(name = Position.TABLE_NAME)
 public class Position extends GdnBaseEntity {
 
+  private static final long serialVersionUID = 628701914919251441L;
   public static final String TABLE_NAME = "position";
   public static final String COLUMN_TITLE = "title";
 

@@ -13,8 +13,12 @@ public class CandidateInsertNewEventListener implements DomainEventListener<Cand
 
   @Override
   public void onDomainEventConsumed(CandidateNewInsert message) throws Exception {
-    // TODO Auto-generated method stub
     System.out.println(message.getEmailAddress());
+    System.out.println(message.getFirstName());
+    System.out.println(message.getLastName());
+    System.out.println(message.getPhoneNumber());
+    System.out.println(message.getStatus());
+    System.out.println(message.getTimestamp());
   }
 
 }

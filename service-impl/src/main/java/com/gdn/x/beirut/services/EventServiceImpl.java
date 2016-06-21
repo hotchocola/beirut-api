@@ -17,7 +17,6 @@ import com.gdn.x.beirut.entities.Position;
 
 @Service(value = "EventService")
 public class EventServiceImpl implements EventService {
-
   @Autowired
   private DomainEventPublisher domainEventPublisher;
 
@@ -36,10 +35,4 @@ public class EventServiceImpl implements EventService {
           CandidateNewInsert.class);
     }
   }
-
-  // @PublishDomainEvent(publishEventClass = CandidateNewInsert.class,
-  // domainEventName = DomainEventName.CANDIDATE_NEW_INSERT)
-  // public CandidateNewInsert insertNewCandidateSingle(CandidateNewInsert candidateNewInsert) {
-  // return candidateNewInsert;
-  // }
 }
