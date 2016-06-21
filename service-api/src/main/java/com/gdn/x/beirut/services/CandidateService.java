@@ -20,7 +20,8 @@ public interface CandidateService {
 
   List<Candidate> getAllCandidates();
 
-  List<Candidate> getAllCandidatesByStoreId(String storeId) throws Exception;
+  Page<Candidate> getAllCandidatesByStoreIdPageable(String storeId, Pageable pageable)
+      throws Exception;
 
   Page<Candidate> getAllCandidatesWithPageable(String storeId, Pageable pageable);
 
@@ -32,8 +33,8 @@ public interface CandidateService {
 
   CandidateDetail getCandidateDetailAndStoreId(String id, String storeId) throws Exception;
 
-  CandidatePosition getCandidatePositionWithLogs(String idCandidate, String idPosition)
-      throws Exception;
+  CandidatePosition getCandidatePositionByStoreIdWithLogs(String idCandidate, String idPosition,
+      String storeId) throws Exception;
 
   void markForDelete(List<String> ids) throws Exception;
 

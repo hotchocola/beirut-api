@@ -1,6 +1,5 @@
 package com.gdn.x.beirut.services;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -8,6 +7,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
@@ -191,6 +191,11 @@ public class CandidateServiceTest {
 
   @Test
   public void testApplyNewPosition() throws Exception {
+    Candidate candidate = new Candidate();
+    candidate.setId(ID);
+    candidate.setStoreId(STORE_ID);
+    candidate.setFirstName(FIRST_NAME);
+    candidate.setLastName(LAST_NAME);
     Mockito.when(this.candidateDao.findOne(ID)).thenReturn(candidate);
     List<Position> positions = new ArrayList<>();
     List<String> positionIds = new ArrayList<>();
@@ -202,9 +207,56 @@ public class CandidateServiceTest {
       positions.add(position);
       positionIds.add(POSITION_ID + i);
     }
-    this.candidateService.applyNewPosition(ID, positionIds);
     Mockito.when(this.positionDao.findAll(positionIds)).thenReturn(positions);
+    for (Position position : positions) {
+      candidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
+    }
 
+    Assert.assertTrue(
+        this.candidateService.applyNewPosition(ID, positionIds).getId() == candidate.getId());
+
+    Set<CandidatePosition> candPostTest =
+        this.candidateService.applyNewPosition(ID, positionIds).getCandidatePositions();
+    int i = 0;
+    for (CandidatePosition candidatePosition : candPostTest) {
+      Assert.assertTrue(candidatePosition.getPosition().getId() == POSITION_ID + i);
+      Assert.assertTrue(candidatePosition.getPosition().getStoreId() == STORE_ID);
+      Assert.assertTrue(candidatePosition.getPosition().getTitle() == "Title : " + i);
+      i++;
+    }
+    this.candidateService.applyNewPosition(ID, positionIds);
+    verify(this.candidateDao, times(3)).findOne(ID);
+    verify(this.positionDao, times(3)).findAll(positionIds);
+    verify(this.candidateDao, times(3)).save(candidate);
+    // verify(this.candidateDao, times(3)).find
+  }
+
+  @Test(expected = Exception.class)
+  public void testApplyNewPositionException() throws Exception {
+    Candidate candidate = new Candidate();
+    candidate.setId(ID);
+    candidate.setStoreId(STORE_ID);
+    candidate.setFirstName(FIRST_NAME);
+    candidate.setLastName(LAST_NAME);
+    Mockito.when(this.candidateDao.findOne(ID)).thenReturn(null);
+    List<Position> positions = new ArrayList<>();
+    List<String> positionIds = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      Position position = new Position();
+      position.setTitle("Title : " + i);
+      position.setId(POSITION_ID + i);
+      position.setStoreId(STORE_ID);
+      positions.add(position);
+      positionIds.add(POSITION_ID + i);
+    }
+    try {
+      this.candidateService.applyNewPosition(ID, positionIds);
+    } catch (Exception e) {
+      verify(this.candidateDao, times(1)).findOne(ID);
+      throw e;
+    }
+    // verify(this.positionDao, times(1)).findAll(positionIds);
+    // verify(this.candidateDao, times(1)).save(candidate);
   }
 
   @Test
@@ -221,20 +273,24 @@ public class CandidateServiceTest {
     when(this.candidateDao.findAll()).thenReturn(candidates);
 
     // Black Box Test
-    Assert.assertTrue(this.candidateDao.findAll() == candidates);
+    Assert.assertTrue(this.candidateService.getAllCandidates() == candidates);
     // White Box Test
     this.candidateService.getAllCandidates();
     verify(this.candidateDao, times(2)).findAll();
   }
 
   @Test
-  public void testGetAllCandidatesByStoreId() {
+  public void testGetAllCandidatesByStoreIdPageable() throws Exception {
     List<Candidate> candidates = new ArrayList<Candidate>();
     candidates.add(this.candidate);
     Page<Candidate> pageCandidates =
         new PageImpl<>(candidates, DEFAULT_PAGEABLE, candidates.size());
     Mockito.when(this.candidateDao.findByStoreId(STORE_ID, DEFAULT_PAGEABLE))
         .thenReturn(pageCandidates);
+    assertTrue(this.candidateService.getAllCandidatesByStoreIdPageable(STORE_ID,
+        DEFAULT_PAGEABLE) == pageCandidates);
+    this.candidateService.getAllCandidatesByStoreIdPageable(STORE_ID, DEFAULT_PAGEABLE);
+    verify(this.candidateDao, times(2)).findByStoreId(STORE_ID, DEFAULT_PAGEABLE);
   }
 
   @Test
@@ -267,26 +323,97 @@ public class CandidateServiceTest {
   @Test
   public void testGetCandidateByIdAndStoreIdEager() throws Exception {
     when(this.candidateDao.findOne(ID)).thenReturn(this.candidate);
-    assertTrue(this.candidateDao.findOne(ID).equals(this.candidate));
+    assertTrue(
+        this.candidateService.getCandidateByIdAndStoreIdEager(ID, STORE_ID) == this.candidate);
     this.candidateService.getCandidateByIdAndStoreIdEager(ID, STORE_ID);
     verify(this.candidateDao, times(2)).findOne(ID);
+  }
+
+  @Test(expected = Exception.class)
+  public void testGetCandidateByIdAndStoreIdEagerException() throws Exception {
+    when(this.candidateDao.findOne(ID)).thenReturn(null);
+    try {
+      this.candidateService.getCandidateByIdAndStoreIdEager(ID, STORE_ID);
+    } catch (Exception e) {
+      verify(this.candidateDao, times(1)).findOne(ID);
+      throw e;
+    }
   }
 
   @Test
   public void testGetCandidateByIdAndStoreIdLazy() throws Exception {
     when(this.candidateDao.findOne(ID)).thenReturn(this.candidate);
-    assertTrue(this.candidateDao.findOne(ID).equals(this.candidate));
+    assertTrue(
+        this.candidateService.getCandidateByIdAndStoreIdLazy(ID, STORE_ID) == this.candidate);
     this.candidateService.getCandidateByIdAndStoreIdLazy(ID, STORE_ID);
     verify(this.candidateDao, times(2)).findOne(ID);
   }
 
+  @Test(expected = Exception.class)
+  public void testGetCandidateByIdAndStoreIdLazy_IdException() throws Exception {
+    when(this.candidateDao.findOne(ID)).thenReturn(null);
+    try {
+      this.candidateService.getCandidateByIdAndStoreIdLazy(ID, STORE_ID);
+    } catch (Exception e) {
+      verify(this.candidateDao, times(1)).findOne(ID);
+      throw e;
+    }
+  }
+
+  @Test(expected = Exception.class)
+  public void testGetCandidateByIdAndStoreIdLazy_StoreIdException() throws Exception {
+    Candidate candidate = new Candidate();
+    candidate.setId(ID);
+    candidate.setStoreId(STORE_ID + "false");
+    when(this.candidateDao.findOne(ID)).thenReturn(candidate);
+    try {
+      this.candidateService.getCandidateByIdAndStoreIdLazy(ID, STORE_ID);
+    } catch (Exception e) {
+      verify(this.candidateDao, times(1)).findOne(ID);
+      throw e;
+    }
+  }
+
+
   @Test
-  public void testGetCandidateDetail() throws Exception {
+  public void testGetCandidateDetailAndStoreId() throws Exception {
+    when(this.candidateDao.findOne(ID)).thenReturn(this.candidateWithDetail);
     // Black Box Test
-    assertTrue(this.candidateDao.findOne(ID).equals(this.candidate));
+    assertTrue(
+        this.candidateService.getCandidateDetailAndStoreId(ID, STORE_ID) == this.candidateDetail);
     // White Box Test
     this.candidateService.getCandidateDetailAndStoreId(ID, STORE_ID);
     verify(this.candidateDao, times(2)).findOne(ID);
+  }
+
+  @Test(expected = Exception.class)
+  public void testGetCandidateDetailAndStoreId_IdException() throws Exception {
+    when(this.candidateDao.findOne(ID)).thenReturn(null);
+    // Black Box Test
+    try {
+      this.candidateService.getCandidateDetailAndStoreId(ID, STORE_ID);
+    } catch (Exception e) {
+      verify(this.candidateDao, times(1)).findOne(ID);
+      throw e;
+    }
+  }
+
+  @Test(expected = Exception.class)
+  public void testGetCandidateDetailAndStoreId_StoreIdException() throws Exception {
+    Candidate candidateWithDetail = new Candidate();
+    candidateWithDetail.setId(ID);
+    candidateWithDetail.setStoreId(STORE_ID + "fail");
+    candidateWithDetail.setFirstName(FIRST_NAME);
+    candidateWithDetail.setLastName(LAST_NAME);
+    candidateWithDetail.setCandidateDetail(this.candidateDetail);
+    when(this.candidateDao.findOne(ID)).thenReturn(candidateWithDetail);
+    // Black Box Test
+    try {
+      this.candidateService.getCandidateDetailAndStoreId(ID, STORE_ID);
+    } catch (Exception e) {
+      verify(this.candidateDao, times(1)).findOne(ID);
+      throw e;
+    }
   }
 
   @Test
@@ -306,11 +433,134 @@ public class CandidateServiceTest {
     sets.add(candPost);
     candidate.setCandidatePositions(sets);
     position.setCandidatePositions(sets);
+
     when(this.candidateDao.findOne(ID)).thenReturn(candidate);
     when(this.positionDao.findOne(ID)).thenReturn(position);
-    this.candidateService.getCandidatePositionWithLogs(ID, ID);
-    verify(this.positionDao, times(1)).findOne(ID);
-    verify(this.candidateDao, times(1)).findOne(ID);
+
+    assertTrue(
+        this.candidateService.getCandidatePositionByStoreIdWithLogs(ID, ID, STORE_ID) == candPost);
+    this.candidateService.getCandidatePositionByStoreIdWithLogs(ID, ID, STORE_ID);
+
+    verify(this.positionDao, times(2)).findOne(ID);
+    verify(this.candidateDao, times(2)).findOne(ID);
+  }
+
+  @Test(expected = Exception.class)
+  public void testGetCandidatePositionWithLogs_IdCandidateException() throws Exception {
+    Candidate candidate = new Candidate();
+    candidate.setId(ID);
+    candidate.setStoreId(STORE_ID);
+    candidate.setFirstName("ZAL");
+    Position position = new Position();
+    position.setId(ID);
+    position.setStoreId(STORE_ID);
+    position.setTitle("ZALTITLE");
+    CandidatePosition candPost = new CandidatePosition();
+    candPost.setCandidate(candidate);
+    candPost.setPosition(position);
+    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    sets.add(candPost);
+    candidate.setCandidatePositions(sets);
+    position.setCandidatePositions(sets);
+
+    when(this.candidateDao.findOne(ID)).thenReturn(null);
+    when(this.positionDao.findOne(ID)).thenReturn(position);
+
+    try {
+      this.candidateService.getCandidatePositionByStoreIdWithLogs(ID, ID, STORE_ID);
+    } catch (Exception e) {
+      verify(this.candidateDao, times(1)).findOne(ID);
+      throw e;
+    }
+  }
+
+  @Test(expected = Exception.class)
+  public void testGetCandidatePositionWithLogs_IdPositionException() throws Exception {
+    Candidate candidate = new Candidate();
+    candidate.setId(ID);
+    candidate.setStoreId(STORE_ID);
+    candidate.setFirstName("ZAL");
+    Position position = new Position();
+    position.setId(ID);
+    position.setStoreId(STORE_ID);
+    position.setTitle("ZALTITLE");
+    CandidatePosition candPost = new CandidatePosition();
+    candPost.setCandidate(candidate);
+    candPost.setPosition(position);
+    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    sets.add(candPost);
+    candidate.setCandidatePositions(sets);
+    position.setCandidatePositions(sets);
+
+    when(this.candidateDao.findOne(ID)).thenReturn(candidate);
+    when(this.positionDao.findOne(ID)).thenReturn(null);
+
+    try {
+      this.candidateService.getCandidatePositionByStoreIdWithLogs(ID, ID, STORE_ID);
+    } catch (Exception e) {
+      verify(this.candidateDao, times(1)).findOne(ID);
+      verify(this.positionDao, times(1)).findOne(ID);
+      throw e;
+    }
+  }
+
+  @Test(expected = Exception.class)
+  public void testGetCandidatePositionWithLogs_StoreIdCandidateException() throws Exception {
+    Candidate candidate = new Candidate();
+    candidate.setId(ID);
+    candidate.setStoreId(STORE_ID + "fail");
+    candidate.setFirstName("ZAL");
+    Position position = new Position();
+    position.setId(ID);
+    position.setStoreId(STORE_ID);
+    position.setTitle("ZALTITLE");
+    CandidatePosition candPost = new CandidatePosition();
+    candPost.setCandidate(candidate);
+    candPost.setPosition(position);
+    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    sets.add(candPost);
+    candidate.setCandidatePositions(sets);
+    position.setCandidatePositions(sets);
+
+    when(this.candidateDao.findOne(ID)).thenReturn(candidate);
+    when(this.positionDao.findOne(ID)).thenReturn(position);
+
+    try {
+      this.candidateService.getCandidatePositionByStoreIdWithLogs(ID, ID, STORE_ID);
+    } catch (Exception e) {
+      verify(this.candidateDao, times(1)).findOne(ID);
+      throw e;
+    }
+  }
+
+  @Test(expected = Exception.class)
+  public void testGetCandidatePositionWithLogs_StoreIdPositionException() throws Exception {
+    Candidate candidate = new Candidate();
+    candidate.setId(ID);
+    candidate.setStoreId(STORE_ID);
+    candidate.setFirstName("ZAL");
+    Position position = new Position();
+    position.setId(ID);
+    position.setStoreId(STORE_ID + "fail");
+    position.setTitle("ZALTITLE");
+    CandidatePosition candPost = new CandidatePosition();
+    candPost.setCandidate(candidate);
+    candPost.setPosition(position);
+    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    sets.add(candPost);
+    candidate.setCandidatePositions(sets);
+    position.setCandidatePositions(sets);
+
+    when(this.candidateDao.findOne(ID)).thenReturn(candidate);
+    when(this.positionDao.findOne(ID)).thenReturn(position);
+
+    try {
+      this.candidateService.getCandidatePositionByStoreIdWithLogs(ID, ID, STORE_ID);
+    } catch (Exception e) {
+      verify(this.candidateDao, times(1)).findOne(ID);
+      verify(this.positionDao, times(1)).findOne(ID);
+      throw e;
+    }
   }
 
   @Test
@@ -362,21 +612,31 @@ public class CandidateServiceTest {
   @Test
   public void testSearchByCreatedDateBetween() {
     GregorianCalendar start = new GregorianCalendar(2016, 1, 1);
-    GregorianCalendar end = new GregorianCalendar(2016, 6, 1);
-
-    List<Candidate> result =
-        this.candidateService.searchByCreatedDateBetweenAndStoreId(start.getTime(), end.getTime(),
-            STORE_ID, DEFAULT_PAGEABLE).getContent();
-    Page<Candidate> pageRes = new PageImpl<>(result, DEFAULT_PAGEABLE, result.size());
+    long end = System.currentTimeMillis();
+    List<Candidate> candidates = new ArrayList<>();
+    for (Candidate candidate : this.candidates) {
+      if (candidate.getCreatedDate() != null && candidate.getCreatedDate().getTime() < end
+          && candidate.getCreatedDate().getTime() > start.getTime().getTime()) {
+        candidates.add(candidate);
+      }
+    }
+    Page<Candidate> pageCandidates =
+        new PageImpl<>(candidates, DEFAULT_PAGEABLE, candidates.size());
     Mockito.when(this.candidateDao.findByCreatedDateBetweenAndStoreId(start.getTime(),
-        end.getTime(), STORE_ID, DEFAULT_PAGEABLE)).thenReturn(pageRes);
-
+        new Date(end), STORE_ID, DEFAULT_PAGEABLE)).thenReturn(pageCandidates);
+    List<Candidate> result =
+        this.candidateService.searchByCreatedDateBetweenAndStoreId(start.getTime(), new Date(end),
+            STORE_ID, DEFAULT_PAGEABLE).getContent();
     // Black Box Test
-    Assert.assertTrue(result.size() == 1);
-    Assert.assertTrue(result.get(0).getStoreId().equals(this.candidate.getStoreId()));
+    Assert.assertTrue(result.size() == 20);
+    for (Candidate candidate : result) {
+      Assert.assertTrue(candidate.getCreatedDate().getTime() > start.getTime().getTime()
+          && candidate.getCreatedDate().getTime() < end);
+      Assert.assertTrue(candidate.getStoreId().equals(STORE_ID));
+    }
     // White Box Test
     verify(this.candidateDao, times(1)).findByCreatedDateBetweenAndStoreId(start.getTime(),
-        end.getTime(), STORE_ID, DEFAULT_PAGEABLE);
+        new Date(end), STORE_ID, DEFAULT_PAGEABLE);
   }
 
   @Test
@@ -400,6 +660,44 @@ public class CandidateServiceTest {
   }
 
   @Test
+  public void testSearchByPhoneNumberContainingAndStoreId() {
+    List<Candidate> res = new ArrayList<>();
+    for (Candidate candidate : candidates) {
+      if (candidate.getPhoneNumber() != null && candidate.getPhoneNumber().contains("123456789")) {
+        res.add(candidate);
+      }
+    }
+    when(this.candidateDao.findByPhoneNumberContainingAndStoreId("123456789", STORE_ID,
+        DEFAULT_PAGEABLE)).thenReturn(candidatePage);
+    Page<Candidate> result = this.candidateService
+        .searchCandidateByPhoneNumberContainAndStoreId("123456789", STORE_ID, DEFAULT_PAGEABLE);
+    // Black Box Test
+    Assert.assertTrue(result.getContent().size() == 1);
+    // White Box Test
+    verify(this.candidateDao, times(1)).findByPhoneNumberContainingAndStoreId("123456789", STORE_ID,
+        DEFAULT_PAGEABLE);
+  }
+
+  // @Test
+  // public void testSearchCandidateByPhoneNumber() {
+  // List<Candidate> res = new ArrayList<>();
+  // for (Candidate candidate : candidates) {
+  // if (candidate.getPhoneNumber() != null && candidate.getPhoneNumber().equals("1234567890")) {
+  // res.add(candidate);
+  // }
+  // }
+  // Page<Candidate> pageRes = new PageImpl<>(res, DEFAULT_PAGEABLE, res.size());
+  // when(this.candidateDao.findByPhoneNumberContainingAndStoreId("1234567890", STORE_ID,
+  // DEFAULT_PAGEABLE)).thenReturn(pageRes);
+  // List<Candidate> result = this.candidateService.searchCandidateByPhoneNumber("1234567890");
+  // // Black Box Test
+  // Assert.assertTrue(result.equals(res));
+  // // White Box Test
+  // verify(this.candidateDao, times(1)).findByPhoneNumberContainingAndStoreId("1234567890",
+  // STORE_ID, DEFAULT_PAGEABLE);
+  // }
+
+  @Test
   public void testSearchCandidateByEmailAddress() {
     // List<Candidate> res = new ArrayList<>();
     // for (Candidate candidate : candidateRanges) {
@@ -419,21 +717,24 @@ public class CandidateServiceTest {
         STORE_ID);
   }
 
-  @Test
+
+  // @Test
   public void testSearchCandidateByPhoneNumber() {
-    List<Candidate> res = new ArrayList<>();
+    List<Candidate> expected = new ArrayList<>();
     for (Candidate candidate : candidates) {
       if (candidate.getPhoneNumber() != null && candidate.getPhoneNumber().equals("1234567890")) {
-        res.add(candidate);
+        expected.add(candidate);
       }
     }
-    Page<Candidate> pageRes = new PageImpl<>(res, DEFAULT_PAGEABLE, res.size());
+    Page<Candidate> pageExpected = new PageImpl<>(expected, DEFAULT_PAGEABLE, expected.size());
     when(this.candidateDao.findByPhoneNumberContainingAndStoreId("1234567890", STORE_ID,
-        DEFAULT_PAGEABLE)).thenReturn(pageRes);
+        DEFAULT_PAGEABLE)).thenReturn(pageExpected);
     Page<Candidate> result = this.candidateService
         .searchCandidateByPhoneNumberContainAndStoreId("1234567890", STORE_ID, DEFAULT_PAGEABLE);
     // Black Box Test
-    Assert.assertTrue(result.getContent().equals(res));
+    for (Candidate candidate : result.getContent()) {
+      assertTrue(candidate.getPhoneNumber().contains("1234567890"));
+    }
     // White Box Test
     verify(this.candidateDao, times(1)).findByPhoneNumberContainingAndStoreId("1234567890",
         STORE_ID, DEFAULT_PAGEABLE);
@@ -472,21 +773,22 @@ public class CandidateServiceTest {
     candidateWithDetail.setLastName(lastTest);
     candidateWithDetail.getCandidateDetail().setContent((detilTest).getBytes());
     when(this.candidateDao.findOne(ID)).thenReturn(candidateWithDetail);
-    Candidate testCandidate = candidateWithDetail;
+    Candidate updatedCandidate = candidateWithDetail;
+    updatedCandidate.setPhoneNumber(phoneTest);
+    updatedCandidate.setEmailAddress(emailTest);
+    updatedCandidate.setFirstName(firstTest);
+    updatedCandidate.setLastName(lastTest);
+    updatedCandidate.getCandidateDetail().setContent((emailTest).getBytes());
+    when(this.candidateDao.save(updatedCandidate)).thenReturn(updatedCandidate);
 
-    this.candidateService.updateCandidateDetail(STORE_ID, testCandidate);
-    testCandidate.setPhoneNumber(phoneTest);
-    testCandidate.setEmailAddress(emailTest);
-    testCandidate.setFirstName(firstTest);
-    testCandidate.setLastName(lastTest);
-    testCandidate.getCandidateDetail().setContent((detilTest).getBytes());
+    this.candidateService.updateCandidateDetail(STORE_ID, updatedCandidate);
 
-    assertTrue(testCandidate.getFirstName().equals(candidateWithDetail.getFirstName()));
-    assertTrue(testCandidate.getLastName().equals(candidateWithDetail.getLastName()));
-    assertTrue(testCandidate.getEmailAddress().equals(candidateWithDetail.getEmailAddress()));
-    assertTrue(testCandidate.getPhoneNumber().equals(candidateWithDetail.getPhoneNumber()));
-    assertEquals(testCandidate.getCandidateDetail().getContent(),
-        candidateWithDetail.getCandidateDetail().getContent());
+    // assertTrue(updatedCandidate.getFirstName().equals(candidateWithDetail.getFirstName()));
+    // assertTrue(updatedCandidate.getLastName().equals(candidateWithDetail.getLastName()));
+    // assertTrue(updatedCandidate.getEmailAddress().equals(candidateWithDetail.getEmailAddress()));
+    // assertTrue(updatedCandidate.getPhoneNumber().equals(candidateWithDetail.getPhoneNumber()));
+    // assertEquals(updatedCandidate.getCandidateDetail().getContent(),
+    // candidateWithDetail.getCandidateDetail().getContent());
 
     verify(this.candidateDao, times(1)).findOne(ID);
     verify(this.candidateDao, times(1)).save(Mockito.any(Candidate.class));
