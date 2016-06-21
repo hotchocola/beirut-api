@@ -35,10 +35,4 @@ public class EventServiceImpl implements EventService {
           CandidateNewInsert.class);
     }
   }
-
-  // @PublishDomainEvent(publishEventClass = CandidateNewInsert.class,
-  // domainEventName = DomainEventName.CANDIDATE_NEW_INSERT)
-  // public CandidateNewInsert insertNewCandidateSingle(CandidateNewInsert candidateNewInsert) {
-  // return candidateNewInsert;
-  // }
 }

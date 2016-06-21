@@ -30,12 +30,13 @@ public class PositionServiceImpl implements PositionService {
   private PositionDAO positionDAO;
 
   @Override
-  public List<Position> getAllPosition(String storeId) {
+  @Deprecated
+  public List<Position> getAllPositionByStoreId(String storeId) {
     return positionDAO.findByStoreId(storeId);
   }
 
   @Override
-  public Page<Position> getAllPositionWithPageable(String storeId, Pageable pageable) {
+  public Page<Position> getAllPositionByStoreIdWithPageable(String storeId, Pageable pageable) {
     return positionDAO.findByStoreId(storeId, pageable);
   }
 

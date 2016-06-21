@@ -54,10 +54,10 @@ public class PositionController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "get all position", notes = "mengambil semua posisi.")
   @ResponseBody
-  public GdnRestListResponse<PositionDTOResponse> getAllPosition(@RequestParam String clientId,
-      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username) {
-    List<Position> positions = this.positionService.getAllPosition(storeId);
+  public GdnRestListResponse<PositionDTOResponse> getAllPositionByStoreId(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username) {
+    List<Position> positions = this.positionService.getAllPositionByStoreId(storeId);
     List<PositionDTOResponse> positionDTOResponses = new ArrayList<PositionDTOResponse>();
     for (Position positiones : positions) {
       PositionDTOResponse positionDTOResponse = new PositionDTOResponse();
@@ -78,7 +78,7 @@ public class PositionController {
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username, @RequestParam int page,
       @RequestParam int size) {
-    Page<Position> positions = this.positionService.getAllPositionWithPageable(storeId,
+    Page<Position> positions = this.positionService.getAllPositionByStoreIdWithPageable(storeId,
         PageableHelper.generatePageable(page, size));
     List<PositionDTOResponse> res = new ArrayList<>();
     for (Position position : positions) {

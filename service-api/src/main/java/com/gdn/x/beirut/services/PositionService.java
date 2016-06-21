@@ -9,9 +9,9 @@ import com.gdn.x.beirut.entities.Position;
 
 public interface PositionService {
 
-  List<Position> getAllPosition(String storeId);
+  List<Position> getAllPositionByStoreId(String storeId);
 
-  Page<Position> getAllPositionWithPageable(String storeId, Pageable pageable);
+  Page<Position> getAllPositionByStoreIdWithPageable(String storeId, Pageable pageable);
 
   Position getPosition(String storeId, String positionId) throws Exception;
 
