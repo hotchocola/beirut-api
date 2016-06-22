@@ -28,7 +28,7 @@ http://maven.apache.org/maven-v4_0_0.xsd">
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-solr</artifactId>
-			<version>1.5.2</version>
+			<version>1.5.2.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>com.gdn</groupId>
