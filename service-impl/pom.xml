@@ -21,6 +21,10 @@
       <groupId>com.gdn.x.beirut</groupId>
       <artifactId>beirut-model</artifactId>
     </dependency>
+	<dependency>
+		<groupId>com.gdn.x.beirut</groupId>
+		<artifactId>beirut-solr-dao</artifactId>
+	</dependency> 
     <dependency>
       <groupId>org.springframework.amqp</groupId>
       <artifactId>spring-rabbit</artifactId>
@@ -84,12 +88,5 @@
       <artifactId>commons-io</artifactId>
     </dependency>
 
-    <!-- 
-    <dependency>
-      <groupId>org.neo4j</groupId>
-      <artifactId>neo4j-cypher-compiler-2.1</artifactId>
-      <version>2.1.2</version>
-    </dependency>
-     -->	
 </dependencies>
 </project>
