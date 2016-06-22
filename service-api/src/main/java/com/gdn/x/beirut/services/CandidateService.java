@@ -20,6 +20,9 @@ public interface CandidateService {
 
   List<Candidate> getAllCandidates();
 
+  Page<Candidate> getAllCandidatesByStoreIdAndMarkForDeletePageable(String storeId,
+      boolean markForDelete, Pageable pageable) throws Exception;
+
   Page<Candidate> getAllCandidatesByStoreIdPageable(String storeId, Pageable pageable)
       throws Exception;
 

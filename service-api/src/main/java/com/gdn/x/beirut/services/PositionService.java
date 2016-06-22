@@ -23,7 +23,7 @@ public interface PositionService {
 
   Position getPositionDetailByIdAndStoreId(String id, String storeId) throws Exception;
 
-  boolean insertNewPosition(Position position);
+  Position insertNewPosition(Position position);
 
   void markForDeletePosition(String storeId, List<String> id) throws Exception;
 

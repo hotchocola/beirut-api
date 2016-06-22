@@ -66,24 +66,10 @@ public class CandidateServiceImpl implements CandidateService {
       CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
       BeanUtils.copyProperties(candidate, candidateNewInsert, "candidateDetail",
           "candidatePositions");
-      // Position position = candidatePosition.getPosition();
       BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
-      // candidateNewInsert.setStatus(candidatePosition.getStatus().toString());
       domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
           CandidateNewInsert.class);
     }
-    // Set<CandidatePosition> candidatePositions = candidate.getCandidatePositions();
-    // List<CandidateNewInsert> candidateNewInserts = new ArrayList<>();
-    // for (CandidatePosition candidatePosition : candidatePositions) {
-    // CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
-    // BeanUtils.copyProperties(candidate, candidateNewInsert, "candidateDetail",
-    // "candidatePositions");
-    // Position position = candidatePosition.getPosition();
-    // BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
-    // // candidateNewInsert.setStatus(candidatePosition.getStatus().toString());
-    // domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
-    // CandidateNewInsert.class);
-    // }
     return candidateDAO.save(candidate);
   }
 
@@ -94,10 +80,17 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
+  public Page<Candidate> getAllCandidatesByStoreIdAndMarkForDeletePageable(String storeId,
+      boolean markForDelete, Pageable pageable) throws Exception {
+    return this.candidateDAO.findByStoreIdAndMarkForDelete(storeId, markForDelete, pageable);
+  }
+
+  @Override
   public Page<Candidate> getAllCandidatesByStoreIdPageable(String storeId, Pageable pageable)
       throws Exception {
     return this.candidateDAO.findByStoreId(storeId, pageable);
   }
+
 
   @Override
   @Deprecated
@@ -132,7 +125,6 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   public Candidate getCandidateByIdAndStoreIdLazy(String id, String storeId) throws Exception {
-    // TODO Auto-generated method stub
     Candidate candidate = this.candidateDAO.findOne(id);
     if (candidate == null || candidate.equals(null)) {
       throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "id not found in database");
@@ -221,19 +213,6 @@ public class CandidateServiceImpl implements CandidateService {
     this.candidateDAO.save(candidate);
   }
 
-  // @Override
-  // public boolean setCandidatePositionStatus(String idCandidatePosition, Status newStatus) {
-  // // TODO Auto-generated method stub
-  // // 1. insert new status log...
-  // // 2. update status candidateposition (yang saat ini)
-  // CandidatePosition candidatePostition =
-  // candidateDAO.findCandidatePositionById(idCandidatePosition);
-  // StatusLog newStatusLog = new StatusLog();
-  // newStatusLog.setStatus(newStatus);
-  // newStatusLog.setCandidatePositions(candidatePostition);
-  // return false;
-  // }
-
   @Override
   public Page<Candidate> searchByCreatedDateBetweenAndStoreId(Date start, Date end, String storeId,
       Pageable pageable) {
@@ -312,7 +291,6 @@ public class CandidateServiceImpl implements CandidateService {
               + " but was = " + storeId);
     }
     Position existingPosition = positionDAO.findOne(idPosition);
-    // TODO: if existing position not exist
     Hibernate.initialize(existingCandidate.getCandidatePositions());
     existingCandidate.getCandidatePositions().stream()
         .filter(candidatePosition -> candidatePosition.getPosition().equals(existingPosition))
