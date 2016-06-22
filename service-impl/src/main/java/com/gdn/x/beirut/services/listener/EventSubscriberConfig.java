@@ -1,4 +1,4 @@
-package com.gdn.x.beirut.services;
+package com.gdn.x.beirut.services.listener;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.config.EnableIntegration;

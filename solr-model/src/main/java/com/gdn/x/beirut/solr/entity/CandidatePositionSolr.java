@@ -1,31 +1,41 @@
-package com.gdn.x.beirut.domain.event.model;
+package com.gdn.x.beirut.solr.entity;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.gdn.common.base.entity.GdnBaseDomainEventModel;
+import org.apache.solr.client.solrj.beans.Field;
+import org.springframework.data.solr.core.mapping.SolrDocument;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class CandidateNewInsert extends GdnBaseDomainEventModel {
+import com.gdn.common.base.entity.GdnBaseSolrEntity;
 
-  private String storeId;
+@SolrDocument(solrCoreName = "xcandidatePosition")
+public class CandidatePositionSolr extends GdnBaseSolrEntity {
+  private static final long serialVersionUID = 1L;
 
-  private String idPosition;
-
+  @Field
   private String idCandidate;
 
+  @Field
+  private String idPosition;
+
+  @Field
   private String emailAddress;
 
+  @Field
   private String firstName;
 
+  @Field
   private String lastName;
 
+  @Field
   private String phoneNumber;
 
+  @Field
   private Date createdDate;
 
+  @Field
   private String title;
 
+  @Field
   private String status;
 
   public Date getCreatedDate() {
@@ -98,5 +108,12 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  @Override
+  public String toString() {
+    return String.format(
+        "CandidateSolr [emailAddress=%s, firstName=%s, lastName=%s, phoneNumber=%s, status=%s, title=%s, toString()=%s]",
+        emailAddress, firstName, lastName, phoneNumber, status, title, super.toString());
   }
 }

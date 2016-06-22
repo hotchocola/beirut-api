@@ -28,7 +28,11 @@ import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.entities.StatusLog;
 import com.gdn.x.beirut.solr.dao.CandidatePositionSolrRepository;
+<<<<<<< HEAD
 import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
+=======
+import com.gdn.x.beirut.solr.entity.CandidatePositionSolr;
+>>>>>>> EgaPrianto-master
 
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
@@ -40,6 +44,9 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Autowired
   private CandidateDAO candidateDAO;
+
+  @Autowired
+  private CandidatePositionSolrRepository candidatePositionSolrRepository;
 
   @Autowired
   private PositionDAO positionDAO;
@@ -71,7 +78,9 @@ public class CandidateServiceImpl implements CandidateService {
       CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
       BeanUtils.copyProperties(candidate, candidateNewInsert, "candidateDetail",
           "candidatePositions");
+      candidateNewInsert.setIdCandidate(candidate.getId());
       BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
+      candidateNewInsert.setIdPosition(position.getId());
       domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
           CandidateNewInsert.class);
     }
@@ -235,9 +244,11 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
-  public Page<Candidate> searchByFirstNameContainAndStoreId(String firstName, String storeId,
-      Pageable pageable) throws Exception {
-    return candidateDAO.findByFirstNameContainingAndStoreId(firstName, storeId, pageable);
+  public Page<CandidatePositionSolr> searchByFirstNameContainAndStoreId(String firstName,
+      String storeId, Pageable pageable) throws Exception {
+    Page<CandidatePositionSolr> result = candidatePositionSolrRepository
+        .findByFirstNameContainingAndStoreId(firstName, storeId, pageable);
+    return resutl;
   }
 
   @Override

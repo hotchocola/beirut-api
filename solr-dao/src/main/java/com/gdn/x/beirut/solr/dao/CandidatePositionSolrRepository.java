@@ -1,11 +1,16 @@
 package com.gdn.x.beirut.solr.dao;
 
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.solr.repository.SolrCrudRepository;
 
-import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
+import com.gdn.x.beirut.solr.entity.CandidatePositionSolr;
 
 public interface CandidatePositionSolrRepository
     extends SolrCrudRepository<CandidatePositionSolr, String> {
-  // @Override
-  // Page<CandidatePositionSolr> findAll(Pageable pageable);
+
+  public Page<CandidatePositionSolr> findByFirstNameContainingAndStoreId(String firstName,
+      String storeId, Pageable pageable);
+
 }

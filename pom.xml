@@ -322,6 +322,16 @@
         <artifactId>beirut-model</artifactId>
         <version>${project.version}</version>
       </dependency>
+	  <dependency>
+        <groupId>com.gdn.x.beirut</groupId>
+        <artifactId>beirut-solr-dao</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+	  <dependency>
+        <groupId>com.gdn.x.beirut</groupId>
+        <artifactId>beirut-solr-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.gdn.x.beirut</groupId>
         <artifactId>beirut-dao-api</artifactId>
@@ -347,16 +357,6 @@
         <artifactId>beirut-domain-event</artifactId>
         <version>${project.version}</version>
       </dependency>
-	  <dependency>
-        <groupId>com.gdn.x.beirut</groupId>
-        <artifactId>beirut-solr-dao</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-	  <dependency>
-		<groupId>com.gdn.x.beirut</groupId>
-        <artifactId>beirut-solr-model</artifactId>
-        <version>${project.version}</version>
-	  </dependency>
       <dependency>
         <groupId>com.gdn.x.beirut</groupId>
         <artifactId>beirut-outbound-api</artifactId>
