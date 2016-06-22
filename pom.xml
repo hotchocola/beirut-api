@@ -347,6 +347,11 @@
         <artifactId>beirut-domain-event</artifactId>
         <version>${project.version}</version>
       </dependency>
+	  <dependency>
+        <groupId>com.gdn.x.beirut</groupId>
+        <artifactId>beirut-solr-dao</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.gdn.x.beirut</groupId>
         <artifactId>beirut-outbound-api</artifactId>
@@ -620,7 +625,6 @@
       <artifactId>h2</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
   <modules>
     <module>model</module>
@@ -632,5 +636,6 @@
     <module>rest-web</module>
     <module>client-java-sdk</module>
     <module>domain-event</module>
+	<module>solr-dao</module>
   </modules>
 </project>
