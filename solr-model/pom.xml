@@ -13,33 +13,14 @@ http://maven.apache.org/maven-v4_0_0.xsd">
 	<properties>
 	</properties>
 	<build>
-		<finalName>${project.name}</finalName>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<warSourceExcludes>version</warSourceExcludes>
-				</configuration>
-			</plugin>
-		</plugins>
+		<!-- <finalName>${project.name}</finalName> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
+			<artifactId>maven-war-plugin</artifactId> <configuration> <warSourceExcludes>version</warSourceExcludes> 
+			</configuration> </plugin> </plugins> -->
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-solr</artifactId>
-			<version>1.5.2.RELEASE</version>
-		</dependency>
-		<dependency>
 			<groupId>com.gdn</groupId>
 			<artifactId>gdn-common-base</artifactId>
-			<version>4.2.0</version>
 		</dependency>
-		<dependency>
-			<groupId>com.gdn.x.beirut</groupId>
-			<artifactId>base-rest-web</artifactId>
-			<version>5.2.0</version>
-			<type>war</type>
-		</dependency>																			
 	</dependencies>
 </project>

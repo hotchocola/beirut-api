@@ -6,9 +6,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,9 +28,6 @@ public class PositionServiceTest {
 
   @InjectMocks
   private PositionServiceImpl service;
-
-  @PersistenceContext
-  private EntityManager em;
 
   private Position position;
   private final List<Position> positions = new ArrayList<Position>();

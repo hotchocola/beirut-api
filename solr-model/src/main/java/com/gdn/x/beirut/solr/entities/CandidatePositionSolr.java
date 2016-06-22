@@ -1,4 +1,4 @@
-package com.gdn.x.beirut.solr.entity;
+package com.gdn.x.beirut.solr.entities;
 
 import java.util.Date;
 
