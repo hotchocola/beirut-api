@@ -7,7 +7,7 @@ http://maven.apache.org/maven-v4_0_0.xsd">
 		<artifactId>beirut-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>beirut-solr-dao</artifactId>
+	<artifactId>beirut-solr-model</artifactId>
 	<packaging>jar</packaging>
 	<name>${project.groupId}-${project.artifactId}</name>
 	<properties>
@@ -37,13 +37,9 @@ http://maven.apache.org/maven-v4_0_0.xsd">
 		</dependency>
 		<dependency>
 			<groupId>com.gdn.x.beirut</groupId>
-			<artifactId>beirut-solr-model</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.gdn.x</groupId>
 			<artifactId>base-rest-web</artifactId>
 			<version>5.2.0</version>
 			<type>war</type>
-		</dependency>										
+		</dependency>																			
 	</dependencies>
 </project>
