@@ -12,7 +12,7 @@
   <import resource="classpath:*gdn-dozer-configuration.xml" />
   <import resource="classpath:*domain-event-subscriber-context.xml" />
   <import resource="classpath:*gdn-solr-configuration.xml" />
-  <solr:repositories base-package="com.gdn.x.beirut" multicore-support="true" />
+  <solr:repositories base-package="com.gdn.x.beirut.solr.dao" multicore-support="true" />
   <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper" />
   <jpa:repositories base-package="com.gdn.x.beirut.dao" />
   <context:component-scan base-package="com.gdn.x.beirut.services" />
