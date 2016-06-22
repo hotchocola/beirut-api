@@ -2,11 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:context="http://www.springframework.org/schema/context" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
   xmlns:task="http://www.springframework.org/schema/task" xmlns:metrics="http://www.ryantenney.com/schema/metrics"
+  xmlns:solr="http://www.springframework.org/schema/data/solr"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
-		http://www.ryantenney.com/schema/metrics http://www.ryantenney.com/schema/metrics/metrics-3.0.xsd">
+		http://www.ryantenney.com/schema/metrics http://www.ryantenney.com/schema/metrics/metrics-3.0.xsd
+		http://www.springframework.org/schema/data/solr http://www.springframework.org/schema/data/solr/spring-solr.xsd">
   <import resource="classpath:gdn-jpa-configuration.xml" />
   <import resource="classpath:*domain-event-publisher-context.xml" />
   <import resource="classpath:*gdn-dozer-configuration.xml" />
