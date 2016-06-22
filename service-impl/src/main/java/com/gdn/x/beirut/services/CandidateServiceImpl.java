@@ -27,6 +27,8 @@ import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.entities.StatusLog;
+import com.gdn.x.beirut.solr.dao.CandidatePositionSolrRepository;
+import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
@@ -44,6 +46,9 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Autowired
   private DomainEventPublisher domainEventPublisher;
+
+  @Autowired
+  private CandidatePositionSolrRepository candidatePositionSolrRepository;
 
   @Override
   @Transactional(readOnly = false)
@@ -74,6 +79,16 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
+  public Page<CandidatePosition> getAllCandidatePositionByStoreId(String storeId,
+      Pageable pageable) {
+    Page<CandidatePositionSolr> result = this.candidatePositionSolrRepository.findAll(pageable);
+    for (CandidatePositionSolr candidatePositionSolr : result.getContent()) {
+
+    }
+    return null;
+  }
+
+  @Override
   @Deprecated
   public List<Candidate> getAllCandidates() {
     return candidateDAO.findAll();
@@ -85,12 +100,12 @@ public class CandidateServiceImpl implements CandidateService {
     return this.candidateDAO.findByStoreIdAndMarkForDelete(storeId, markForDelete, pageable);
   }
 
+
   @Override
   public Page<Candidate> getAllCandidatesByStoreIdPageable(String storeId, Pageable pageable)
       throws Exception {
     return this.candidateDAO.findByStoreId(storeId, pageable);
   }
-
 
   @Override
   @Deprecated
@@ -231,11 +246,11 @@ public class CandidateServiceImpl implements CandidateService {
     return candidateDAO.findByLastNameContainingAndStoreId(lastName, storeId, pageable);
   }
 
+
   @Override
   public Candidate searchCandidateByEmailAddressAndStoreId(String emailAddress, String storeId) {
     return candidateDAO.findByEmailAddressAndStoreId(emailAddress, storeId);
   }
-
 
   @Override
   @Deprecated
