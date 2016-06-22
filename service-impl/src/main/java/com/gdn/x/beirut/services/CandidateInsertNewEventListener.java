@@ -13,12 +13,12 @@ public class CandidateInsertNewEventListener implements DomainEventListener<Cand
 
   @Override
   public void onDomainEventConsumed(CandidateNewInsert message) throws Exception {
-    System.out.println(message.getEmailAddress());
-    System.out.println(message.getFirstName());
-    System.out.println(message.getLastName());
-    System.out.println(message.getPhoneNumber());
-    System.out.println(message.getStatus());
-    System.out.println(message.getTimestamp());
+    System.out.print("[ " + message.getEmailAddress() + ", ");
+    System.out.print(message.getFirstName() + ", ");
+    System.out.print(message.getLastName() + ", ");
+    System.out.print(message.getPhoneNumber() + ", ");
+    System.out.print(message.getStatus() + ", ");
+    System.out.print(message.getTimestamp() + " ]");
   }
 
 }
