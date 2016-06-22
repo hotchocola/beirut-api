@@ -206,9 +206,9 @@ public class PositionServiceTest {
     testSavePosition.setId("122");
     testSavePosition.setStoreId("Store");
     Mockito.when(repository.save(position)).thenReturn(testSavePosition);
-    boolean isSaved = this.service.insertNewPosition(position);
-    Mockito.verify(repository, Mockito.times(2)).save(position);
-    Assert.assertTrue(position.equals(testSavePosition));
+    Position result = this.service.insertNewPosition(testSavePosition);
+    Mockito.verify(repository, Mockito.times(2)).save(testSavePosition);
+    Assert.assertTrue(result.equals(testSavePosition));
   }
 
 }

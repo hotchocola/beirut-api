@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.gdn.common.web.param.PageableHelper;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
+import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
@@ -156,7 +157,7 @@ public class PositionController {
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "insert new position", notes = "memasukan posisi baru.")
   @ResponseBody
-  public GdnBaseRestResponse insertNewPosition(@RequestParam String clientId,
+  public GdnRestSingleResponse<PositionDTOResponse> insertNewPosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestBody PositionDTORequest positionDTORequest) {
     Position temp = new Position();
@@ -164,7 +165,10 @@ public class PositionController {
     // System.out.println("DTO : " + positionDTORequest.toString());
     // System.out.println(temp.toString());
     temp.setStoreId(storeId);
-    return new GdnBaseRestResponse(this.positionService.insertNewPosition(temp));
+    Position result = this.positionService.insertNewPosition(temp);
+    PositionDTOResponse positionDTOResponse = new PositionDTOResponse();
+    dozerMapper.map(result, positionDTOResponse);
+    return new GdnRestSingleResponse<PositionDTOResponse>(positionDTOResponse, requestId);
   }
 
   public void setDozerMapper(Mapper dm) {

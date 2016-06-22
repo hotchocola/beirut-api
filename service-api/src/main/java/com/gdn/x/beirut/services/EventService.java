@@ -1,7 +1,7 @@
 package com.gdn.x.beirut.services;
 
-import com.gdn.x.beirut.entities.Candidate;
+import com.gdn.x.beirut.entities.Position;
 
 public interface EventService {
-  public void insertNewCandidateDenormalized(Candidate candidate);
+  public Position insertNewPosition(Position position);
 }
