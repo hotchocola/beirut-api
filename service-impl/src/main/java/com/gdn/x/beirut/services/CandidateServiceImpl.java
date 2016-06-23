@@ -18,6 +18,7 @@ import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.CandidateDAO;
 import com.gdn.x.beirut.dao.PositionDAO;
+import com.gdn.x.beirut.domain.event.model.CandidateMarkForDelete;
 import com.gdn.x.beirut.domain.event.model.CandidateNewInsert;
 import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.entities.Candidate;
@@ -65,18 +66,22 @@ public class CandidateServiceImpl implements CandidateService {
     for (Position position : positions) {
       candidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
     }
-    Candidate newCandidate = candidateDAO.save(candidate);
-    for (Position position : positions) {
-      CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
-      BeanUtils.copyProperties(newCandidate, candidateNewInsert, "candidateDetail",
-          "candidatePositions");
-      BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
-      candidateNewInsert.setIdCandidate(newCandidate.getId());
-      candidateNewInsert.setIdPosition(position.getId());
-      domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
-          CandidateNewInsert.class);
+    try {
+      Candidate newCandidate = candidateDAO.save(candidate);
+      for (Position position : positions) {
+        CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
+        BeanUtils.copyProperties(newCandidate, candidateNewInsert, "candidateDetail",
+            "candidatePositions");
+        BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
+        candidateNewInsert.setIdCandidate(newCandidate.getId());
+        candidateNewInsert.setIdPosition(position.getId());
+        domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
+            CandidateNewInsert.class);
+      }
+      return newCandidate;
+    } catch (RuntimeException e) {
+      throw e;
     }
-    return newCandidate;
   }
 
   @Override
@@ -220,6 +225,13 @@ public class CandidateServiceImpl implements CandidateService {
     }
     candidate.setMarkForDelete(true);
     this.candidateDAO.save(candidate);
+    CandidateMarkForDelete candidateMarkForDelete =
+        this.gdnMapper.deepCopy(candidate, CandidateMarkForDelete.class);
+    candidateMarkForDelete.setId(candidate.getId());
+    candidateMarkForDelete.setMarkForDelete(true);
+    candidateMarkForDelete.setStoreId(candidate.getStoreId());
+    domainEventPublisher.publish(candidateMarkForDelete, DomainEventName.CANDIDATE_MARK_FOR_DELETE,
+        CandidateMarkForDelete.class);
   }
 
   @Override

@@ -7,6 +7,8 @@ import com.gdn.x.beirut.entities.Status;
 public interface EventService {
   public Position insertNewPosition(Position position);
 
+  public Position markForDelete(Position position);
+
   public Candidate updateCandidateStatus(String storeid, String candidateId, String idPosition,
       Status status);
 }

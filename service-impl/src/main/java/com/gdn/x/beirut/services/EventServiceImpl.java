@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import com.gdn.common.base.domainevent.publisher.PublishDomainEvent;
 import com.gdn.x.beirut.domain.event.model.CandidateUpdateStatus;
 import com.gdn.x.beirut.domain.event.model.DomainEventName;
-import com.gdn.x.beirut.domain.event.model.PositionNewInsert;
+import com.gdn.x.beirut.domain.event.model.PositionMarkForDelete;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
@@ -14,9 +14,9 @@ import com.gdn.x.beirut.entities.Status;
 public class EventServiceImpl implements EventService {
 
   @Override
-  @PublishDomainEvent(publishEventClass = PositionNewInsert.class,
-      domainEventName = DomainEventName.POSITION_NEW_INSERT)
-  public Position insertNewPosition(Position position) {
+  @PublishDomainEvent(publishEventClass = PositionMarkForDelete.class,
+      domainEventName = DomainEventName.POSITION_MARK_FOR_DELETE)
+  public Position markForDelete(Position position) {
     return position;
   }
 
