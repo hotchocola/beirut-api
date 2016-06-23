@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.dozer.DozerBeanMapper;
+import org.dozer.Mapper;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.common.web.param.PageableHelper;
 import com.gdn.x.beirut.dao.CandidateDAO;
 import com.gdn.x.beirut.dao.PositionDAO;
@@ -66,6 +69,8 @@ public class CandidateServiceTest {
   @InjectMocks
   private CandidateServiceImpl candidateService;
 
+  private GdnMapper gdnMapper;
+
   private Candidate candidate;
 
   private Candidate markForDeleteCandidate;
@@ -87,6 +92,26 @@ public class CandidateServiceTest {
   @Before
   public void initialize() {
     initMocks(this);
+    this.gdnMapper = new GdnMapper() {
+      @SuppressWarnings("unchecked")
+      @Override
+      public <T> T deepCopy(Object source, Class<T> destinationClass) {
+        Mapper mapper = new DozerBeanMapper();
+        T destination;
+        try {
+          destination = destinationClass.newInstance();
+        } catch (InstantiationException e) {
+          return (T) source;
+        } catch (IllegalAccessException e) {
+          return (T) source;
+        }
+        mapper.map(source, destination);
+        return destination;
+      }
+    };
+
+    this.candidateService.setGdnMapper(this.gdnMapper);
+
     this.position = new Position();
     this.position.setId(ID);
     this.position.setStoreId(STORE_ID);
@@ -107,7 +132,6 @@ public class CandidateServiceTest {
 
     this.candidateDetail = new CandidateDetail();
     this.candidateDetail.setId(ID);
-
 
     this.candidateWithDetail = new Candidate();
     this.candidateWithDetail.setId(ID);
@@ -189,7 +213,6 @@ public class CandidateServiceTest {
     Mockito.verifyNoMoreInteractions(this.positionDao);
   }
 
-
   @Test
   public void testApplyNewPosition() throws Exception {
     Candidate candidate = new Candidate();
@@ -260,6 +283,7 @@ public class CandidateServiceTest {
     // verify(this.candidateDao, times(1)).save(candidate);
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetAllCandidates() {
     Candidate cand1 = new Candidate();

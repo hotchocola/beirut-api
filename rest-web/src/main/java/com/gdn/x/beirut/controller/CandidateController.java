@@ -40,7 +40,6 @@ import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.services.CandidateService;
-import com.gdn.x.beirut.services.PositionService;
 import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 import com.gdn.x.beirut.solr.services.CandidatePositionSolrService;
 import com.wordnik.swagger.annotations.Api;
@@ -53,9 +52,6 @@ public class CandidateController {
 
   @Autowired
   private CandidateService candidateService;
-
-  @Autowired
-  private PositionService positionService;
 
   @Autowired
   private GdnMapper gdnMapper;
@@ -471,10 +467,6 @@ public class CandidateController {
 
   public void setObjectMapper(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
-  }
-
-  public void setPositionService(PositionService positionService) {
-    this.positionService = positionService;
   }
 
   @RequestMapping(value = "updateCandidateDetail", method = RequestMethod.POST,

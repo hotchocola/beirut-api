@@ -62,6 +62,7 @@ public class PositionServiceTest {
     aa.add("1");
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetAllPositionByStoreId() {
     this.service.getAllPositionByStoreId(STORE_ID);

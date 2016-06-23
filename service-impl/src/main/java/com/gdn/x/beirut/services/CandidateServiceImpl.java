@@ -31,7 +31,7 @@ import com.gdn.x.beirut.entities.StatusLog;
 @Transactional(readOnly = true)
 public class CandidateServiceImpl implements CandidateService {
 
-  private static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
+  public static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
 
   @Autowired
   private CandidateDAO candidateDAO;
@@ -95,7 +95,6 @@ public class CandidateServiceImpl implements CandidateService {
       throws Exception {
     return this.candidateDAO.findByStoreId(storeId, pageable);
   }
-
 
   @Override
   @Deprecated
