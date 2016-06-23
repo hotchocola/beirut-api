@@ -99,13 +99,6 @@ public class CandidateServiceImpl implements CandidateService {
     return this.candidateDAO.findByStoreIdAndMarkForDelete(storeId, markForDelete, pageable);
   }
 
-  // @Override
-  // public Page<CandidatePosition> getAllCandidatePositionByStoreId(String storeId,
-  // Pageable pageable) {
-  // Page<CandidatePosition> result = this.candidateDAO.
-  // return result;
-  // }
-
   @Override
   public Page<Candidate> getAllCandidatesByStoreIdPageable(String storeId, Pageable pageable)
       throws Exception {
