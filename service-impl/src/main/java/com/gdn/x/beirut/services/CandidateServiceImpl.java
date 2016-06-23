@@ -1,17 +1,13 @@
 package com.gdn.x.beirut.services;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,22 +26,15 @@ import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.entities.StatusLog;
-import com.gdn.x.beirut.solr.dao.CandidatePositionSolrRepository;
-import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
 public class CandidateServiceImpl implements CandidateService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(CandidateServiceImpl.class);
-  private static final String ID_SHOULD_EMPTY_FOR_NEW_RECORD = "id should empty for new record";
   private static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
 
   @Autowired
   private CandidateDAO candidateDAO;
-
-  @Autowired
-  private CandidatePositionSolrRepository candidatePositionSolrRepository;
 
   @Autowired
   private PositionDAO positionDAO;
@@ -242,15 +231,7 @@ public class CandidateServiceImpl implements CandidateService {
   @Override
   public Page<Candidate> searchByFirstNameContainAndStoreId(String firstName, String storeId,
       Pageable pageable) throws Exception {
-    Page<CandidatePositionSolr> resultFromSolr = candidatePositionSolrRepository
-        .findIdCandidateDistinctByFirstNameContainingAndStoreId(firstName, storeId, pageable);
-    List<Candidate> candidates = new ArrayList<>();
-    for (CandidatePositionSolr candidatePositionSolr : resultFromSolr.getContent()) {
-      Candidate newCandidate = getGdnMapper().deepCopy(candidatePositionSolr, Candidate.class);
-      newCandidate.setId(candidatePositionSolr.getIdCandidate());
-      candidates.add(newCandidate);
-    }
-    return new PageImpl<>(candidates, pageable, candidates.size());
+    return this.candidateDAO.findByFirstNameContainingAndStoreId(firstName, storeId, pageable);
   }
 
   @Override
