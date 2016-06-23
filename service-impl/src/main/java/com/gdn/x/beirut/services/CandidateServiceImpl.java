@@ -28,7 +28,6 @@ import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.entities.StatusLog;
-import com.gdn.x.beirut.solr.dao.CandidatePositionSolrRepository;
 
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
@@ -38,6 +37,14 @@ public class CandidateServiceImpl implements CandidateService {
   private static final String ID_SHOULD_EMPTY_FOR_NEW_RECORD = "id should empty for new record";
   private static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
 
+  public static String getIdShouldEmptyForNewRecord() {
+    return ID_SHOULD_EMPTY_FOR_NEW_RECORD;
+  }
+
+  public static Logger getLog() {
+    return LOG;
+  }
+
   @Autowired
   private CandidateDAO candidateDAO;
 
@@ -46,9 +53,6 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Autowired
   private DomainEventPublisher domainEventPublisher;
-
-  @Autowired
-  private CandidatePositionSolrRepository candidatePositionSolrRepository;
 
   @Autowired
   private GdnMapper gdnMapper;
@@ -95,6 +99,13 @@ public class CandidateServiceImpl implements CandidateService {
     return this.candidateDAO.findByStoreIdAndMarkForDelete(storeId, markForDelete, pageable);
   }
 
+  // @Override
+  // public Page<CandidatePosition> getAllCandidatePositionByStoreId(String storeId,
+  // Pageable pageable) {
+  // Page<CandidatePosition> result = this.candidateDAO.
+  // return result;
+  // }
+
   @Override
   public Page<Candidate> getAllCandidatesByStoreIdPageable(String storeId, Pageable pageable)
       throws Exception {
@@ -106,13 +117,6 @@ public class CandidateServiceImpl implements CandidateService {
   public Page<Candidate> getAllCandidatesWithPageable(String storeId, Pageable pageable) {
     return candidateDAO.findByStoreId(storeId, pageable);
   }
-
-  // @Override
-  // public Page<CandidatePosition> getAllCandidatePositionByStoreId(String storeId,
-  // Pageable pageable) {
-  // Page<CandidatePosition> result = this.candidateDAO.
-  // return result;
-  // }
 
   @Override
   public Candidate getCandidate(String id) throws Exception {
@@ -139,6 +143,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
   }
 
+
   @Override
   public Candidate getCandidateByIdAndStoreIdLazy(String id, String storeId) throws Exception {
     Candidate candidate = this.candidateDAO.findOne(id);
@@ -156,7 +161,6 @@ public class CandidateServiceImpl implements CandidateService {
   public CandidateDAO getCandidateDAO() {
     return candidateDAO;
   }
-
 
   @Override
   public CandidateDetail getCandidateDetailAndStoreId(String id, String storeId) throws Exception {
@@ -194,10 +198,6 @@ public class CandidateServiceImpl implements CandidateService {
     }
     throw new ApplicationException(ErrorCategory.UNSPECIFIED,
         "didn't get equal position in candidate");
-  }
-
-  public CandidatePositionSolrRepository getCandidatePositionSolrRepository() {
-    return candidatePositionSolrRepository;
   }
 
   public DomainEventPublisher getDomainEventPublisher() {
@@ -281,11 +281,6 @@ public class CandidateServiceImpl implements CandidateService {
     this.candidateDAO = candidateDAO;
   }
 
-  public void setCandidatePositionSolrRepository(
-      CandidatePositionSolrRepository candidatePositionSolrRepository) {
-    this.candidatePositionSolrRepository = candidatePositionSolrRepository;
-  }
-
   public void setDomainEventPublisher(DomainEventPublisher domainEventPublisher) {
     this.domainEventPublisher = domainEventPublisher;
   }
@@ -349,14 +344,6 @@ public class CandidateServiceImpl implements CandidateService {
     for (String id : idCandidates) {
       this.updateCandidateStatus(storeId, id, idPosition, status);
     }
-  }
-
-  public static String getIdShouldEmptyForNewRecord() {
-    return ID_SHOULD_EMPTY_FOR_NEW_RECORD;
-  }
-
-  public static Logger getLog() {
-    return LOG;
   }
 
 }

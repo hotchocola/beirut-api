@@ -324,11 +324,6 @@
       </dependency>
 	  <dependency>
         <groupId>com.gdn.x.beirut</groupId>
-        <artifactId>beirut-solr-dao</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-	  <dependency>
-        <groupId>com.gdn.x.beirut</groupId>
         <artifactId>beirut-solr-model</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -641,7 +636,6 @@
     <module>rest-web</module>
     <module>client-java-sdk</module>
     <module>domain-event</module>
-	<module>solr-dao</module>
 	<module>solr-model</module>
   </modules>
 </project>

@@ -23,10 +23,6 @@
     </dependency>
 	<dependency>
 		<groupId>com.gdn.x.beirut</groupId>
-		<artifactId>beirut-solr-dao</artifactId>
-	</dependency> 
-	<dependency>
-		<groupId>com.gdn.x.beirut</groupId>
 		<artifactId>beirut-solr-model</artifactId>
 	</dependency>
     <dependency>
