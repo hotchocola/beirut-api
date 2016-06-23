@@ -92,6 +92,7 @@ public class CandidateServiceTest {
   public void initialize() {
     initMocks(this);
     this.gdnMapper = new GdnMapper() {
+      @SuppressWarnings("unchecked")
       @Override
       public <T> T deepCopy(Object source, Class<T> destinationClass) {
         Mapper mapper = new DozerBeanMapper();
@@ -281,6 +282,7 @@ public class CandidateServiceTest {
     // verify(this.candidateDao, times(1)).save(candidate);
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetAllCandidates() {
     Candidate cand1 = new Candidate();

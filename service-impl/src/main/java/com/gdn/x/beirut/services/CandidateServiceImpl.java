@@ -83,13 +83,6 @@ public class CandidateServiceImpl implements CandidateService {
     return candidateDAO.save(candidate);
   }
 
-  // @Override
-  // public Page<CandidatePosition> getAllCandidatePositionByStoreId(String storeId,
-  // Pageable pageable) {
-  // Page<CandidatePosition> result = this.candidateDAO.
-  // return result;
-  // }
-
   @Override
   @Deprecated
   public List<Candidate> getAllCandidates() {
@@ -114,6 +107,12 @@ public class CandidateServiceImpl implements CandidateService {
     return candidateDAO.findByStoreId(storeId, pageable);
   }
 
+  // @Override
+  // public Page<CandidatePosition> getAllCandidatePositionByStoreId(String storeId,
+  // Pageable pageable) {
+  // Page<CandidatePosition> result = this.candidateDAO.
+  // return result;
+  // }
 
   @Override
   public Candidate getCandidate(String id) throws Exception {
@@ -158,6 +157,7 @@ public class CandidateServiceImpl implements CandidateService {
     return candidateDAO;
   }
 
+
   @Override
   public CandidateDetail getCandidateDetailAndStoreId(String id, String storeId) throws Exception {
     Candidate candidate = getCandidate(id);
@@ -194,6 +194,14 @@ public class CandidateServiceImpl implements CandidateService {
     }
     throw new ApplicationException(ErrorCategory.UNSPECIFIED,
         "didn't get equal position in candidate");
+  }
+
+  public CandidatePositionSolrRepository getCandidatePositionSolrRepository() {
+    return candidatePositionSolrRepository;
+  }
+
+  public DomainEventPublisher getDomainEventPublisher() {
+    return domainEventPublisher;
   }
 
   public GdnMapper getGdnMapper() {
@@ -273,6 +281,15 @@ public class CandidateServiceImpl implements CandidateService {
     this.candidateDAO = candidateDAO;
   }
 
+  public void setCandidatePositionSolrRepository(
+      CandidatePositionSolrRepository candidatePositionSolrRepository) {
+    this.candidatePositionSolrRepository = candidatePositionSolrRepository;
+  }
+
+  public void setDomainEventPublisher(DomainEventPublisher domainEventPublisher) {
+    this.domainEventPublisher = domainEventPublisher;
+  }
+
   public void setGdnMapper(GdnMapper gdnMapper) {
     this.gdnMapper = gdnMapper;
   }
@@ -332,6 +349,14 @@ public class CandidateServiceImpl implements CandidateService {
     for (String id : idCandidates) {
       this.updateCandidateStatus(storeId, id, idPosition, status);
     }
+  }
+
+  public static String getIdShouldEmptyForNewRecord() {
+    return ID_SHOULD_EMPTY_FOR_NEW_RECORD;
+  }
+
+  public static Logger getLog() {
+    return LOG;
   }
 
 }

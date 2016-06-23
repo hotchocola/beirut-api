@@ -34,4 +34,12 @@ public class CandidateInsertNewEventListener implements DomainEventListener<Cand
     candidatePositionTemplate.saveBean(newCandidateSolr);
     System.out.println(newCandidateSolr);
   }
+
+  public CandidatePositionSolrRepository getCandidatePositionSolrRepository() {
+    return candidatePositionSolrRepository;
+  }
+
+  public void setCandidatePositionSolrRepository(CandidatePositionSolrRepository candidatePositionSolrRepository) {
+    this.candidatePositionSolrRepository = candidatePositionSolrRepository;
+  }
 }

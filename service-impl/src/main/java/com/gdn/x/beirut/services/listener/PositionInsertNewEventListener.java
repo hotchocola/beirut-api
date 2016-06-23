@@ -21,4 +21,12 @@ public class PositionInsertNewEventListener implements DomainEventListener<Posit
 
   }
 
+  public CandidatePositionSolrRepository getCandidatePositionSolrRepository() {
+    return candidatePositionSolrRepository;
+  }
+
+  public void setCandidatePositionSolrRepository(CandidatePositionSolrRepository candidatePositionSolrRepository) {
+    this.candidatePositionSolrRepository = candidatePositionSolrRepository;
+  }
+
 }

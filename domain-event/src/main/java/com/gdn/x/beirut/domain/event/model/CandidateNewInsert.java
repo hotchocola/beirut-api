@@ -99,4 +99,12 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
   public void setTitle(String title) {
     this.title = title;
   }
+
+  public String getStoreId() {
+    return storeId;
+  }
+
+  public void setStoreId(String storeId) {
+    this.storeId = storeId;
+  }
 }

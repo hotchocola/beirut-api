@@ -141,4 +141,8 @@ public class PositionServiceImpl implements PositionService {
       return false;
     }
   }
+
+  public static Logger getLog() {
+    return LOG;
+  }
 }

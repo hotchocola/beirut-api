@@ -81,6 +81,7 @@ public class PositionControllerTest {
     initMocks(this);
     this.mockMVC = standaloneSetup(this.positionController).build();
     this.gdnMapper = new GdnMapper() {
+      @SuppressWarnings("unchecked")
       @Override
       public <T> T deepCopy(Object source, Class<T> destinationClass) {
         Mapper mapper = new DozerBeanMapper();
@@ -104,6 +105,7 @@ public class PositionControllerTest {
     this.positionDTORequests.add(positionDTORequest);
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void testDeletePosition() throws Exception {
     String uri = "deletePosition";

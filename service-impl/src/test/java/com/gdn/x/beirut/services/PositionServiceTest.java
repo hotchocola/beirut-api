@@ -81,6 +81,7 @@ public class PositionServiceTest {
     aa.add("1");
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetAllPositionByStoreId() {
     this.service.getAllPositionByStoreId(STORE_ID);
@@ -183,7 +184,7 @@ public class PositionServiceTest {
     Mockito.when(repository.findByIdAndStoreIdAndMarkForDelete(DEFAULT_ID, STORE_ID, false))
         .thenReturn(null);
     try {
-      Position result = this.service.getPositionDetailByIdAndStoreId(DEFAULT_ID, STORE_ID);
+      this.service.getPositionDetailByIdAndStoreId(DEFAULT_ID, STORE_ID);
     } catch (Exception e) {
       if (e instanceof ApplicationException) {
         Assert.assertEquals(
