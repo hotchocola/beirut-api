@@ -31,6 +31,7 @@ import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.entities.StatusLog;
 import com.gdn.x.beirut.solr.dao.CandidatePositionSolrRepository;
+// import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
 @Service(value = "candidateService")

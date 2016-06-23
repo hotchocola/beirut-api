@@ -220,6 +220,10 @@
 	<dependency>
 		<groupId>com.gdn.x.beirut</groupId>
 		<artifactId>beirut-solr-dao</artifactId>
-	</dependency> 	
+	</dependency> 
+	<dependency>
+		<groupId>com.gdn.x.beirut</groupId>
+		<artifactId>beirut-solr-service</artifactId>
+    </dependency>	
   </dependencies>
 </project>

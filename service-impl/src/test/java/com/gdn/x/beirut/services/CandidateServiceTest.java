@@ -36,6 +36,7 @@ import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.solr.dao.CandidatePositionSolrRepository;
+// import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
 public class CandidateServiceTest {
