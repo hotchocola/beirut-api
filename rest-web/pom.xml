@@ -71,6 +71,10 @@
     </dependency>
     <dependency>
       <groupId>com.gdn.x.beirut</groupId>
+      <artifactId>beirut-solr-service-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.gdn.x.beirut</groupId>
       <artifactId>beirut-service-api</artifactId>
     </dependency>
     <dependency>
@@ -216,10 +220,6 @@
 	<dependency>
 		<groupId>com.gdn.x.beirut</groupId>
 		<artifactId>beirut-domain-event</artifactId>
-	</dependency>	
-	<dependency>
-		<groupId>com.gdn.x.beirut</groupId>
-		<artifactId>beirut-solr-dao</artifactId>
-	</dependency> 	
+	</dependency>		
   </dependencies>
 </project>

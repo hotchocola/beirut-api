@@ -1,4 +1,4 @@
-package com.gdn.x.beirut.services;
+package com.gdn.x.beirut.solr.services;
 
 import javax.annotation.Resource;
 
@@ -13,6 +13,7 @@ import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
 @Service(value = "candidatePositionSolrService")
 public class CandidatePositionSolrServiceImpl implements CandidatePositionSolrService {
+
   @Resource(name = "xcandidatePositionTemplate")
   private SolrTemplate candidatePositionTemplate;
 

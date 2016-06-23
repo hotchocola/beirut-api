@@ -1,4 +1,4 @@
-package com.gdn.x.beirut.services;
+package com.gdn.x.beirut.solr.services;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
