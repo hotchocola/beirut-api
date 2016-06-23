@@ -11,7 +11,6 @@ import com.gdn.x.beirut.domain.event.model.PositionNewInsert;
 @SubscribeDomainEvent(DomainEventName.POSITION_NEW_INSERT)
 public class PositionInsertNewEventListener implements DomainEventListener<PositionNewInsert> {
 
-
   @Override
   public void onDomainEventConsumed(PositionNewInsert message) throws Exception {
 

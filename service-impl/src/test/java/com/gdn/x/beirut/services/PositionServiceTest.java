@@ -45,19 +45,6 @@ public class PositionServiceTest {
   // Mockito.verify(this.repository).findByIdAndMarkForDelete(this.position.getId(), false);
   // }
 
-  @Test
-  public void checkUpdatePositionTitle() throws Exception {
-    this.service.updatePositionTitle(STORE_ID, this.position.getId(), "Emporio Ivankov");
-    verify(this.repository).findOne(this.position.getId());
-    verify(this.repository).save(position);
-  }
-
-  @Test
-  public void getPositionByTitle() {
-    this.service.getPositionByTitle("Cho", "Store");
-    verify(this.repository).findByTitleContainingAndStoreIdAndMarkForDelete("Cho", "Store", false);
-  }
-
   @Before
   public void initialize() throws Exception {
     initMocks(this);
@@ -75,6 +62,7 @@ public class PositionServiceTest {
     aa.add("1");
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetAllPositionByStoreId() {
     this.service.getAllPositionByStoreId(STORE_ID);
@@ -177,7 +165,7 @@ public class PositionServiceTest {
     Mockito.when(repository.findByIdAndStoreIdAndMarkForDelete(DEFAULT_ID, STORE_ID, false))
         .thenReturn(null);
     try {
-      Position result = this.service.getPositionDetailByIdAndStoreId(DEFAULT_ID, STORE_ID);
+      this.service.getPositionDetailByIdAndStoreId(DEFAULT_ID, STORE_ID);
     } catch (Exception e) {
       if (e instanceof ApplicationException) {
         Assert.assertEquals(
@@ -203,6 +191,13 @@ public class PositionServiceTest {
     Position result = this.service.insertNewPosition(testSavePosition);
     Mockito.verify(repository, Mockito.times(2)).save(testSavePosition);
     Assert.assertTrue(result.equals(testSavePosition));
+  }
+
+  @Test
+  public void testUpdatePositionTitle() throws Exception {
+    this.service.updatePositionTitle(STORE_ID, this.position.getId(), "Emporio Ivankov");
+    verify(this.repository).findOne(this.position.getId());
+    verify(this.repository).save(position);
   }
 
 }
