@@ -1,5 +1,7 @@
 package com.gdn.x.beirut.solr.entities;
 
+import java.util.Date;
+
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
@@ -7,15 +9,13 @@ import com.gdn.common.base.entity.GdnBaseSolrEntity;
 
 @SolrDocument(solrCoreName = "xcandidatePosition")
 public class CandidatePositionSolr extends GdnBaseSolrEntity {
+  private static final long serialVersionUID = 1L;
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 3654681855794230105L;
+  @Field
+  private String idCandidate;
 
-  public static long getSerialversionuid() {
-    return serialVersionUID;
-  }
+  @Field
+  private String idPosition;
 
   @Field
   private String emailAddress;
@@ -30,10 +30,17 @@ public class CandidatePositionSolr extends GdnBaseSolrEntity {
   private String phoneNumber;
 
   @Field
+  private Date createdDate;
+
+  @Field
   private String title;
 
   @Field
   private String status;
+
+  public Date getCreatedDate() {
+    return createdDate;
+  }
 
   public String getEmailAddress() {
     return emailAddress;
@@ -41,6 +48,14 @@ public class CandidatePositionSolr extends GdnBaseSolrEntity {
 
   public String getFirstName() {
     return firstName;
+  }
+
+  public String getIdCandidate() {
+    return idCandidate;
+  }
+
+  public String getIdPosition() {
+    return idPosition;
   }
 
   public String getLastName() {
@@ -59,12 +74,24 @@ public class CandidatePositionSolr extends GdnBaseSolrEntity {
     return title;
   }
 
+  public void setCreatedDate(Date createdDate) {
+    this.createdDate = createdDate;
+  }
+
   public void setEmailAddress(String emailAddress) {
     this.emailAddress = emailAddress;
   }
 
   public void setFirstName(String firstName) {
     this.firstName = firstName;
+  }
+
+  public void setIdCandidate(String idCandidate) {
+    this.idCandidate = idCandidate;
+  }
+
+  public void setIdPosition(String idPosition) {
+    this.idPosition = idPosition;
   }
 
   public void setLastName(String lastName) {
@@ -81,6 +108,13 @@ public class CandidatePositionSolr extends GdnBaseSolrEntity {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  @Override
+  public String toString() {
+    return String.format(
+        "CandidateSolr [emailAddress=%s, firstName=%s, lastName=%s, phoneNumber=%s, status=%s, title=%s, toString()=%s]",
+        emailAddress, firstName, lastName, phoneNumber, status, title, super.toString());
   }
 
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gdn.common.base.domainevent.publisher.DomainEventPublisher;
+import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.CandidateDAO;
@@ -28,11 +29,6 @@ import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.entities.StatusLog;
 import com.gdn.x.beirut.solr.dao.CandidatePositionSolrRepository;
-<<<<<<< HEAD
-import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
-=======
-import com.gdn.x.beirut.solr.entity.CandidatePositionSolr;
->>>>>>> EgaPrianto-master
 
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
@@ -46,9 +42,6 @@ public class CandidateServiceImpl implements CandidateService {
   private CandidateDAO candidateDAO;
 
   @Autowired
-  private CandidatePositionSolrRepository candidatePositionSolrRepository;
-
-  @Autowired
   private PositionDAO positionDAO;
 
   @Autowired
@@ -56,6 +49,9 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Autowired
   private CandidatePositionSolrRepository candidatePositionSolrRepository;
+
+  @Autowired
+  private GdnMapper gdnMapper;
 
   @Override
   @Transactional(readOnly = false)
@@ -87,15 +83,12 @@ public class CandidateServiceImpl implements CandidateService {
     return candidateDAO.save(candidate);
   }
 
-  @Override
-  public Page<CandidatePosition> getAllCandidatePositionByStoreId(String storeId,
-      Pageable pageable) {
-    Page<CandidatePositionSolr> result = this.candidatePositionSolrRepository.findAll(pageable);
-    for (CandidatePositionSolr candidatePositionSolr : result.getContent()) {
-
-    }
-    return null;
-  }
+  // @Override
+  // public Page<CandidatePosition> getAllCandidatePositionByStoreId(String storeId,
+  // Pageable pageable) {
+  // Page<CandidatePosition> result = this.candidateDAO.
+  // return result;
+  // }
 
   @Override
   @Deprecated
@@ -109,7 +102,6 @@ public class CandidateServiceImpl implements CandidateService {
     return this.candidateDAO.findByStoreIdAndMarkForDelete(storeId, markForDelete, pageable);
   }
 
-
   @Override
   public Page<Candidate> getAllCandidatesByStoreIdPageable(String storeId, Pageable pageable)
       throws Exception {
@@ -121,6 +113,7 @@ public class CandidateServiceImpl implements CandidateService {
   public Page<Candidate> getAllCandidatesWithPageable(String storeId, Pageable pageable) {
     return candidateDAO.findByStoreId(storeId, pageable);
   }
+
 
   @Override
   public Candidate getCandidate(String id) throws Exception {
@@ -203,6 +196,10 @@ public class CandidateServiceImpl implements CandidateService {
         "didn't get equal position in candidate");
   }
 
+  public GdnMapper getGdnMapper() {
+    return gdnMapper;
+  }
+
   public PositionDAO getPositionDAO() {
     return positionDAO;
   }
@@ -244,11 +241,9 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
-  public Page<CandidatePositionSolr> searchByFirstNameContainAndStoreId(String firstName,
-      String storeId, Pageable pageable) throws Exception {
-    Page<CandidatePositionSolr> result = candidatePositionSolrRepository
-        .findByFirstNameContainingAndStoreId(firstName, storeId, pageable);
-    return resutl;
+  public Page<Candidate> searchByFirstNameContainAndStoreId(String firstName, String storeId,
+      Pageable pageable) throws Exception {
+    return this.candidateDAO.findByFirstNameContainingAndStoreId(firstName, storeId, pageable);
   }
 
   @Override
@@ -256,7 +251,6 @@ public class CandidateServiceImpl implements CandidateService {
       Pageable pageable) {
     return candidateDAO.findByLastNameContainingAndStoreId(lastName, storeId, pageable);
   }
-
 
   @Override
   public Candidate searchCandidateByEmailAddressAndStoreId(String emailAddress, String storeId) {
@@ -277,6 +271,10 @@ public class CandidateServiceImpl implements CandidateService {
 
   public void setCandidateDAO(CandidateDAO candidateDAO) {
     this.candidateDAO = candidateDAO;
+  }
+
+  public void setGdnMapper(GdnMapper gdnMapper) {
+    this.gdnMapper = gdnMapper;
   }
 
   public void setPositionDAO(PositionDAO positionDAO) {

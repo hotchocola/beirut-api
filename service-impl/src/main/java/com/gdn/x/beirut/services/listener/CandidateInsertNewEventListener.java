@@ -12,7 +12,7 @@ import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.x.beirut.domain.event.model.CandidateNewInsert;
 import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.solr.dao.CandidatePositionSolrRepository;
-import com.gdn.x.beirut.solr.entity.CandidatePositionSolr;
+import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
 @Service
 @SubscribeDomainEvent(DomainEventName.CANDIDATE_NEW_INSERT)

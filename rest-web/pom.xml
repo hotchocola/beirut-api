@@ -213,9 +213,5 @@
 		<groupId>com.gdn.x.beirut</groupId>
 		<artifactId>beirut-domain-event</artifactId>
 	</dependency>	
-	<dependency>
-		<groupId>com.gdn.x.beirut</groupId>
-		<artifactId>beirut-solr-dao</artifactId>
-	</dependency> 	
   </dependencies>
 </project>

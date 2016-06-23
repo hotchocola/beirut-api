@@ -18,7 +18,7 @@ public interface CandidateService {
 
   Candidate createNew(Candidate candidate, List<String> positionIds) throws Exception;
 
-  Page<CandidatePosition> getAllCandidatePositionByStoreId(String storeId, Pageable pageable);
+  // Page<CandidatePosition> getAllCandidatePositionByStoreId(String storeId, Pageable pageable);
 
   List<Candidate> getAllCandidates();
 
