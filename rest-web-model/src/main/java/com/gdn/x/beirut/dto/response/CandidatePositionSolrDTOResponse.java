@@ -1,18 +1,14 @@
-package com.gdn.x.beirut.domain.event.model;
+package com.gdn.x.beirut.dto.response;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.gdn.common.base.entity.GdnBaseDomainEventModel;
+import com.gdn.common.web.base.BaseResponse;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class CandidateNewInsert extends GdnBaseDomainEventModel {
-
-  private String storeId;
-
-  private String idPosition;
+public class CandidatePositionSolrDTOResponse extends BaseResponse {
 
   private String idCandidate;
+
+  private String idPosition;
 
   private String emailAddress;
 
@@ -28,6 +24,7 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
 
   private String status;
 
+  @Override
   public Date getCreatedDate() {
     return createdDate;
   }
@@ -60,14 +57,11 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
     return status;
   }
 
-  public String getStoreId() {
-    return storeId;
-  }
-
   public String getTitle() {
     return title;
   }
 
+  @Override
   public void setCreatedDate(Date createdDate) {
     this.createdDate = createdDate;
   }
@@ -100,19 +94,7 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
     this.status = status;
   }
 
-  public void setStoreId(String storeId) {
-    this.storeId = storeId;
-  }
-
   public void setTitle(String title) {
     this.title = title;
-  }
-
-  @Override
-  public String toString() {
-    return "CandidateNewInsert [storeId=" + storeId + ", idPosition=" + idPosition
-        + ", idCandidate=" + idCandidate + ", emailAddress=" + emailAddress + ", firstName="
-        + firstName + ", lastName=" + lastName + ", phoneNumber=" + phoneNumber + ", createdDate="
-        + createdDate + ", title=" + title + ", status=" + status + "]";
   }
 }

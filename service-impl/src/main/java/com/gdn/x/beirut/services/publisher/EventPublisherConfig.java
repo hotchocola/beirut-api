@@ -1,4 +1,4 @@
-package com.gdn.x.beirut.services;
+package com.gdn.x.beirut.services.publisher;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;

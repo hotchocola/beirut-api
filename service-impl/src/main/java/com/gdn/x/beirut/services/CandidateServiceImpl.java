@@ -1,5 +1,6 @@
 package com.gdn.x.beirut.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -10,11 +11,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gdn.common.base.domainevent.publisher.DomainEventPublisher;
+import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.CandidateDAO;
@@ -27,6 +30,8 @@ import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.entities.StatusLog;
+import com.gdn.x.beirut.solr.dao.CandidatePositionSolrRepository;
+import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
@@ -40,10 +45,16 @@ public class CandidateServiceImpl implements CandidateService {
   private CandidateDAO candidateDAO;
 
   @Autowired
+  private CandidatePositionSolrRepository candidatePositionSolrRepository;
+
+  @Autowired
   private PositionDAO positionDAO;
 
   @Autowired
   private DomainEventPublisher domainEventPublisher;
+
+  @Autowired
+  private GdnMapper gdnMapper;
 
   @Override
   @Transactional(readOnly = false)
@@ -63,14 +74,19 @@ public class CandidateServiceImpl implements CandidateService {
     List<Position> positions = positionDAO.findAll(positionIds);
     for (Position position : positions) {
       candidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
+    }
+    Candidate newCandidate = candidateDAO.save(candidate);
+    for (Position position : positions) {
       CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
-      BeanUtils.copyProperties(candidate, candidateNewInsert, "candidateDetail",
+      BeanUtils.copyProperties(newCandidate, candidateNewInsert, "candidateDetail",
           "candidatePositions");
       BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
+      candidateNewInsert.setIdCandidate(newCandidate.getId());
+      candidateNewInsert.setIdPosition(position.getId());
       domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
           CandidateNewInsert.class);
     }
-    return candidateDAO.save(candidate);
+    return newCandidate;
   }
 
   @Override
@@ -179,6 +195,10 @@ public class CandidateServiceImpl implements CandidateService {
         "didn't get equal position in candidate");
   }
 
+  public GdnMapper getGdnMapper() {
+    return gdnMapper;
+  }
+
   public PositionDAO getPositionDAO() {
     return positionDAO;
   }
@@ -222,7 +242,15 @@ public class CandidateServiceImpl implements CandidateService {
   @Override
   public Page<Candidate> searchByFirstNameContainAndStoreId(String firstName, String storeId,
       Pageable pageable) throws Exception {
-    return candidateDAO.findByFirstNameContainingAndStoreId(firstName, storeId, pageable);
+    Page<CandidatePositionSolr> resultFromSolr = candidatePositionSolrRepository
+        .findIdCandidateDistinctByFirstNameContainingAndStoreId(firstName, storeId, pageable);
+    List<Candidate> candidates = new ArrayList<>();
+    for (CandidatePositionSolr candidatePositionSolr : resultFromSolr.getContent()) {
+      Candidate newCandidate = getGdnMapper().deepCopy(candidatePositionSolr, Candidate.class);
+      newCandidate.setId(candidatePositionSolr.getIdCandidate());
+      candidates.add(newCandidate);
+    }
+    return new PageImpl<>(candidates, pageable, candidates.size());
   }
 
   @Override
@@ -231,11 +259,11 @@ public class CandidateServiceImpl implements CandidateService {
     return candidateDAO.findByLastNameContainingAndStoreId(lastName, storeId, pageable);
   }
 
+
   @Override
   public Candidate searchCandidateByEmailAddressAndStoreId(String emailAddress, String storeId) {
     return candidateDAO.findByEmailAddressAndStoreId(emailAddress, storeId);
   }
-
 
   @Override
   @Deprecated
@@ -251,6 +279,10 @@ public class CandidateServiceImpl implements CandidateService {
 
   public void setCandidateDAO(CandidateDAO candidateDAO) {
     this.candidateDAO = candidateDAO;
+  }
+
+  public void setGdnMapper(GdnMapper gdnMapper) {
+    this.gdnMapper = gdnMapper;
   }
 
   public void setPositionDAO(PositionDAO positionDAO) {

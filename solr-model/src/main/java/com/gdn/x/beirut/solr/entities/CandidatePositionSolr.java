@@ -1,13 +1,21 @@
-package com.gdn.x.beirut.solr.dao;
+package com.gdn.x.beirut.solr.entities;
+
+import java.util.Date;
 
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
 import com.gdn.common.base.entity.GdnBaseSolrEntity;
 
-@SolrDocument(solrCoreName = "xcandidate")
+@SolrDocument(solrCoreName = "xcandidatePosition")
 public class CandidatePositionSolr extends GdnBaseSolrEntity {
   private static final long serialVersionUID = 1L;
+
+  @Field
+  private String idCandidate;
+
+  @Field
+  private String idPosition;
 
   @Field
   private String emailAddress;
@@ -22,10 +30,17 @@ public class CandidatePositionSolr extends GdnBaseSolrEntity {
   private String phoneNumber;
 
   @Field
+  private Date createdDate;
+
+  @Field
   private String title;
 
   @Field
   private String status;
+
+  public Date getCreatedDate() {
+    return createdDate;
+  }
 
   public String getEmailAddress() {
     return emailAddress;
@@ -33,6 +48,14 @@ public class CandidatePositionSolr extends GdnBaseSolrEntity {
 
   public String getFirstName() {
     return firstName;
+  }
+
+  public String getIdCandidate() {
+    return idCandidate;
+  }
+
+  public String getIdPosition() {
+    return idPosition;
   }
 
   public String getLastName() {
@@ -51,12 +74,24 @@ public class CandidatePositionSolr extends GdnBaseSolrEntity {
     return title;
   }
 
+  public void setCreatedDate(Date createdDate) {
+    this.createdDate = createdDate;
+  }
+
   public void setEmailAddress(String emailAddress) {
     this.emailAddress = emailAddress;
   }
 
   public void setFirstName(String firstName) {
     this.firstName = firstName;
+  }
+
+  public void setIdCandidate(String idCandidate) {
+    this.idCandidate = idCandidate;
+  }
+
+  public void setIdPosition(String idPosition) {
+    this.idPosition = idPosition;
   }
 
   public void setLastName(String lastName) {
