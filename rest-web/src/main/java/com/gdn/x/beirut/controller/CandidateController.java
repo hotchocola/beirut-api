@@ -309,27 +309,29 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
-  // DEPRECATED udah diganti pake getAllCandidateByStoreIdWithPageable
-  // @RequestMapping(value = "getAllCandidateByStoreId", method = RequestMethod.GET,
-  // consumes = {MediaType.APPLICATION_JSON_VALUE},
-  // produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  // @ApiOperation(value = "get all candidate dengan store id yang diberikan",
-  // notes = "Mengembalikan semua kandidat pada store id tertentu")
-  // @ResponseBody
-  // public GdnRestListResponse<CandidateDTOResponse> getAllCandidateByStoreIdWithPageable(
-  // @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
-  // @RequestParam String channelId, @RequestParam String username) throws Exception {
-  // List<CandidateDTOResponse> candidatesDTO = new ArrayList<CandidateDTOResponse>();
-  // Page<Candidate> candidates = this.candidateService.getAllCandidatesByStoreIdPageable(storeId,
-  // );
-  // for (Candidate candidate : candidates) {
-  // CandidateDTOResponse candidateDTOResponse =
-  // getGdnMapper().deepCopy(candidate, CandidateDTOResponse.class);
-  // candidatesDTO.add(candidateDTOResponse);
-  // }
-  // return new GdnRestListResponse<CandidateDTOResponse>(candidatesDTO,
-  // new PageMetaData(50, 0, candidatesDTO.size()), requestId);
-  // }
+  @RequestMapping(value = "getAllCandidatesByStoreIdAndMarkForDeleteWithPageable",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Getting all candidates And MarkForDelete with pageable", notes = "")
+
+  @ResponseBody
+  public GdnRestListResponse<CandidateDTOResponseWithoutDetail> getAllCandidateByStoreIdAndMarkForDeleteWithPageable(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username,
+      @RequestParam boolean markForDelete, @RequestParam int page, @RequestParam int size)
+          throws Exception {
+    Pageable pageable = PageableHelper.generatePageable(page, size);
+    Page<Candidate> pages = this.candidateService
+        .getAllCandidatesByStoreIdAndMarkForDeletePageable(storeId, markForDelete, pageable);
+    List<CandidateDTOResponseWithoutDetail> toShow = new ArrayList<>();
+    for (Candidate candidate : pages.getContent()) {
+      CandidateDTOResponseWithoutDetail newCandidateDTOResponse =
+          getGdnMapper().deepCopy(candidate, CandidateDTOResponseWithoutDetail.class);
+      toShow.add(newCandidateDTOResponse);
+    }
+    return new GdnRestListResponse<CandidateDTOResponseWithoutDetail>(toShow,
+        new PageMetaData(50, 0, toShow.size()), requestId);
+  }
 
   @RequestMapping(value = "getAllCandidatesByStoreIdWithPageable", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})

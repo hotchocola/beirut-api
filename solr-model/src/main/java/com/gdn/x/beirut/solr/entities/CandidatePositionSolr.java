@@ -1,31 +1,41 @@
-package com.gdn.x.beirut.domain.event.model;
+package com.gdn.x.beirut.solr.entities;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.gdn.common.base.entity.GdnBaseDomainEventModel;
+import org.apache.solr.client.solrj.beans.Field;
+import org.springframework.data.solr.core.mapping.SolrDocument;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class CandidateNewInsert extends GdnBaseDomainEventModel {
+import com.gdn.common.base.entity.GdnBaseSolrEntity;
 
-  private String storeId;
+@SolrDocument(solrCoreName = "xcandidatePosition")
+public class CandidatePositionSolr extends GdnBaseSolrEntity {
+  private static final long serialVersionUID = 1L;
 
-  private String idPosition;
-
+  @Field
   private String idCandidate;
 
+  @Field
+  private String idPosition;
+
+  @Field
   private String emailAddress;
 
+  @Field
   private String firstName;
 
+  @Field
   private String lastName;
 
+  @Field
   private String phoneNumber;
 
+  @Field
   private Date createdDate;
 
+  @Field
   private String title;
 
+  @Field
   private String status;
 
   public Date getCreatedDate() {
@@ -58,10 +68,6 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
 
   public String getStatus() {
     return status;
-  }
-
-  public String getStoreId() {
-    return storeId;
   }
 
   public String getTitle() {
@@ -100,19 +106,14 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
     this.status = status;
   }
 
-  public void setStoreId(String storeId) {
-    this.storeId = storeId;
-  }
-
   public void setTitle(String title) {
     this.title = title;
   }
 
   @Override
   public String toString() {
-    return "CandidateNewInsert [storeId=" + storeId + ", idPosition=" + idPosition
-        + ", idCandidate=" + idCandidate + ", emailAddress=" + emailAddress + ", firstName="
-        + firstName + ", lastName=" + lastName + ", phoneNumber=" + phoneNumber + ", createdDate="
-        + createdDate + ", title=" + title + ", status=" + status + "]";
+    return String.format(
+        "CandidateSolr [emailAddress=%s, firstName=%s, lastName=%s, phoneNumber=%s, status=%s, title=%s, toString()=%s]",
+        emailAddress, firstName, lastName, phoneNumber, status, title, super.toString());
   }
 }

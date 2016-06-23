@@ -447,6 +447,37 @@ public class CandidateControllerTest {
 
 
   @Test
+  public void testGetAllCandidateByStoreIdAndMarkForDeleteWithPageable() throws Exception {
+    String uri = "/api/candidate/getAllCandidatesByStoreIdAndMarkForDeleteWithPageable";
+    List<Candidate> content = new ArrayList<>();
+    for (Candidate candidate : this.candidates) {
+      if (!candidate.isMarkForDelete()) {
+        content.add(candidate);
+      }
+    }
+    Page<Candidate> pageCandidate = new PageImpl<>(content, pageable, content.size());
+    Mockito.when(this.candidateService.getAllCandidatesByStoreIdAndMarkForDeletePageable(STORE_ID,
+        false, pageable)).thenReturn(pageCandidate);
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME)
+            .param("markForDelete", "false").param("page", page).param("size", size))
+        .andExpect(status().isOk());
+    GdnRestListResponse<CandidateDTOResponseWithoutDetail> res = this.candidateController
+        .getAllCandidateByStoreIdAndMarkForDeleteWithPageable(CLIENT_ID, STORE_ID, REQUEST_ID,
+            CHANNEL_ID, USERNAME, false, Integer.parseInt(page), Integer.parseInt(size));
+    GdnRestListResponse<CandidateDTOResponseWithoutDetail> expectedRes =
+        new GdnRestListResponse<>(candidateResponsesWithoutDetail,
+            new PageMetaData(50, 0, candidateResponsesWithoutDetail.size()), REQUEST_ID);
+    for (CandidateDTOResponseWithoutDetail candidateDTOResponse : res.getContent()) {
+      expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
+    }
+    Mockito.verify(this.candidateService, Mockito.times(2))
+        .getAllCandidatesByStoreIdAndMarkForDeletePageable(STORE_ID, false, pageable);
+  }
+
+  @Test
   public void testGetAllCandidateByStoreIdWithPageable() throws Exception {
     String uri = "/api/candidate/getAllCandidatesByStoreIdWithPageable";
     Mockito.when(this.candidateService.getAllCandidatesByStoreIdPageable(STORE_ID, pageable))

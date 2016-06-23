@@ -14,9 +14,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gdn.common.base.domainevent.publisher.PublishDomainEvent;
 import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.PositionDAO;
+import com.gdn.x.beirut.domain.event.model.DomainEventName;
+import com.gdn.x.beirut.domain.event.model.PositionNewInsert;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 
@@ -28,6 +31,7 @@ public class PositionServiceImpl implements PositionService {
 
   @Autowired
   private PositionDAO positionDAO;
+
 
   @Override
   @Deprecated
@@ -88,12 +92,14 @@ public class PositionServiceImpl implements PositionService {
 
   @Override
   @Transactional(readOnly = false)
-  public boolean insertNewPosition(Position position) {
+  @PublishDomainEvent(publishEventClass = PositionNewInsert.class,
+      domainEventName = DomainEventName.POSITION_NEW_INSERT)
+  public Position insertNewPosition(Position position) {
     for (CandidatePosition iterable_element : position.getCandidatePositions()) {
       iterable_element.setPosition(position);
     }
-    this.getPositionDao().save(position);
-    return true;
+    return this.getPositionDao().save(position);
+
   }
 
   @Override

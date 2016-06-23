@@ -226,7 +226,7 @@ public class PositionControllerTest {
     Position temp = new Position();
     String positionDTORequestJson = "{\"title\":\"title\"}";
     dozerMapper.map(this.positionDTORequest, temp);
-    Mockito.when(this.positionService.insertNewPosition(temp)).thenReturn(true);
+    Mockito.when(this.positionService.insertNewPosition(temp)).thenReturn(temp);
     this.mockMVC.perform(MockMvcRequestBuilders.post(UriBasePath + uri)
         .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
         .param("clientId", CLIENT_ID).param("storeId", STORE_ID).param("requestId", REQUEST_ID)
