@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Hibernate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,8 +24,6 @@ import com.gdn.x.beirut.entities.Position;
 @Service(value = "positionService")
 @Transactional(readOnly = true)
 public class PositionServiceImpl implements PositionService {
-
-  private static final Logger LOG = LoggerFactory.getLogger(PositionServiceImpl.class);
 
   @Autowired
   private PositionDAO positionDAO;

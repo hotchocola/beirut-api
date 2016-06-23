@@ -21,14 +21,6 @@
       <groupId>com.gdn.x.beirut</groupId>
       <artifactId>beirut-model</artifactId>
     </dependency>
-	<dependency>
-		<groupId>com.gdn.x.beirut</groupId>
-		<artifactId>beirut-solr-dao</artifactId>
-	</dependency> 
-	<dependency>
-		<groupId>com.gdn.x.beirut</groupId>
-		<artifactId>beirut-solr-service</artifactId>
-	</dependency> 
     <dependency>
       <groupId>org.springframework.amqp</groupId>
       <artifactId>spring-rabbit</artifactId>
