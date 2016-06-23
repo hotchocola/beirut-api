@@ -12,12 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gdn.common.base.domainevent.publisher.PublishDomainEvent;
 import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.PositionDAO;
-import com.gdn.x.beirut.domain.event.model.DomainEventName;
-import com.gdn.x.beirut.domain.event.model.PositionNewInsert;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 
@@ -27,6 +24,9 @@ public class PositionServiceImpl implements PositionService {
 
   @Autowired
   private PositionDAO positionDAO;
+
+  @Autowired
+  private EventService eventService;
 
 
   @Override
@@ -88,8 +88,6 @@ public class PositionServiceImpl implements PositionService {
 
   @Override
   @Transactional(readOnly = false)
-  @PublishDomainEvent(publishEventClass = PositionNewInsert.class,
-      domainEventName = DomainEventName.POSITION_NEW_INSERT)
   public Position insertNewPosition(Position position) {
     for (CandidatePosition iterable_element : position.getCandidatePositions()) {
       iterable_element.setPosition(position);
@@ -118,7 +116,14 @@ public class PositionServiceImpl implements PositionService {
       posi.setMarkForDelete(true);
       positions.add(posi);
     }
-    this.getPositionDao().save(positions);
+    try {
+      this.getPositionDao().save(positions);
+      for (Position position : positions) {
+        eventService.markForDelete(position);
+      }
+    } catch (RuntimeException e) {
+      throw e;
+    }
   }
 
   @Override

@@ -36,5 +36,6 @@ public class CandidateInsertNewEventListener implements DomainEventListener<Cand
         gdnMapper.deepCopy(message, CandidatePositionSolr.class);
     newCandidateSolr.setId(UUID.randomUUID().toString());
     candidatePositionTemplate.saveBean(newCandidateSolr);
+    candidatePositionTemplate.commit();
   }
 }

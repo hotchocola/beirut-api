@@ -8,21 +8,27 @@ import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.core.query.SimpleStringCriteria;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
 @Service(value = "candidatePositionSolrService")
+@Transactional(readOnly = true)
 public class CandidatePositionSolrServiceImpl implements CandidatePositionSolrService {
 
+  private static final String STORE_ID = "storeId:";
+  private static final String AND = " AND ";
   @Resource(name = "xcandidatePositionTemplate")
   private SolrTemplate candidatePositionTemplate;
 
   @Override
   public Page<CandidatePositionSolr> executeSolrQuery(String query, String storeId,
       Pageable pageable) {
-    String realQuery = query + " AND storeId:" + storeId;
+    String realQuery = STORE_ID + storeId + AND + query;
     return candidatePositionTemplate.queryForPage(
-        new SimpleQuery(new SimpleStringCriteria(realQuery), pageable),
+        new SimpleQuery(new SimpleStringCriteria(realQuery)).setPageRequest(pageable),
         CandidatePositionSolr.class);
+    // return candidatePositionTemplate.queryForPage(new SimpleQuery() , clazz);
+
   }
 }
