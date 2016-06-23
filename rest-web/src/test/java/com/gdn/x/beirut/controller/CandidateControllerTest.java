@@ -316,30 +316,6 @@ public class CandidateControllerTest {
     Mockito.verify(this.candidateService, Mockito.times(2)).getCandidate(ID);
   }
 
-  // DEPRECATED : Diganti sama findCandidateByPhoneNumberContainAndStoreId
-  // @Test
-  // public void testFindCandidateByPhoneNumber() throws Exception {
-  // String uri = "/api/candidate/findCandidateByPhoneNumber";
-  // Mockito.when(this.candidateService.searchCandidateByPhoneNumber(PHONE_NUMBER))
-  // .thenReturn(candidates);
-  // this.mockMVC
-  // .perform(
-  // MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
-  // .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-  // .param("username", USERNAME).param("phoneNumber", PHONE_NUMBER))
-  // .andExpect(status().isOk());
-  // GdnRestListResponse<CandidateDTOResponse> res =
-  // this.candidateController.findCandidateByPhoneNumber(CLIENT_ID, STORE_ID, REQUEST_ID,
-  // CHANNEL_ID, USERNAME, PHONE_NUMBER);
-  // GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
-  // candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
-  // for (CandidateDTOResponse candidateDTOResponse : res.getContent()) {
-  // expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
-  // }
-  // Mockito.verify(this.candidateService, Mockito.times(2))
-  // .searchCandidateByPhoneNumber(PHONE_NUMBER);
-  // }
-
   @Test
   public void testFindCandidateByIdAndStoreIdEager() throws Exception {
     String uri = "/api/candidate/findCandidateByIdAndStoreIdEager";
@@ -386,34 +362,6 @@ public class CandidateControllerTest {
     Mockito.verify(this.candidateService, Mockito.times(2)).getCandidateByIdAndStoreIdLazy(ID,
         STORE_ID);
   }
-
-  // List<CandidateDTOResponse> candidatesDTO = new ArrayList<CandidateDTOResponse>();
-  // List<Candidate> candidates = this.candidateService.getAllCandidatesByStoreId(storeId);
-  // for (Candidate candidate : candidates) {
-  // CandidateDTOResponse candidateDTOResponse = new CandidateDTOResponse();
-  // CandidateMapper.mapLazy(candidate, candidateDTOResponse, dozerMapper);
-  // }
-  // return new GdnRestListResponse<CandidateDTOResponse>(candidatesDTO,
-  // new PageMetaData(50, 0, candidatesDTO.size()), requestId);
-  // }
-  // @Test
-  // public void testGetAllCandidateByStoreId() throws Exception {
-  // String uri = "/api/candidate/getAllCandidateByStoreId";
-  // List<Candidate> candidates = new ArrayList<Candidate>();
-  // candidates.add(this.candidate);
-  // Mockito.when(this.candidateService.getAllCandidatesByStoreIdPageable(STORE_ID, pageable))
-  // .thenReturn(pageCandidate);
-  // this.mockMVC
-  // .perform(MockMvcRequestBuilders.get(uri).accept(MediaType.APPLICATION_JSON)
-  // .contentType(MediaType.APPLICATION_JSON).param("clientId", CLIENT_ID)
-  // .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
-  // .param("channelId", CHANNEL_ID).param("username", USERNAME))
-  // .andExpect(MockMvcResultMatchers.status().isOk());
-  //
-  // Mockito.verify(this.candidateService, Mockito.times(1))
-  // .getAllCandidatesByStoreIdPageable(STORE_ID, pageable);
-  // }
-
 
   @Test
   public void testFindCandidateByPhoneNumberContainAndStoreId() throws Exception {
@@ -653,7 +601,6 @@ public class CandidateControllerTest {
   public void testUpdateCandidatesStatus() throws Exception {
     String uri = "/api/candidate/updateCandidateStatus";
     String content = "{  \"values\": [    \"1\" ]}";
-    // CandidatesPositionDTOWrapper contentWrapper = new CandidatesPositionDTOWrapper();
     List<String> idCandidates = new ArrayList<String>();
     idCandidates.add("1");
     String idPosition = "1";

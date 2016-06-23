@@ -6,9 +6,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,9 +29,6 @@ public class PositionServiceTest {
   @InjectMocks
   private PositionServiceImpl service;
 
-  @PersistenceContext
-  private EntityManager em;
-
   private Position position;
   private final List<Position> positions = new ArrayList<Position>();
 
@@ -50,19 +44,6 @@ public class PositionServiceTest {
   // this.service.markForDeletePosition(ids);
   // Mockito.verify(this.repository).findByIdAndMarkForDelete(this.position.getId(), false);
   // }
-
-  @Test
-  public void checkUpdatePositionTitle() throws Exception {
-    this.service.updatePositionTitle(STORE_ID, this.position.getId(), "Emporio Ivankov");
-    verify(this.repository).findOne(this.position.getId());
-    verify(this.repository).save(position);
-  }
-
-  @Test
-  public void getPositionByTitle() {
-    this.service.getPositionByTitle("Cho", "Store");
-    verify(this.repository).findByTitleContainingAndStoreIdAndMarkForDelete("Cho", "Store", false);
-  }
 
   @Before
   public void initialize() throws Exception {
@@ -210,6 +191,13 @@ public class PositionServiceTest {
     Position result = this.service.insertNewPosition(testSavePosition);
     Mockito.verify(repository, Mockito.times(2)).save(testSavePosition);
     Assert.assertTrue(result.equals(testSavePosition));
+  }
+
+  @Test
+  public void testUpdatePositionTitle() throws Exception {
+    this.service.updatePositionTitle(STORE_ID, this.position.getId(), "Emporio Ivankov");
+    verify(this.repository).findOne(this.position.getId());
+    verify(this.repository).save(position);
   }
 
 }

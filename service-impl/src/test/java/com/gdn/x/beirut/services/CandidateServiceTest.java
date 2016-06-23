@@ -56,6 +56,7 @@ public class CandidateServiceTest {
 
   private static final String POSITION_ID = "POSITION_ID";
 
+
   @Mock
   private CandidateDAO candidateDao;
 
@@ -665,11 +666,16 @@ public class CandidateServiceTest {
 
   @Test
   public void testSearchByFirstName() throws Exception {
+    Page<Candidate> result = this.candidateService
+        .searchByFirstNameContainAndStoreId(LIKE_FIRST_NAME, STORE_ID, DEFAULT_PAGEABLE);
+    // Black Box Test
+    for (Candidate candidate : result) {
+      Assert.assertTrue(candidate.getFirstName().contains(LIKE_FIRST_NAME));
+    }
     // White Box Test
-    this.candidateService.searchByFirstNameContainAndStoreId(LIKE_FIRST_NAME, STORE_ID,
-        DEFAULT_PAGEABLE);
     verify(this.candidateDao, times(1)).findByFirstNameContainingAndStoreId(LIKE_FIRST_NAME,
         STORE_ID, DEFAULT_PAGEABLE);
+
   }
 
   @Test

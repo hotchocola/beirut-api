@@ -63,7 +63,6 @@ public class PositionController {
     for (Position positiones : positions) {
       PositionDTOResponse positionDTOResponse =
           this.gdnMapper.deepCopy(positiones, PositionDTOResponse.class);
-      // dozerMapper.map(positiones, positionDTOResponse);
       positionDTOResponses.add(positionDTOResponse);
     }
 
@@ -86,7 +85,6 @@ public class PositionController {
     for (Position position : positions) {
       PositionDTOResponse positionDTOResponse =
           this.gdnMapper.deepCopy(position, PositionDTOResponse.class);
-      // dozerMapper.map(position, positionDTOResponse);
       res.add(positionDTOResponse);
     }
     return new GdnRestListResponse<>(res, new PageMetaData(50, 0, res.size()), requestId);
@@ -112,7 +110,6 @@ public class PositionController {
     for (Position position : positions) {
       PositionDTOResponse positionDTOResponse =
           this.gdnMapper.deepCopy(position, PositionDTOResponse.class);
-      // dozerMapper.map(position, positionDTOResponse);
       positionDTOResponses.add(positionDTOResponse);
     }
     return new GdnRestListResponse<>(positionDTOResponses,
@@ -132,7 +129,6 @@ public class PositionController {
     for (Position positiones : positions) {
       PositionDTOResponse positionDTOResponse =
           this.gdnMapper.deepCopy(positiones, PositionDTOResponse.class);
-      // dozerMapper.map(positiones, positionDTOResponse);
       positionDTOResponses.add(positionDTOResponse);
     }
 
@@ -169,12 +165,10 @@ public class PositionController {
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestBody PositionDTORequest positionDTORequest) {
     Position temp = this.gdnMapper.deepCopy(positionDTORequest, Position.class);
-    // dozerMapper.map(positionDTORequest, temp);
     temp.setStoreId(storeId);
     Position result = this.positionService.insertNewPosition(temp);
     PositionDTOResponse positionDTOResponse =
         this.gdnMapper.deepCopy(result, PositionDTOResponse.class);
-    // dozerMapper.map(result, positionDTOResponse);
     return new GdnRestSingleResponse<PositionDTOResponse>(positionDTOResponse, requestId);
   }
 

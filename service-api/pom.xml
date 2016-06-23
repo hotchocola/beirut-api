@@ -19,16 +19,16 @@
   <dependencies>
     <dependency>
       <groupId>com.gdn.x.beirut</groupId>
+      <artifactId>beirut-solr-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.gdn.x.beirut</groupId>
       <artifactId>beirut-model</artifactId>
     </dependency>
     <dependency>
       <groupId>com.gdn.x.beirut</groupId>
       <artifactId>beirut-dao-api</artifactId>
     </dependency>
-    <dependency>
-		<groupId>com.gdn.x.beirut</groupId>
-		<artifactId>beirut-solr-model</artifactId>
-	</dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>

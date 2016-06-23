@@ -1,43 +1,30 @@
-package com.gdn.x.beirut.solr.entities;
+package com.gdn.x.beirut.dto.response;
 
 import java.util.Date;
 
-import org.apache.solr.client.solrj.beans.Field;
-import org.springframework.data.solr.core.mapping.SolrDocument;
+import com.gdn.common.web.base.BaseResponse;
 
-import com.gdn.common.base.entity.GdnBaseSolrEntity;
+public class CandidatePositionSolrDTOResponse extends BaseResponse {
 
-@SolrDocument(solrCoreName = "xcandidatePosition")
-public class CandidatePositionSolr extends GdnBaseSolrEntity {
-  private static final long serialVersionUID = 1L;
-
-  @Field
   private String idCandidate;
 
-  @Field
   private String idPosition;
 
-  @Field
   private String emailAddress;
 
-  @Field
   private String firstName;
 
-  @Field
   private String lastName;
 
-  @Field
   private String phoneNumber;
 
-  @Field
   private Date createdDate;
 
-  @Field
   private String title;
 
-  @Field
   private String status;
 
+  @Override
   public Date getCreatedDate() {
     return createdDate;
   }
@@ -74,6 +61,7 @@ public class CandidatePositionSolr extends GdnBaseSolrEntity {
     return title;
   }
 
+  @Override
   public void setCreatedDate(Date createdDate) {
     this.createdDate = createdDate;
   }
@@ -108,12 +96,5 @@ public class CandidatePositionSolr extends GdnBaseSolrEntity {
 
   public void setTitle(String title) {
     this.title = title;
-  }
-
-  @Override
-  public String toString() {
-    return String.format(
-        "CandidateSolr [emailAddress=%s, firstName=%s, lastName=%s, phoneNumber=%s, status=%s, title=%s, toString()=%s]",
-        emailAddress, firstName, lastName, phoneNumber, status, title, super.toString());
   }
 }

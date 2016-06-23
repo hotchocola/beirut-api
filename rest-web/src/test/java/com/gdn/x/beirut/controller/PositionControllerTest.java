@@ -241,7 +241,6 @@ public class PositionControllerTest {
   public void testInsertNewPosition() throws Exception {
     String uri = "insertNewPosition";
     String positionDTORequestJson = "{\"title\":\"title\"}";
-    // dozerMapper.map(this.positionDTORequest, temp);
     Position temp = this.gdnMapper.deepCopy(this.positionDTORequest, Position.class);
     Mockito.when(this.positionService.insertNewPosition(temp)).thenReturn(temp);
     this.mockMVC.perform(MockMvcRequestBuilders.post(UriBasePath + uri)

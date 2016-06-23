@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,17 +31,7 @@ import com.gdn.x.beirut.entities.StatusLog;
 @Transactional(readOnly = true)
 public class CandidateServiceImpl implements CandidateService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(CandidateServiceImpl.class);
-  private static final String ID_SHOULD_EMPTY_FOR_NEW_RECORD = "id should empty for new record";
-  private static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
-
-  public static String getIdShouldEmptyForNewRecord() {
-    return ID_SHOULD_EMPTY_FOR_NEW_RECORD;
-  }
-
-  public static Logger getLog() {
-    return LOG;
-  }
+  public static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
 
   @Autowired
   private CandidateDAO candidateDAO;
@@ -75,16 +63,19 @@ public class CandidateServiceImpl implements CandidateService {
     List<Position> positions = positionDAO.findAll(positionIds);
     for (Position position : positions) {
       candidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
+    }
+    Candidate newCandidate = candidateDAO.save(candidate);
+    for (Position position : positions) {
       CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
-      BeanUtils.copyProperties(candidate, candidateNewInsert, "candidateDetail",
+      BeanUtils.copyProperties(newCandidate, candidateNewInsert, "candidateDetail",
           "candidatePositions");
-      candidateNewInsert.setIdCandidate(candidate.getId());
       BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
+      candidateNewInsert.setIdCandidate(newCandidate.getId());
       candidateNewInsert.setIdPosition(position.getId());
       domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
           CandidateNewInsert.class);
     }
-    return candidateDAO.save(candidate);
+    return newCandidate;
   }
 
   @Override
@@ -135,7 +126,6 @@ public class CandidateServiceImpl implements CandidateService {
       }
     }
   }
-
 
   @Override
   public Candidate getCandidateByIdAndStoreIdLazy(String id, String storeId) throws Exception {
@@ -191,10 +181,6 @@ public class CandidateServiceImpl implements CandidateService {
     }
     throw new ApplicationException(ErrorCategory.UNSPECIFIED,
         "didn't get equal position in candidate");
-  }
-
-  public DomainEventPublisher getDomainEventPublisher() {
-    return domainEventPublisher;
   }
 
   public GdnMapper getGdnMapper() {
@@ -253,6 +239,7 @@ public class CandidateServiceImpl implements CandidateService {
     return candidateDAO.findByLastNameContainingAndStoreId(lastName, storeId, pageable);
   }
 
+
   @Override
   public Candidate searchCandidateByEmailAddressAndStoreId(String emailAddress, String storeId) {
     return candidateDAO.findByEmailAddressAndStoreId(emailAddress, storeId);
@@ -272,10 +259,6 @@ public class CandidateServiceImpl implements CandidateService {
 
   public void setCandidateDAO(CandidateDAO candidateDAO) {
     this.candidateDAO = candidateDAO;
-  }
-
-  public void setDomainEventPublisher(DomainEventPublisher domainEventPublisher) {
-    this.domainEventPublisher = domainEventPublisher;
   }
 
   public void setGdnMapper(GdnMapper gdnMapper) {

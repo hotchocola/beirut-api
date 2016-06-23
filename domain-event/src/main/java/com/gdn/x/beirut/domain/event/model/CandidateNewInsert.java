@@ -60,6 +60,10 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
     return status;
   }
 
+  public String getStoreId() {
+    return storeId;
+  }
+
   public String getTitle() {
     return title;
   }
@@ -96,15 +100,19 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
     this.status = status;
   }
 
+  public void setStoreId(String storeId) {
+    this.storeId = storeId;
+  }
+
   public void setTitle(String title) {
     this.title = title;
   }
 
-  public String getStoreId() {
-    return storeId;
-  }
-
-  public void setStoreId(String storeId) {
-    this.storeId = storeId;
+  @Override
+  public String toString() {
+    return "CandidateNewInsert [storeId=" + storeId + ", idPosition=" + idPosition
+        + ", idCandidate=" + idCandidate + ", emailAddress=" + emailAddress + ", firstName="
+        + firstName + ", lastName=" + lastName + ", phoneNumber=" + phoneNumber + ", createdDate="
+        + createdDate + ", title=" + title + ", status=" + status + "]";
   }
 }
