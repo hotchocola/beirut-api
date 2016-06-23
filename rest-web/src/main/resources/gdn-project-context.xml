@@ -20,7 +20,7 @@
   <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper" />
   <solr:repositories base-package="com.gdn.x.beirut.solr.dao" multicore-support="true" />
   <jpa:repositories base-package="com.gdn.x.beirut.dao" />
-  <context:component-scan base-package="com.gdn.x.beirut.services" />
+  <context:component-scan base-package="com.gdn.x.beirut.services,com.gdn.x.beirut.solr.services" />
   <!-- <context:component-scan base-package="com.gdn.x.productcategorybase.config" /> -->
   <task:executor id="taskExecutor" queue-capacity="10" pool-size="${thread.pool.size}" rejection-policy="CALLER_RUNS" />
   <bean id="executorService" class="org.springframework.core.task.support.ExecutorServiceAdapter">

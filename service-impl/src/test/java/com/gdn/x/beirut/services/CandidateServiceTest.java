@@ -63,9 +63,6 @@ public class CandidateServiceTest {
   @Mock
   private PositionDAO positionDao;
 
-  @Mock
-  private EventService eventService;
-
   @InjectMocks
   private CandidateServiceImpl candidateService;
 
@@ -828,6 +825,7 @@ public class CandidateServiceTest {
   @Test
   public void testUpdateCandidateStatus() throws Exception {
     when(this.positionDao.findOne(ID)).thenReturn(this.position);
+    when(this.candidateDao.findOne(ID)).thenReturn(this.candidate);
     Candidate testCandidate = candidate;
     this.candidateService.updateCandidateStatus(STORE_ID, testCandidate.getId(), ID, STATUS);
     verify(this.candidateDao, times(1)).findOne(ID);
