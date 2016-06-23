@@ -5,4 +5,6 @@ public class DomainEventName {
   public static final String POSITION_NEW_INSERT = "com.gdn.x.beirut.position.new.insert";
   public static final String CANDIDATE_MARK_FOR_DELETE =
       "com.gdn.x.beirut.candidate.mark.for.delete";
+  public static final String POSITION_MARK_FOR_DELETE = "com.gdn.x.beirut.position.mark.for.delete";
+
 }

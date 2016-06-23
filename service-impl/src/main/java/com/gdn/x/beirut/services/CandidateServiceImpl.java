@@ -65,18 +65,22 @@ public class CandidateServiceImpl implements CandidateService {
     for (Position position : positions) {
       candidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
     }
-    Candidate newCandidate = candidateDAO.save(candidate);
-    for (Position position : positions) {
-      CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
-      BeanUtils.copyProperties(newCandidate, candidateNewInsert, "candidateDetail",
-          "candidatePositions");
-      BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
-      candidateNewInsert.setIdCandidate(newCandidate.getId());
-      candidateNewInsert.setIdPosition(position.getId());
-      domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
-          CandidateNewInsert.class);
+    try {
+      Candidate newCandidate = candidateDAO.save(candidate);
+      for (Position position : positions) {
+        CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
+        BeanUtils.copyProperties(newCandidate, candidateNewInsert, "candidateDetail",
+            "candidatePositions");
+        BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
+        candidateNewInsert.setIdCandidate(newCandidate.getId());
+        candidateNewInsert.setIdPosition(position.getId());
+        domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
+            CandidateNewInsert.class);
+      }
+      return newCandidate;
+    } catch (RuntimeException e) {
+      throw e;
     }
-    return newCandidate;
   }
 
   @Override

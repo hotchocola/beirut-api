@@ -1,22 +1,24 @@
 package com.gdn.x.beirut.solr.services;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.query.Query;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.core.query.SimpleStringCriteria;
+import org.springframework.data.solr.core.query.result.ScoredPage;
 import org.springframework.data.solr.core.query.result.SolrResultPage;
 
 import com.gdn.common.web.param.PageableHelper;
@@ -24,74 +26,64 @@ import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
 public class CandidatePositionSolrTest {
 
-  private static final Pageable DEFAULT_PAGEABLE = PageableHelper.generatePageable(0, 10);
+  private static final Pageable DEFAULT_PAGEABLE = PageableHelper.generatePageable(0, 4);
 
-  public String ID_CANDIDATE = "idC";
+  private static final String STORE_ID = "StoreID";
 
-  public String ID_POSITION = "idP";
+  private static final String FIRST_NAME = "FIRSTNAME";
 
-  public String EMAIL_ADDRESS = "em@em.em";
+  private static final String WILDCARD = "*";
 
-  public String STORE_ID = "storeId";
+  private static final String EMAIL_ADDRESS = "email@address.com";
 
-  public String FIRST_NAME = "fahri";
+  private static final String LAST_NAME = "LASTNAME";
 
-  public String LAST_NAME = "zal";
+  private static final String PHONE_NUMBER = "PHONENUMBER";
 
-  public String PHONE_NUMBER = "666";
+  private static final String STATUS = "APPLY";
 
-  public Date CREATED_DATE = new Date(System.currentTimeMillis());
-
-  public String TITLE = "myTitle";
-
-  public String STATUS = "CEO";
-
-  public String PLAIN_QUERY = "name:izal OR price:9";
-
-  public String STORE_ID_QUERY = "storeId:" + STORE_ID;
-
-  public String REAL_QUERY = STORE_ID_QUERY + " AND " + PLAIN_QUERY;
+  private static final String TITLE = "TITLE";
 
 
-  public CandidatePositionSolr candidatePositionSolr;
+  @InjectMocks
+  private CandidatePositionSolrServiceImpl candidatePositionSolrServiceImpl;
 
   @Mock
   private SolrTemplate candidatePositionTemplate;
-
-  @InjectMocks
-  private CandidatePositionSolrServiceImpl candidatePositionSolrService;
 
   @Before
   public void initialize() {
     initMocks(this);
   }
 
-  @After
-  public void noMoreTransaction() {
-    Mockito.verifyNoMoreInteractions(candidatePositionTemplate);
-  }
+  @Test
+  public void testExecuteSolrQuery() {
+    List<CandidatePositionSolr> candidatePositionSolrs = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      CandidatePositionSolr candidatePositionSolr = new CandidatePositionSolr();
+      candidatePositionSolr.setCreatedDate(new Date());
+      candidatePositionSolr.setEmailAddress(i + EMAIL_ADDRESS);
+      candidatePositionSolr.setFirstName(i + " " + FIRST_NAME);
+      candidatePositionSolr.setId(UUID.randomUUID().toString());
+      candidatePositionSolr.setIdCandidate(UUID.randomUUID().toString());
+      candidatePositionSolr.setIdPosition(UUID.randomUUID().toString());
+      candidatePositionSolr.setLastName(i + LAST_NAME);
+      candidatePositionSolr.setMarkForDelete(false);
+      candidatePositionSolr.setPhoneNumber(i + PHONE_NUMBER);
+      candidatePositionSolr.setStatus(STATUS);
+      candidatePositionSolr.setTitle(TITLE);
+      candidatePositionSolrs.add(candidatePositionSolr);
+    }
+    ScoredPage<CandidatePositionSolr> pageCandidatePositionSolrs = new SolrResultPage<>(
+        candidatePositionSolrs, DEFAULT_PAGEABLE, candidatePositionSolrs.size(), 2.5f);
+    Query query = new SimpleQuery(new SimpleStringCriteria("name:" + WILDCARD + FIRST_NAME))
+        .setPageRequest(DEFAULT_PAGEABLE);
+    Mockito.when(this.candidatePositionTemplate.queryForPage(query, CandidatePositionSolr.class))
+        .thenReturn(pageCandidatePositionSolrs);
+    candidatePositionSolrServiceImpl.executeSolrQuery("name:" + WILDCARD + FIRST_NAME, STORE_ID,
+        DEFAULT_PAGEABLE);
 
-  // @Test
-  public void testExecuteSolrQueryFindAll() {
-    List<CandidatePositionSolr> candidatePositionSolrList = new ArrayList<CandidatePositionSolr>();
-    candidatePositionSolrList.add(this.candidatePositionSolr);
-
-    SolrResultPage<CandidatePositionSolr> candidatePositionSolrScoredPage =
-        new SolrResultPage<CandidatePositionSolr>(candidatePositionSolrList);
-
-    // when(candidatePositionTemplate.queryForPage(
-    // new SimpleQuery(new SimpleStringCriteria(REAL_QUERY), DEFAULT_PAGEABLE),
-    // CandidatePositionSolr.class)).thenReturn(candidatePositionSolrScoredPage);
-
-    Mockito.when(candidatePositionTemplate.queryForPage(
-        new SimpleQuery(new SimpleStringCriteria(REAL_QUERY), DEFAULT_PAGEABLE),
-        CandidatePositionSolr.class)).thenReturn(candidatePositionSolrScoredPage);
-
-    this.candidatePositionSolrService.executeSolrQuery(PLAIN_QUERY, STORE_ID, DEFAULT_PAGEABLE);
-
-    verify(this.candidatePositionTemplate, times(1)).queryForPage(
-        new SimpleQuery(new SimpleStringCriteria(REAL_QUERY), DEFAULT_PAGEABLE),
-        CandidatePositionSolr.class);
-
+    Mockito.verify(this.candidatePositionTemplate).queryForPage(Mockito.any(Query.class),
+        Mockito.any());
   }
 }

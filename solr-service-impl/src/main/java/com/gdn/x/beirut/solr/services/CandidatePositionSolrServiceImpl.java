@@ -16,19 +16,19 @@ import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 @Transactional(readOnly = true)
 public class CandidatePositionSolrServiceImpl implements CandidatePositionSolrService {
 
+  private static final String STORE_ID = "storeId:";
+  private static final String AND = " AND ";
   @Resource(name = "xcandidatePositionTemplate")
   private SolrTemplate candidatePositionTemplate;
 
   @Override
   public Page<CandidatePositionSolr> executeSolrQuery(String query, String storeId,
       Pageable pageable) {
-    String realQuery = "storeId: " + storeId + " AND " + query;
-    System.out.println(realQuery + " Impl");
-    System.out.println("MASUK");
-    Page<CandidatePositionSolr> candidatePositionSolrPage = candidatePositionTemplate.queryForPage(
-        new SimpleQuery(new SimpleStringCriteria(realQuery), pageable),
+    String realQuery = STORE_ID + storeId + AND + query;
+    return candidatePositionTemplate.queryForPage(
+        new SimpleQuery(new SimpleStringCriteria(realQuery)).setPageRequest(pageable),
         CandidatePositionSolr.class);
+    // return candidatePositionTemplate.queryForPage(new SimpleQuery() , clazz);
 
-    return candidatePositionSolrPage;
   }
 }
