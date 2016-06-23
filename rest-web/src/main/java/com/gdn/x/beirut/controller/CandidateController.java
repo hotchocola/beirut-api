@@ -270,8 +270,6 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
-
-
   @RequestMapping(value = "findCandidateDetailAndStoreId", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -287,7 +285,6 @@ public class CandidateController {
         getGdnMapper().deepCopy(candidate, CandidateDetailDTOResponse.class);
     return new GdnRestSingleResponse<CandidateDetailDTOResponse>(candetres, requestId);
   }
-
 
   // DEPRECATED udah diganti pake getAllCandidateByStoreIdWithPageable
   @Deprecated
@@ -357,6 +354,8 @@ public class CandidateController {
         new PageMetaData(50, 0, toShow.size()), requestId);
   }
 
+
+
   @RequestMapping(value = "getCandidatePositionBySolrQuery", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "Mendapatkan candidatePosition dari data yang ada id Solr",
@@ -378,6 +377,7 @@ public class CandidateController {
     return new GdnRestListResponse<>(candidatePositionSolrDTOResponses,
         new PageMetaData(50, 0, candidatePositionSolrDTOResponses.size()), requestId);
   }
+
 
   @RequestMapping(value = "getCandidatePositionDetailByStoreIdWithLogs", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -457,9 +457,7 @@ public class CandidateController {
     } catch (Exception e) {
       return new GdnBaseRestResponse(e.getMessage(), "", false, requestId);
     }
-
   }
-
 
   public void setGdnMapper(GdnMapper gdnMapper) {
     this.gdnMapper = gdnMapper;
