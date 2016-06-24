@@ -23,6 +23,7 @@ import com.gdn.x.beirut.dao.CandidateDAO;
 import com.gdn.x.beirut.dao.PositionDAO;
 import com.gdn.x.beirut.domain.event.model.CandidateMarkForDelete;
 import com.gdn.x.beirut.domain.event.model.CandidateNewInsert;
+import com.gdn.x.beirut.domain.event.model.CandidateUpdateStatus;
 import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
@@ -30,6 +31,7 @@ import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.entities.StatusLog;
+
 
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
@@ -89,6 +91,7 @@ public class CandidateServiceImpl implements CandidateService {
         BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
         candidateNewInsert.setIdCandidate(newCandidate.getId());
         candidateNewInsert.setIdPosition(position.getId());
+        LOG.info("MAU PUBLISH WOI!!!");
         domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
             CandidateNewInsert.class);
       }
@@ -334,13 +337,25 @@ public class CandidateServiceImpl implements CandidateService {
     }
     Position existingPosition = positionDAO.findOne(idPosition);
     Hibernate.initialize(existingCandidate.getCandidatePositions());
+    CandidateUpdateStatus candidateUpdateStatus =
+        this.gdnMapper.deepCopy(existingCandidate, CandidateUpdateStatus.class);
+    candidateUpdateStatus.setIdCandidate(existingCandidate.getId());
+    candidateUpdateStatus.setIdPosition(existingPosition.getId());
     existingCandidate.getCandidatePositions().stream()
         .filter(candidatePosition -> candidatePosition.getPosition().equals(existingPosition))
         .forEach(candidatePosition -> {
-          candidatePosition.getStatusLogs().add(new StatusLog(candidatePosition, status));
+          StatusLog statusLog = new StatusLog(candidatePosition, status);
+          statusLog.setStoreId(storeId);
+          candidatePosition.getStatusLogs().add(statusLog);
           candidatePosition.setStatus(status); // add missing setter zal
+          candidatePosition.setStoreId(storeId);
+          candidateUpdateStatus.setStatus(status.toString());
         });
     candidateDAO.save(existingCandidate);
+    LOG.info("SAMPEI MAU PUBLISH WOOI, YANG DI PUBLISNYA INI OIII : ",
+        new Object[] {candidateUpdateStatus});
+    domainEventPublisher.publish(candidateUpdateStatus, DomainEventName.CANDIDATE_UPDATE_STATUS,
+        CandidateUpdateStatus.class);
   }
 
   @Override

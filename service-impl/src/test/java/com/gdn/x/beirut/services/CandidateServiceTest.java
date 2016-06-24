@@ -863,6 +863,7 @@ public class CandidateServiceTest {
   @Test
   public void testUpdateCandidateStatus() throws Exception {
     when(this.positionDao.findOne(ID)).thenReturn(this.position);
+    when(this.candidateDao.findOne(ID)).thenReturn(this.candidate);
     Candidate testCandidate = candidate;
     List<CandidatePosition> candidatePositions = new ArrayList<CandidatePosition>();
     candidatePositions.add(new CandidatePosition(testCandidate, this.position, STORE_ID));
