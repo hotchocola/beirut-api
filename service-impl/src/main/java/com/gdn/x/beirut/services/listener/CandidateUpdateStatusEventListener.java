@@ -31,14 +31,12 @@ public class CandidateUpdateStatusEventListener
   public void onDomainEventConsumed(CandidateUpdateStatus message) throws Exception {
     LOG.info("consuming message from kafka : {}", new Object[] {message});
     CandidatePositionSolr exist = candidatePositionTemplate.queryForObject(
-        new SimpleQuery(new SimpleStringCriteria("idCandidate:" + message.getIdCandidate())),
+        new SimpleQuery(new SimpleStringCriteria("idCandidate:" + message.getIdCandidate()
+            + " AND idPosition:" + message.getIdPosition())),
         CandidatePositionSolr.class);
-    if (!exist.getIdCandidate().equals(null)) {
-      PartialUpdate update = new PartialUpdate("idPosition", exist.getIdPosition());
-      update.setValueOfField("status", message.getStatus());
-      candidatePositionTemplate.saveBean(update);
-      candidatePositionTemplate.commit();
-    }
-
+    PartialUpdate update = new PartialUpdate("id", exist.getId());
+    update.setValueOfField("status", message.getStatus());
+    candidatePositionTemplate.saveBean(update);
+    candidatePositionTemplate.commit();
   }
 }

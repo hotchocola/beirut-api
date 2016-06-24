@@ -866,8 +866,8 @@ public class CandidateServiceTest {
     when(this.positionDao.findOne(ID)).thenReturn(this.position);
     when(this.candidateDao.findOne(ID)).thenReturn(this.candidate);
     Candidate testCandidate = candidate;
-    Set<CandidatePosition> candidatePositions = new HashSet<CandidatePosition>();
-    candidatePositions.add(new CandidatePosition(testCandidate, this.position));
+    List<CandidatePosition> candidatePositions = new ArrayList<CandidatePosition>();
+    candidatePositions.add(new CandidatePosition(testCandidate, this.position, STORE_ID));
     testCandidate.setCandidatePositions(candidatePositions);
     when(this.candidateDao.findOne(ID)).thenReturn(testCandidate);
     this.candidateService.updateCandidateStatus(STORE_ID, testCandidate.getId(), ID, STATUS);
