@@ -22,7 +22,8 @@ import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 public class CandidateUpdateStatusEventListener
     implements DomainEventListener<CandidateUpdateStatus> {
 
-  private static final Logger LOG = LoggerFactory.getLogger(CandidateUpdateStatus.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(CandidateUpdateStatusEventListener.class);
 
   @Resource(name = "xcandidatePositionTemplate")
   private SolrTemplate candidatePositionTemplate;

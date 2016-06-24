@@ -14,6 +14,12 @@ import com.gdn.x.beirut.entities.Status;
 public class EventServiceImpl implements EventService {
 
   @Override
+  public Position insertNewPosition(Position position) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
   @PublishDomainEvent(publishEventClass = PositionMarkForDelete.class,
       domainEventName = DomainEventName.POSITION_MARK_FOR_DELETE)
   public Position markForDelete(Position position) {
@@ -23,9 +29,8 @@ public class EventServiceImpl implements EventService {
   @Override
   @PublishDomainEvent(publishEventClass = CandidateUpdateStatus.class,
       domainEventName = DomainEventName.CANDIDATE_UPDATE_STATUS)
-  public Candidate updateCandidateStatus(String storeid, String candidateId, String idPosition,
-      Status status) {
-    return new Candidate();
+  public Candidate updateCandidateStatus(Candidate candidate, Position position, Status status) {
+    return candidate;
   }
 
 }

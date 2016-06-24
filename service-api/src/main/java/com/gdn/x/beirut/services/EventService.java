@@ -9,6 +9,5 @@ public interface EventService {
 
   public Position markForDelete(Position position);
 
-  public Candidate updateCandidateStatus(String storeid, String candidateId, String idPosition,
-      Status status);
+  public Candidate updateCandidateStatus(Candidate candidate, Position position, Status status);
 }

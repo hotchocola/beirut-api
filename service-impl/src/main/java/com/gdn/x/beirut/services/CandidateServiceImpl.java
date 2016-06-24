@@ -3,6 +3,7 @@ package com.gdn.x.beirut.services;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.BeanUtils;
@@ -20,6 +21,7 @@ import com.gdn.x.beirut.dao.CandidateDAO;
 import com.gdn.x.beirut.dao.PositionDAO;
 import com.gdn.x.beirut.domain.event.model.CandidateMarkForDelete;
 import com.gdn.x.beirut.domain.event.model.CandidateNewInsert;
+import com.gdn.x.beirut.domain.event.model.CandidateUpdateStatus;
 import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
@@ -324,6 +326,21 @@ public class CandidateServiceImpl implements CandidateService {
           candidatePosition.setStatus(status); // add missing setter zal
         });
     candidateDAO.save(existingCandidate);
+    CandidateUpdateStatus candidateUpdateStatus =
+        this.gdnMapper.deepCopy(existingCandidate, CandidateUpdateStatus.class);
+    candidateUpdateStatus.setIdCandidate(existingCandidate.getId());
+    candidateUpdateStatus.setIdPosition(existingPosition.getId());
+    Set<CandidatePosition> existingCandidatePosition = existingCandidate.getCandidatePositions();
+    String status1 = "";
+    for (CandidatePosition candidate : existingCandidatePosition) {
+      if (!candidate.getStatus().equals(null)) {
+        status1 = candidate.getStatus().toString();
+        System.out.println(status1);
+      }
+    }
+    candidateUpdateStatus.setStatus(status1);
+    domainEventPublisher.publish(candidateUpdateStatus, DomainEventName.CANDIDATE_UPDATE_STATUS,
+        CandidateUpdateStatus.class);
   }
 
   @Override
