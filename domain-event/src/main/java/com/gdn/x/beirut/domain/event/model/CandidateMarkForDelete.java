@@ -1,7 +1,9 @@
 package com.gdn.x.beirut.domain.event.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.gdn.common.base.entity.GdnBaseDomainEventModel;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CandidateMarkForDelete extends GdnBaseDomainEventModel {
 
   private String id;
@@ -32,6 +34,12 @@ public class CandidateMarkForDelete extends GdnBaseDomainEventModel {
 
   public void setStoreId(String storeId) {
     this.storeId = storeId;
+  }
+
+  @Override
+  public String toString() {
+    return "CandidateMarkForDelete [id=" + id + ", storeId=" + storeId + ", markForDelete="
+        + markForDelete + "]";
   }
 
 }

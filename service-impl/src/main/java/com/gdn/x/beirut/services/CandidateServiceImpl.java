@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,6 +33,8 @@ import com.gdn.x.beirut.entities.StatusLog;
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
 public class CandidateServiceImpl implements CandidateService {
+
+  private static final Logger LOG = LoggerFactory.getLogger(Candidate.class);
 
   public static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
 
@@ -224,11 +228,14 @@ public class CandidateServiceImpl implements CandidateService {
     }
     candidate.setMarkForDelete(true);
     this.candidateDAO.save(candidate);
+
     CandidateMarkForDelete candidateMarkForDelete =
         this.gdnMapper.deepCopy(candidate, CandidateMarkForDelete.class);
-    candidateMarkForDelete.setId(candidate.getId());
-    candidateMarkForDelete.setMarkForDelete(true);
-    candidateMarkForDelete.setStoreId(candidate.getStoreId());
+    candidateMarkForDelete.setTimestamp(System.currentTimeMillis());
+    LOG.info("%%COBA MAU DI PUBLISH... = [id:" + candidateMarkForDelete.getId() + ", storeId:"
+        + candidateMarkForDelete.getStoreId() + ", markForDelete:"
+        + candidateMarkForDelete.isMarkForDelete() + ", timestamp(FROM PARENT):"
+        + candidateMarkForDelete.getTimestamp() + "] %%");
     domainEventPublisher.publish(candidateMarkForDelete, DomainEventName.CANDIDATE_MARK_FOR_DELETE,
         CandidateMarkForDelete.class);
   }
