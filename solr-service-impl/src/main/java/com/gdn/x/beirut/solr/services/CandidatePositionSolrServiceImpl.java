@@ -8,10 +8,12 @@ import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.core.query.SimpleStringCriteria;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
 @Service(value = "candidatePositionSolrService")
+@Transactional(readOnly = true)
 public class CandidatePositionSolrServiceImpl implements CandidatePositionSolrService {
 
   private static final String STORE_ID = "STORE_ID:";
@@ -27,5 +29,6 @@ public class CandidatePositionSolrServiceImpl implements CandidatePositionSolrSe
         new SimpleQuery(new SimpleStringCriteria(realQuery)).setPageRequest(pageable),
         CandidatePositionSolr.class);
     // return candidatePositionTemplate.queryForPage(new SimpleQuery() , clazz);
+
   }
 }

@@ -92,6 +92,11 @@
       <artifactId>beirut-service-impl</artifactId>
       <scope>runtime</scope>
     </dependency>
+        <dependency>
+      <groupId>com.gdn.x.beirut</groupId>
+      <artifactId>beirut-solr-service-impl</artifactId>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
@@ -225,6 +230,6 @@
 	<dependency>
 		<groupId>com.gdn.x.beirut</groupId>
 		<artifactId>beirut-domain-event</artifactId>
-	</dependency>		
+	</dependency>	
   </dependencies>
 </project>

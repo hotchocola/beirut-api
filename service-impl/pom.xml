@@ -83,6 +83,9 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>com.gdn.x.beirut</groupId>
+      <artifactId>beirut-solr-service-api</artifactId>
+    </dependency>
 </dependencies>
 </project>

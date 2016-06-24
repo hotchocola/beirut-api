@@ -1,5 +1,6 @@
 package com.gdn.x.beirut.solr.services;
 
+
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import com.gdn.common.web.param.PageableHelper;
 import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
 public class CandidatePositionSolrTest {
+
   private static final Pageable DEFAULT_PAGEABLE = PageableHelper.generatePageable(0, 4);
 
   private static final String STORE_ID = "StoreID";
