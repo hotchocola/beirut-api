@@ -71,6 +71,13 @@ public class CandidateServiceImpl implements CandidateService {
   public Candidate createNew(Candidate candidate, List<String> positionIds) throws Exception {
     List<Position> positions = positionDAO.findAll(positionIds);
     candidate.setCandidatePositions(new ArrayList<CandidatePosition>());
+    if (positions == null || positions.size() == 0) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "position not found");
+    }
+    if (positionIds == null || positionIds.size() == 0) {
+      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER,
+          "position id must not empty");
+    }
     for (Position position : positions) {
       candidate.getCandidatePositions()
           .add(new CandidatePosition(candidate, position, candidate.getStoreId()));
