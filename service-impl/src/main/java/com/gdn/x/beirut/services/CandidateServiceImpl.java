@@ -21,6 +21,7 @@ import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.CandidateDAO;
 import com.gdn.x.beirut.dao.PositionDAO;
+import com.gdn.x.beirut.domain.event.model.CandidateMarkForDelete;
 import com.gdn.x.beirut.domain.event.model.CandidateNewInsert;
 import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.entities.Candidate;
@@ -33,6 +34,8 @@ import com.gdn.x.beirut.entities.StatusLog;
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
 public class CandidateServiceImpl implements CandidateService {
+
+  private static final Logger LOG = LoggerFactory.getLogger(Candidate.class);
 
   public static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
 
@@ -238,6 +241,16 @@ public class CandidateServiceImpl implements CandidateService {
     }
     candidate.setMarkForDelete(true);
     this.candidateDAO.save(candidate);
+
+    CandidateMarkForDelete candidateMarkForDelete =
+        this.gdnMapper.deepCopy(candidate, CandidateMarkForDelete.class);
+    candidateMarkForDelete.setTimestamp(System.currentTimeMillis());
+    LOG.info("%%COBA MAU DI PUBLISH... = [id:" + candidateMarkForDelete.getId() + ", storeId:"
+        + candidateMarkForDelete.getStoreId() + ", markForDelete:"
+        + candidateMarkForDelete.isMarkForDelete() + ", timestamp(FROM PARENT):"
+        + candidateMarkForDelete.getTimestamp() + "] %%");
+    domainEventPublisher.publish(candidateMarkForDelete, DomainEventName.CANDIDATE_MARK_FOR_DELETE,
+        CandidateMarkForDelete.class);
   }
 
   @Override
