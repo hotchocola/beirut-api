@@ -35,8 +35,6 @@ import com.gdn.x.beirut.entities.StatusLog;
 @Transactional(readOnly = true)
 public class CandidateServiceImpl implements CandidateService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Candidate.class);
-
   public static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
 
   private static final Logger LOG = LoggerFactory.getLogger(CandidateServiceImpl.class);

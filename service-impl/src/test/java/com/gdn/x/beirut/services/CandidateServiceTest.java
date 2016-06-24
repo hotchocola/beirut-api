@@ -665,7 +665,6 @@ public class CandidateServiceTest {
     try {
       this.candidateService.createNew(candidate, positionIds);
     } catch (Exception e) {
-      verify(this.candidateDao, times(1)).save(Mockito.any(Candidate.class));
       verify(this.positionDao, times(1)).findAll(positionIds);
     }
   }
@@ -865,8 +864,8 @@ public class CandidateServiceTest {
   public void testUpdateCandidateStatus() throws Exception {
     when(this.positionDao.findOne(ID)).thenReturn(this.position);
     Candidate testCandidate = candidate;
-    Set<CandidatePosition> candidatePositions = new HashSet<CandidatePosition>();
-    candidatePositions.add(new CandidatePosition(testCandidate, this.position));
+    List<CandidatePosition> candidatePositions = new ArrayList<CandidatePosition>();
+    candidatePositions.add(new CandidatePosition(testCandidate, this.position, STORE_ID));
     testCandidate.setCandidatePositions(candidatePositions);
     when(this.candidateDao.findOne(ID)).thenReturn(testCandidate);
     this.candidateService.updateCandidateStatus(STORE_ID, testCandidate.getId(), ID, STATUS);
