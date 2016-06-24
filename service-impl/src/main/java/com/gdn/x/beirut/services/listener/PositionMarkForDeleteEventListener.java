@@ -9,11 +9,16 @@ import org.springframework.data.solr.core.query.PartialUpdate;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.core.query.SimpleStringCriteria;
 import org.springframework.data.solr.core.query.result.ScoredPage;
+import org.springframework.stereotype.Service;
 
 import com.gdn.common.base.domainevent.subscriber.DomainEventListener;
+import com.gdn.common.base.domainevent.subscriber.SubscribeDomainEvent;
+import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.domain.event.model.PositionMarkForDelete;
 import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
+@Service
+@SubscribeDomainEvent(DomainEventName.POSITION_MARK_FOR_DELETE)
 public class PositionMarkForDeleteEventListener
     implements DomainEventListener<PositionMarkForDelete> {
 
@@ -29,6 +34,7 @@ public class PositionMarkForDeleteEventListener
         new SimpleQuery(new SimpleStringCriteria("idPosition:" + message.getId())),
         CandidatePositionSolr.class);
     for (CandidatePositionSolr candidatePositionSolr : exist.getContent()) {
+      LOG.info("consuming message from kafka IDNYA WOOOI: {}", candidatePositionSolr.toString());
       PartialUpdate update = new PartialUpdate("id", candidatePositionSolr.getId());
       update.setValueOfField(CandidatePositionSolr.MARK_FOR_DELETE, true);
       candidatePositionTemplate.saveBean(update);

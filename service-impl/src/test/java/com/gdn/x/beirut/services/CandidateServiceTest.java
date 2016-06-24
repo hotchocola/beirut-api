@@ -9,9 +9,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.dozer.DozerBeanMapper;
 import org.dozer.Mapper;
@@ -239,13 +237,13 @@ public class CandidateServiceTest {
     }
     Mockito.when(this.positionDao.findAll(positionIds)).thenReturn(positions);
     for (Position position : positions) {
-      candidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
+      candidate.getCandidatePositions().add(new CandidatePosition(candidate, position, STORE_ID));
     }
 
     Assert.assertTrue(
         this.candidateService.applyNewPosition(ID, positionIds).getId() == candidate.getId());
 
-    Set<CandidatePosition> candPostTest =
+    List<CandidatePosition> candPostTest =
         this.candidateService.applyNewPosition(ID, positionIds).getCandidatePositions();
     int i = 0;
     for (CandidatePosition candidatePosition : candPostTest) {
@@ -460,7 +458,7 @@ public class CandidateServiceTest {
     CandidatePosition candPost = new CandidatePosition();
     candPost.setCandidate(candidate);
     candPost.setPosition(position);
-    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    List<CandidatePosition> sets = new ArrayList<CandidatePosition>();
     sets.add(candPost);
     candidate.setCandidatePositions(sets);
     position.setCandidatePositions(sets);
@@ -489,7 +487,7 @@ public class CandidateServiceTest {
     CandidatePosition candPost = new CandidatePosition();
     candPost.setCandidate(candidate);
     candPost.setPosition(position);
-    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    List<CandidatePosition> sets = new ArrayList<CandidatePosition>();
     sets.add(candPost);
     candidate.setCandidatePositions(sets);
     position.setCandidatePositions(sets);
@@ -518,7 +516,7 @@ public class CandidateServiceTest {
     CandidatePosition candPost = new CandidatePosition();
     candPost.setCandidate(candidate);
     candPost.setPosition(position);
-    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    List<CandidatePosition> sets = new ArrayList<CandidatePosition>();
     sets.add(candPost);
     candidate.setCandidatePositions(sets);
     position.setCandidatePositions(sets);
@@ -548,7 +546,7 @@ public class CandidateServiceTest {
     CandidatePosition candPost = new CandidatePosition();
     candPost.setCandidate(candidate);
     candPost.setPosition(position);
-    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    List<CandidatePosition> sets = new ArrayList<CandidatePosition>();
     sets.add(candPost);
     candidate.setCandidatePositions(sets);
     position.setCandidatePositions(sets);
@@ -577,7 +575,7 @@ public class CandidateServiceTest {
     CandidatePosition candPost = new CandidatePosition();
     candPost.setCandidate(candidate);
     candPost.setPosition(position);
-    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    List<CandidatePosition> sets = new ArrayList<CandidatePosition>();
     sets.add(candPost);
     candidate.setCandidatePositions(sets);
     position.setCandidatePositions(sets);
@@ -633,8 +631,8 @@ public class CandidateServiceTest {
       position.setStoreId(STORE_ID);
       positions.add(position);
       positionIds.add(POSITION_ID + i);
-      CandidatePosition candidatePosition = new CandidatePosition(candidate, position);
-      position.setCandidatePositions(new HashSet<CandidatePosition>());
+      CandidatePosition candidatePosition = new CandidatePosition(candidate, position, STORE_ID);
+      position.setCandidatePositions(new ArrayList<CandidatePosition>());
       position.getCandidatePositions().add(candidatePosition);
       candidate.getCandidatePositions().add(candidatePosition);
     }

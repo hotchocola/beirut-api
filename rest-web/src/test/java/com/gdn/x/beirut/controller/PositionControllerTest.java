@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -205,7 +204,7 @@ public class PositionControllerTest {
     shouldBeReturned.setId(ID);
     shouldBeReturned.setStoreId(STORE_ID);
     shouldBeReturned.setCreatedBy("dummy");
-    shouldBeReturned.setCandidatePositions(new HashSet<CandidatePosition>());
+    shouldBeReturned.setCandidatePositions(new ArrayList<CandidatePosition>());
     shouldBeReturned.getCandidatePositions().add(candidatePosition);
     shouldBeReturned.setMarkForDelete(false);
     shouldBeReturned.setTitle("This is a dummy");
