@@ -8,10 +8,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.dozer.DozerBeanMapper;
@@ -322,11 +320,11 @@ public class CandidateControllerTest {
     Candidate cand = new Candidate();
     cand.setStoreId(STORE_ID);
     cand.setId(ID);
-    Set<CandidatePosition> candPositions = new HashSet<CandidatePosition>();
+    List<CandidatePosition> candPositions = new ArrayList<CandidatePosition>();
     Position position = new Position();
     position.setId(ID);
     position.setTitle("koko");
-    candPositions.add(new CandidatePosition(cand, position));
+    candPositions.add(new CandidatePosition(cand, position, STORE_ID));
     cand.setCandidatePositions(candPositions);
     position.setCandidatePositions(candPositions);
     Mockito.when(this.candidateService.getCandidateByIdAndStoreIdEager(ID, STORE_ID))
@@ -477,7 +475,7 @@ public class CandidateControllerTest {
     post.setStoreId(ID);
     candPost.setCandidate(cand);
     candPost.setPosition(post);
-    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    List<CandidatePosition> sets = new ArrayList<CandidatePosition>();
     sets.add(candPost);
     cand.setCandidatePositions(sets);
     post.setCandidatePositions(sets);

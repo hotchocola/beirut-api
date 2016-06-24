@@ -1,11 +1,14 @@
 package com.gdn.x.beirut.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,6 +40,8 @@ public class CandidateServiceImpl implements CandidateService {
 
   public static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
 
+  private static final Logger LOG = LoggerFactory.getLogger(CandidateServiceImpl.class);
+
   @Autowired
   private CandidateDAO candidateDAO;
 
@@ -56,7 +61,7 @@ public class CandidateServiceImpl implements CandidateService {
     List<Position> positions = positionDAO.findAll(positionIds);
     for (Position position : positions) {
       existingCandidate.getCandidatePositions()
-          .add(new CandidatePosition(existingCandidate, position));
+          .add(new CandidatePosition(existingCandidate, position, existingCandidate.getStoreId()));
     }
     return candidateDAO.save(existingCandidate);
   }
@@ -65,10 +70,13 @@ public class CandidateServiceImpl implements CandidateService {
   @Transactional(readOnly = false)
   public Candidate createNew(Candidate candidate, List<String> positionIds) throws Exception {
     List<Position> positions = positionDAO.findAll(positionIds);
+    candidate.setCandidatePositions(new ArrayList<CandidatePosition>());
     for (Position position : positions) {
-      candidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
+      candidate.getCandidatePositions()
+          .add(new CandidatePosition(candidate, position, candidate.getStoreId()));
     }
     try {
+      List<CandidatePosition> candidatePositions = candidate.getCandidatePositions();
       Candidate newCandidate = candidateDAO.save(candidate);
       for (Position position : positions) {
         CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
