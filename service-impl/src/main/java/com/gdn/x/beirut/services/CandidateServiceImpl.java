@@ -90,6 +90,7 @@ public class CandidateServiceImpl implements CandidateService {
             "candidatePositions");
         BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
         candidateNewInsert.setIdCandidate(newCandidate.getId());
+        candidateNewInsert.setStatus(Status.APPLY.toString());
         candidateNewInsert.setIdPosition(position.getId());
         LOG.info("MAU PUBLISH WOI!!!");
         domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
