@@ -16,7 +16,7 @@ import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 @Transactional(readOnly = true)
 public class CandidatePositionSolrServiceImpl implements CandidatePositionSolrService {
 
-  private static final String STORE_ID = "storeId:";
+  private static final String STORE_ID = "STORE_ID:";
   private static final String AND = " AND ";
   @Resource(name = "xcandidatePositionTemplate")
   private SolrTemplate candidatePositionTemplate;
