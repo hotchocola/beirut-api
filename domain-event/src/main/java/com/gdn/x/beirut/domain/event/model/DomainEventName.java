@@ -7,4 +7,6 @@ public class DomainEventName {
   public static final String CANDIDATE_MARK_FOR_DELETE =
       "com.gdn.x.beirut.candidate.mark.for.delete";
   public static final String POSITION_MARK_FOR_DELETE = "com.gdn.x.beirut.position.mark.for.delete";
+  public static final String CANDIDATE_APPLY_NEW_POSITION =
+      "com.gdn.x.beirut.candidate.apply.new.position";
 }

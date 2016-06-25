@@ -4,7 +4,6 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.SimpleQuery;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.gdn.common.base.domainevent.subscriber.DomainEventListener;
 import com.gdn.common.base.domainevent.subscriber.SubscribeDomainEvent;
-import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.x.beirut.domain.event.model.CandidateMarkForDelete;
 import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
@@ -26,9 +24,6 @@ public class CandidateMarkForDeleteEventListener
 
   @Resource(name = "xcandidatePositionTemplate")
   private SolrTemplate candidatePositionTemplate;
-
-  @Autowired
-  private GdnMapper gdnMapper;
 
   public String STORE_ID = "STORE_ID:";
 

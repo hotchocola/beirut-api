@@ -21,6 +21,7 @@ import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.CandidateDAO;
 import com.gdn.x.beirut.dao.PositionDAO;
+import com.gdn.x.beirut.domain.event.model.ApplyNewPosition;
 import com.gdn.x.beirut.domain.event.model.CandidateMarkForDelete;
 import com.gdn.x.beirut.domain.event.model.CandidateNewInsert;
 import com.gdn.x.beirut.domain.event.model.CandidateUpdateStatus;
@@ -57,32 +58,48 @@ public class CandidateServiceImpl implements CandidateService {
   @Transactional(readOnly = false)
   public Candidate applyNewPosition(String candidateId, List<String> positionIds) throws Exception {
     Candidate existingCandidate = getCandidate(candidateId);
+    if (positionIds == null || positionIds.size() == 0) {
+      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER, "position must not empty");
+    }
     List<Position> positions = positionDAO.findAll(positionIds);
+    if (positions == null || positions.size() == 0) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "position not found");
+    }
     for (Position position : positions) {
       existingCandidate.getCandidatePositions()
           .add(new CandidatePosition(existingCandidate, position, existingCandidate.getStoreId()));
     }
-    return candidateDAO.save(existingCandidate);
+    Candidate result = candidateDAO.save(existingCandidate);
+    for (Position position : positions) {
+      ApplyNewPosition objectToPublish = new ApplyNewPosition();
+      BeanUtils.copyProperties(result, objectToPublish, "candidateDetail", "candidatePositions");
+      BeanUtils.copyProperties(position, objectToPublish, "candidatePositions");
+      objectToPublish.setIdCandidate(result.getId());
+      objectToPublish.setStatus(Status.APPLY.toString());
+      objectToPublish.setIdPosition(position.getId());
+      domainEventPublisher.publish(objectToPublish, DomainEventName.CANDIDATE_APPLY_NEW_POSITION,
+          ApplyNewPosition.class);
+    }
+    return result;
   }
 
   @Override
   @Transactional(readOnly = false)
   public Candidate createNew(Candidate candidate, List<String> positionIds) throws Exception {
+    if (positionIds == null || positionIds.size() == 0) {
+      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER,
+          "position id must not empty");
+    }
     List<Position> positions = positionDAO.findAll(positionIds);
     candidate.setCandidatePositions(new ArrayList<CandidatePosition>());
     if (positions == null || positions.size() == 0) {
       throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "position not found");
-    }
-    if (positionIds == null || positionIds.size() == 0) {
-      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER,
-          "position id must not empty");
     }
     for (Position position : positions) {
       candidate.getCandidatePositions()
           .add(new CandidatePosition(candidate, position, candidate.getStoreId()));
     }
     try {
-      List<CandidatePosition> candidatePositions = candidate.getCandidatePositions();
       Candidate newCandidate = candidateDAO.save(candidate);
       for (Position position : positions) {
         CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
@@ -92,7 +109,6 @@ public class CandidateServiceImpl implements CandidateService {
         candidateNewInsert.setIdCandidate(newCandidate.getId());
         candidateNewInsert.setStatus(Status.APPLY.toString());
         candidateNewInsert.setIdPosition(position.getId());
-        LOG.info("MAU PUBLISH WOI!!!");
         domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
             CandidateNewInsert.class);
       }
