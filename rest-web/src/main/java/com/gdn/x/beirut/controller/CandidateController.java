@@ -391,16 +391,6 @@ public class CandidateController {
     CandidatePositionDTOResponse candidatePositionResponse =
         this.gdnMapper.deepCopy(candidatePosition, CandidatePositionDTOResponse.class);
     CandidateMapper.map(candidatePosition, candidatePositionResponse, this.gdnMapper);
-    System.out.println(candidatePositionResponse.getStatusLogs().size());
-    // System.out.println("ID CAND : " + candidatePositionResponse.getCandidate().getId() + "; POST
-    // ID : "
-    // + candidatePositionResponse.getPosition().getId() + "; STATUS : "
-    // + candidatePosition.getStatus());
-    // System.out.println(candidatePositionResponse.getStatusLogs().size());
-    // for (StatusLogDTOResponse statusLogResponse : candidatePositionResponse.getStatusLogs()) {
-    // System.out.println("WUWU : " + statusLogResponse.getStatus());
-    // }
-    // System.out.println("MASUK : ");
     return new GdnRestSingleResponse<CandidatePositionDTOResponse>(candidatePositionResponse,
         requestId);
   }

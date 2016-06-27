@@ -94,11 +94,7 @@ public class CandidateMapper {
           statusLogDTO.setStatus(StatusDTOResponse.APPLY);
           break;
       }
-      System.out.println("mapper : " + statusLogDTO.getStatus());
       candidatePositionResponse.getStatusLogs().add(statusLogDTO);
-      for (StatusLogDTOResponse stat : candidatePositionResponse.getStatusLogs()) {
-        System.out.println("Foreacg Mapper statLog : " + stat.getStatus());
-      }
     }
   }
 
