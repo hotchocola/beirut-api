@@ -1,19 +1,18 @@
-package com.gdn.x.beirut.dto.response;
+package com.gdn.x.beirut.domain.event.model;
 
 import java.util.Date;
 
-import com.gdn.common.web.base.BaseResponse;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.gdn.common.base.entity.GdnBaseDomainEventModel;
 
-public class CandidatePositionSolrDTOResponse extends BaseResponse {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ApplyNewPosition extends GdnBaseDomainEventModel {
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1814098341996849961L;
-
-  private String idCandidate;
+  private String storeId;
 
   private String idPosition;
+
+  private String idCandidate;
 
   private String emailAddress;
 
@@ -29,7 +28,6 @@ public class CandidatePositionSolrDTOResponse extends BaseResponse {
 
   private String status;
 
-  @Override
   public Date getCreatedDate() {
     return createdDate;
   }
@@ -62,11 +60,14 @@ public class CandidatePositionSolrDTOResponse extends BaseResponse {
     return status;
   }
 
+  public String getStoreId() {
+    return storeId;
+  }
+
   public String getTitle() {
     return title;
   }
 
-  @Override
   public void setCreatedDate(Date createdDate) {
     this.createdDate = createdDate;
   }
@@ -82,6 +83,7 @@ public class CandidatePositionSolrDTOResponse extends BaseResponse {
   public void setIdCandidate(String idCandidate) {
     this.idCandidate = idCandidate;
   }
+
 
   public void setIdPosition(String idPosition) {
     this.idPosition = idPosition;
@@ -99,7 +101,19 @@ public class CandidatePositionSolrDTOResponse extends BaseResponse {
     this.status = status;
   }
 
+  public void setStoreId(String storeId) {
+    this.storeId = storeId;
+  }
+
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  @Override
+  public String toString() {
+    return "ApplyNewPosition [storeId=" + storeId + ", idPosition=" + idPosition + ", idCandidate="
+        + idCandidate + ", emailAddress=" + emailAddress + ", firstName=" + firstName
+        + ", lastName=" + lastName + ", phoneNumber=" + phoneNumber + ", createdDate=" + createdDate
+        + ", title=" + title + ", status=" + status + "]";
   }
 }

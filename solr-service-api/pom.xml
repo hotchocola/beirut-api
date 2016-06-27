@@ -19,5 +19,5 @@ http://maven.apache.org/maven-v4_0_0.xsd">
         <groupId>com.gdn.x.beirut</groupId>
         <artifactId>beirut-solr-model</artifactId>
       </dependency>
-   </dependencies>
+	</dependencies>
 </project>

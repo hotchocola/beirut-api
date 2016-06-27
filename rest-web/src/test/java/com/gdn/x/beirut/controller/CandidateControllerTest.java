@@ -184,8 +184,6 @@ public class CandidateControllerTest {
     candidate.setEmailAddress("blahblah");
     candidate.setFirstName("blahblah");
     candidate.setLastName("blahblah");
-    CandidateDTORequest candidateDTORequest =
-        gdnMapper.deepCopy(candidate, CandidateDTORequest.class);
     List<Position> positions = new ArrayList<>();
     List<String> positionIds = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
@@ -201,19 +199,17 @@ public class CandidateControllerTest {
 
     String listStringJson =
         FileUtils.readFileToString(new File("src/test/resources/JSON/markForDeleteJSON.json"));
-    String candidateDTORequestJson = FileUtils
-        .readFileToString(new File("src/test/resources/JSON/candidateDTORequestString.txt"));
     this.mockMVC
-        .perform(MockMvcRequestBuilders.post(uri).param("clientId", CLIENT_ID)
-            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
-            .param("channelId", CHANNEL_ID).param("username", USERNAME)
-            .content(candidateDTORequestJson).content(listStringJson)
-            .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+        .perform(
+            MockMvcRequestBuilders.post(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
+                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+                .param("username", USERNAME).param("idCandidate", ID).content(listStringJson)
+                .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.status().isOk());
     this.candidateController.applyNewPosition(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME,
-        candidateDTORequest, listStringRequest);
+        ID, listStringRequest);
 
-    Mockito.verify(this.candidateService, Mockito.times(1)).applyNewPosition(Mockito.matches(ID),
+    Mockito.verify(this.candidateService, Mockito.times(2)).applyNewPosition(Mockito.matches(ID),
         Mockito.anyListOf(String.class));
   }
 

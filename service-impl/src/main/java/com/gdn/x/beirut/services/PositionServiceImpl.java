@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gdn.common.base.domainevent.publisher.DomainEventPublisher;
 import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.PositionDAO;
@@ -30,6 +31,8 @@ public class PositionServiceImpl implements PositionService {
   @Autowired
   private EventService eventService;
 
+  @Autowired
+  private DomainEventPublisher domainEventPublisher;
 
   @Override
   @Deprecated
@@ -121,7 +124,6 @@ public class PositionServiceImpl implements PositionService {
     try {
       this.getPositionDao().save(positions);
       for (Position position : positions) {
-        LOG.info("POSITION YANG HARUSNYA KEDELETE : " + position.getId());
         eventService.markForDelete(position);
       }
     } catch (RuntimeException e) {

@@ -592,7 +592,7 @@ public class CandidateServiceTest {
     }
   }
 
-  // @Test
+  @Test
   public void testMarkForDelete() throws Exception {
     Mockito.when(this.candidateDao.findByIdAndMarkForDelete(ID, false)).thenReturn(candidate);
     this.candidateService.markForDelete(ID);
@@ -601,7 +601,7 @@ public class CandidateServiceTest {
     verify(this.candidateDao, times(1)).save(Mockito.any(Candidate.class));
   }
 
-  // @Test
+  @Test
   public void testMarkForDeleteBulk() throws Exception {
     List<String> ids = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
@@ -665,7 +665,6 @@ public class CandidateServiceTest {
     try {
       this.candidateService.createNew(candidate, positionIds);
     } catch (Exception e) {
-      verify(this.candidateDao, times(1)).save(Mockito.any(Candidate.class));
       verify(this.positionDao, times(1)).findAll(positionIds);
     }
   }
