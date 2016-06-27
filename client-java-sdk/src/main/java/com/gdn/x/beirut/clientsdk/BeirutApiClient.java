@@ -88,7 +88,18 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     return invokeGetSummary(uri, CandidateDTOResponse.class);
   }
 
-  public GdnRestSingleResponse<CandidateWithPositionsDTOResponse> findCandidateByIdAndStoreIdEager(
+  public GdnRestListResponse<CandidateDTOResponse> findCandidateByFirstNameContainAndStoreId(
+      String requestId, String username, String firstName, int page, int size) throws Exception {
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put("firstName", firstName);
+    map.put("page", String.valueOf(page));
+    map.put("size", String.valueOf(size));
+    URI uri = generateURI("/api/candidate/findCandidateByFirstNameContainAndStoreId", requestId,
+        username, map);
+    return invokeGetSummary(uri, CandidateDTOResponse.class);
+  }
+
+public GdnRestSingleResponse<CandidateWithPositionsDTOResponse> findCandidateByIdAndStoreIdEager(
       String requestId, String username, String idCandidate) throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("idCandidate", String.valueOf(idCandidate));
@@ -135,7 +146,8 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     SimpleRequestHolder request = new SimpleRequestHolder(id);
     URI uri =
         generateURI("/api/candidate/findCandidateDetailAndStoreId", requestId, username, null);
-    return invokeGetSingle(uri, byte[].class, request);
+//    return invokeGetSingle(uri, byte[].class, request);
+    return null;
   }
 
   private URI generateURI(String path, String requestId, String username,
