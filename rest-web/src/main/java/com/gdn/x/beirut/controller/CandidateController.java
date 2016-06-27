@@ -389,17 +389,8 @@ public class CandidateController {
     CandidatePosition candidatePosition = this.candidateService
         .getCandidatePositionByStoreIdWithLogs(idCandidate, idPosition, storeId);
     CandidatePositionDTOResponse candidatePositionResponse =
-        getGdnMapper().deepCopy(candidatePosition, CandidatePositionDTOResponse.class);
-
-    // System.out.println("ID CAND : " + candidatePositionResponse.getCandidate().getId() + "; POST
-    // ID : "
-    // + candidatePositionResponse.getPosition().getId() + "; STATUS : "
-    // + candidatePosition.getStatus());
-    // System.out.println(candidatePositionResponse.getStatusLogs().size());
-    // for (StatusLogDTOResponse statusLogResponse : candidatePositionResponse.getStatusLogs()) {
-    // System.out.println("WUWU : " + statusLogResponse.getStatus());
-    // }
-    // System.out.println("MASUK : ");
+        this.gdnMapper.deepCopy(candidatePosition, CandidatePositionDTOResponse.class);
+    CandidateMapper.map(candidatePosition, candidatePositionResponse, this.gdnMapper);
     return new GdnRestSingleResponse<CandidatePositionDTOResponse>(candidatePositionResponse,
         requestId);
   }
@@ -457,7 +448,6 @@ public class CandidateController {
     }
 
   }
-
 
   public void setGdnMapper(GdnMapper gdnMapper) {
     this.gdnMapper = gdnMapper;
