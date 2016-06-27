@@ -96,6 +96,10 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.gdn.x.beirut</groupId>
       <artifactId>beirut-rest-web-model</artifactId>
     </dependency>
