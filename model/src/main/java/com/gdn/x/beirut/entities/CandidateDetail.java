@@ -25,8 +25,9 @@ public class CandidateDetail implements Serializable {
   private String id;
 
   @Lob
-  @Column(name = CandidateDetail.COLUMN_CONTENT, nullable = false, columnDefinition = "blob")
+  @Column(name = CandidateDetail.COLUMN_CONTENT, nullable = false, length = 12000)
   private byte[] content;
+
 
   @MapsId
   @OneToOne

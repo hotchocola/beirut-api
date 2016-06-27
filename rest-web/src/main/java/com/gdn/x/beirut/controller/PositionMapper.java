@@ -1,7 +1,6 @@
 package com.gdn.x.beirut.controller;
 
 import java.util.List;
-import java.util.Set;
 
 import com.gdn.x.beirut.dto.response.PositionDetailDTOResponse;
 import com.gdn.x.beirut.entities.CandidatePosition;
@@ -12,7 +11,7 @@ public class PositionMapper {
 
   public static void map(Position position,
       List<PositionDetailDTOResponse> positionDetailDTOResponses) {
-    Set<CandidatePosition> candidatePositions = position.getCandidatePositions();
+    List<CandidatePosition> candidatePositions = position.getCandidatePositions();
     for (CandidatePosition candidatePosition : candidatePositions) {
       PositionDetailDTOResponse positionDetailDTOResponse = new PositionDetailDTOResponse();
       positionDetailDTOResponse.setIdPosition(position.getId());

@@ -9,9 +9,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.dozer.DozerBeanMapper;
 import org.dozer.Mapper;
@@ -26,17 +24,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import com.gdn.common.base.domainevent.publisher.DomainEventPublisher;
 import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.common.web.param.PageableHelper;
 import com.gdn.x.beirut.dao.CandidateDAO;
 import com.gdn.x.beirut.dao.PositionDAO;
+import com.gdn.x.beirut.domain.event.model.CandidateNewInsert;
+import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
-import com.gdn.x.beirut.solr.dao.CandidatePositionSolrRepository;
-import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
 public class CandidateServiceTest {
 
@@ -58,7 +57,6 @@ public class CandidateServiceTest {
 
   private static final String POSITION_ID = "POSITION_ID";
 
-  private GdnMapper gdnMapper;
 
   @Mock
   private CandidateDAO candidateDao;
@@ -70,10 +68,12 @@ public class CandidateServiceTest {
   private EventService eventService;
 
   @Mock
-  private CandidatePositionSolrRepository candidatePositionSolrRepository;
+  private DomainEventPublisher domainEventPublisher;
 
   @InjectMocks
   private CandidateServiceImpl candidateService;
+
+  private GdnMapper gdnMapper;
 
   private Candidate candidate;
 
@@ -96,8 +96,8 @@ public class CandidateServiceTest {
   @Before
   public void initialize() {
     initMocks(this);
-    gdnMapper = new GdnMapper() {
-
+    this.gdnMapper = new GdnMapper() {
+      @SuppressWarnings("unchecked")
       @Override
       public <T> T deepCopy(Object source, Class<T> destinationClass) {
         Mapper mapper = new DozerBeanMapper();
@@ -113,7 +113,9 @@ public class CandidateServiceTest {
         return destination;
       }
     };
-    this.candidateService.setGdnMapper(gdnMapper);
+
+    this.candidateService.setGdnMapper(this.gdnMapper);
+
     this.position = new Position();
     this.position.setId(ID);
     this.position.setStoreId(STORE_ID);
@@ -134,7 +136,6 @@ public class CandidateServiceTest {
 
     this.candidateDetail = new CandidateDetail();
     this.candidateDetail.setId(ID);
-
 
     this.candidateWithDetail = new Candidate();
     this.candidateWithDetail.setId(ID);
@@ -216,7 +217,6 @@ public class CandidateServiceTest {
     Mockito.verifyNoMoreInteractions(this.positionDao);
   }
 
-
   @Test
   public void testApplyNewPosition() throws Exception {
     Candidate candidate = new Candidate();
@@ -237,13 +237,13 @@ public class CandidateServiceTest {
     }
     Mockito.when(this.positionDao.findAll(positionIds)).thenReturn(positions);
     for (Position position : positions) {
-      candidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
+      candidate.getCandidatePositions().add(new CandidatePosition(candidate, position, STORE_ID));
     }
 
     Assert.assertTrue(
         this.candidateService.applyNewPosition(ID, positionIds).getId() == candidate.getId());
 
-    Set<CandidatePosition> candPostTest =
+    List<CandidatePosition> candPostTest =
         this.candidateService.applyNewPosition(ID, positionIds).getCandidatePositions();
     int i = 0;
     for (CandidatePosition candidatePosition : candPostTest) {
@@ -287,6 +287,7 @@ public class CandidateServiceTest {
     // verify(this.candidateDao, times(1)).save(candidate);
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetAllCandidates() {
     Candidate cand1 = new Candidate();
@@ -457,7 +458,7 @@ public class CandidateServiceTest {
     CandidatePosition candPost = new CandidatePosition();
     candPost.setCandidate(candidate);
     candPost.setPosition(position);
-    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    List<CandidatePosition> sets = new ArrayList<CandidatePosition>();
     sets.add(candPost);
     candidate.setCandidatePositions(sets);
     position.setCandidatePositions(sets);
@@ -486,7 +487,7 @@ public class CandidateServiceTest {
     CandidatePosition candPost = new CandidatePosition();
     candPost.setCandidate(candidate);
     candPost.setPosition(position);
-    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    List<CandidatePosition> sets = new ArrayList<CandidatePosition>();
     sets.add(candPost);
     candidate.setCandidatePositions(sets);
     position.setCandidatePositions(sets);
@@ -515,7 +516,7 @@ public class CandidateServiceTest {
     CandidatePosition candPost = new CandidatePosition();
     candPost.setCandidate(candidate);
     candPost.setPosition(position);
-    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    List<CandidatePosition> sets = new ArrayList<CandidatePosition>();
     sets.add(candPost);
     candidate.setCandidatePositions(sets);
     position.setCandidatePositions(sets);
@@ -545,7 +546,7 @@ public class CandidateServiceTest {
     CandidatePosition candPost = new CandidatePosition();
     candPost.setCandidate(candidate);
     candPost.setPosition(position);
-    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    List<CandidatePosition> sets = new ArrayList<CandidatePosition>();
     sets.add(candPost);
     candidate.setCandidatePositions(sets);
     position.setCandidatePositions(sets);
@@ -574,7 +575,7 @@ public class CandidateServiceTest {
     CandidatePosition candPost = new CandidatePosition();
     candPost.setCandidate(candidate);
     candPost.setPosition(position);
-    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    List<CandidatePosition> sets = new ArrayList<CandidatePosition>();
     sets.add(candPost);
     candidate.setCandidatePositions(sets);
     position.setCandidatePositions(sets);
@@ -619,7 +620,36 @@ public class CandidateServiceTest {
 
   @Test
   public void testSave() throws Exception {
-    Mockito.when(this.candidateDao.findOne(ID)).thenReturn(candidate);
+    Candidate candidate = new Candidate();
+    candidate.setId(ID);
+    List<Position> positions = new ArrayList<>();
+    List<String> positionIds = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      Position position = new Position();
+      position.setTitle("Title : " + i);
+      position.setId(POSITION_ID + i);
+      position.setStoreId(STORE_ID);
+      positions.add(position);
+      positionIds.add(POSITION_ID + i);
+      CandidatePosition candidatePosition = new CandidatePosition(candidate, position, STORE_ID);
+      position.setCandidatePositions(new ArrayList<CandidatePosition>());
+      position.getCandidatePositions().add(candidatePosition);
+      candidate.getCandidatePositions().add(candidatePosition);
+    }
+    Mockito.when(this.candidateDao.save(candidate)).thenReturn(candidate);
+    Mockito.when(this.positionDao.findAll(positionIds)).thenReturn(positions);
+    // Black Box Test
+    // White Box Test
+
+    this.candidateService.createNew(this.candidate, positionIds);
+    verify(this.candidateDao, times(1)).save(this.candidate);
+    verify(this.positionDao, times(1)).findAll(positionIds);
+    verify(this.domainEventPublisher, times(10)).publish(Mockito.any(CandidateNewInsert.class),
+        Mockito.matches(DomainEventName.CANDIDATE_NEW_INSERT), Mockito.any());
+  }
+
+  @Test
+  public void testSaveAndReturnException() throws Exception {
     List<Position> positions = new ArrayList<>();
     List<String> positionIds = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
@@ -630,11 +660,13 @@ public class CandidateServiceTest {
       positions.add(position);
       positionIds.add(POSITION_ID + i);
     }
-    // Black Box Test
-    // White Box Test
-    this.candidateService.createNew(this.candidate, positionIds);
-    verify(this.candidateDao, times(1)).save(this.candidate);
-    verify(this.positionDao, times(1)).findAll(positionIds);
+    Mockito.when(this.candidateDao.save(Mockito.any(Candidate.class)))
+        .thenThrow(new RuntimeException());
+    try {
+      this.candidateService.createNew(candidate, positionIds);
+    } catch (Exception e) {
+      verify(this.positionDao, times(1)).findAll(positionIds);
+    }
   }
 
   @Test
@@ -669,30 +701,16 @@ public class CandidateServiceTest {
 
   @Test
   public void testSearchByFirstName() throws Exception {
-    // White Box Test
-    List<CandidatePositionSolr> contentShouldBeReturn = new ArrayList<>();
-    for (int i = 0; i < 10; i++) {
-      CandidatePositionSolr candidatePositionSolr = new CandidatePositionSolr();
-      candidatePositionSolr.setCreatedDate(new Date());
-      candidatePositionSolr.setEmailAddress(i + "email@addres.com");
-      candidatePositionSolr.setFirstName(i + LIKE_FIRST_NAME);
-      candidatePositionSolr.setLastName(LAST_NAME);
-      candidatePositionSolr.setPhoneNumber("123456789" + i);
-      candidatePositionSolr.setStatus(Status.APPLY.toString());
-      candidatePositionSolr.setTitle("title" + i);
-      contentShouldBeReturn.add(candidatePositionSolr);
+    Page<Candidate> result = this.candidateService
+        .searchByFirstNameContainAndStoreId(LIKE_FIRST_NAME, STORE_ID, DEFAULT_PAGEABLE);
+    // Black Box Test
+    for (Candidate candidate : result) {
+      Assert.assertTrue(candidate.getFirstName().contains(LIKE_FIRST_NAME));
     }
-    Page<CandidatePositionSolr> shouldBeReturn =
-        new PageImpl<>(contentShouldBeReturn, DEFAULT_PAGEABLE, contentShouldBeReturn.size());
-    Mockito.when(
-        this.candidatePositionSolrRepository.findIdCandidateDistinctByFirstNameContainingAndStoreId(
-            LIKE_FIRST_NAME, STORE_ID, DEFAULT_PAGEABLE))
-        .thenReturn(shouldBeReturn);
-    this.candidateService.searchByFirstNameContainAndStoreId(LIKE_FIRST_NAME, STORE_ID,
-        DEFAULT_PAGEABLE);
-    Mockito.verify(this.candidatePositionSolrRepository, times(1))
-        .findIdCandidateDistinctByFirstNameContainingAndStoreId(LIKE_FIRST_NAME, STORE_ID,
-            DEFAULT_PAGEABLE);
+    // White Box Test
+    verify(this.candidateDao, times(1)).findByFirstNameContainingAndStoreId(LIKE_FIRST_NAME,
+        STORE_ID, DEFAULT_PAGEABLE);
+
   }
 
   @Test
@@ -845,7 +863,12 @@ public class CandidateServiceTest {
   @Test
   public void testUpdateCandidateStatus() throws Exception {
     when(this.positionDao.findOne(ID)).thenReturn(this.position);
+    when(this.candidateDao.findOne(ID)).thenReturn(this.candidate);
     Candidate testCandidate = candidate;
+    List<CandidatePosition> candidatePositions = new ArrayList<CandidatePosition>();
+    candidatePositions.add(new CandidatePosition(testCandidate, this.position, STORE_ID));
+    testCandidate.setCandidatePositions(candidatePositions);
+    when(this.candidateDao.findOne(ID)).thenReturn(testCandidate);
     this.candidateService.updateCandidateStatus(STORE_ID, testCandidate.getId(), ID, STATUS);
     verify(this.candidateDao, times(1)).findOne(ID);
     verify(this.positionDao, times(1)).findOne(ID);

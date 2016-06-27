@@ -3,7 +3,6 @@ package com.gdn.x.beirut.services;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -14,12 +13,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gdn.common.base.domainevent.publisher.PublishDomainEvent;
+import com.gdn.common.base.domainevent.publisher.DomainEventPublisher;
 import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.PositionDAO;
-import com.gdn.x.beirut.domain.event.model.DomainEventName;
-import com.gdn.x.beirut.domain.event.model.PositionNewInsert;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 
@@ -28,10 +25,14 @@ import com.gdn.x.beirut.entities.Position;
 public class PositionServiceImpl implements PositionService {
 
   private static final Logger LOG = LoggerFactory.getLogger(PositionServiceImpl.class);
-
   @Autowired
   private PositionDAO positionDAO;
 
+  @Autowired
+  private EventService eventService;
+
+  @Autowired
+  private DomainEventPublisher domainEventPublisher;
 
   @Override
   @Deprecated
@@ -83,7 +84,7 @@ public class PositionServiceImpl implements PositionService {
     }
     Hibernate.initialize(position.getCandidatePositions());
 
-    Set<CandidatePosition> candidatePositions = position.getCandidatePositions();
+    List<CandidatePosition> candidatePositions = position.getCandidatePositions();
     for (CandidatePosition candidatePosition : candidatePositions) {
       Hibernate.initialize(candidatePosition.getCandidate());
     }
@@ -92,8 +93,6 @@ public class PositionServiceImpl implements PositionService {
 
   @Override
   @Transactional(readOnly = false)
-  @PublishDomainEvent(publishEventClass = PositionNewInsert.class,
-      domainEventName = DomainEventName.POSITION_NEW_INSERT)
   public Position insertNewPosition(Position position) {
     for (CandidatePosition iterable_element : position.getCandidatePositions()) {
       iterable_element.setPosition(position);
@@ -108,21 +107,28 @@ public class PositionServiceImpl implements PositionService {
     // System.out.println(ids.toString());
     List<Position> positions = new ArrayList<Position>();
     for (int i = 0; i < ids.size(); i++) {
-      Position posi = this.getPositionDao().findOne(ids.get(i));
-      if (!posi.getStoreId().equals(storeId)) {
+      Position position = this.positionDAO.findOne(ids.get(i));
+      if (!position.getStoreId().equals(storeId)) {
         throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
             "position exist but storeId not match");
       }
-      Hibernate.initialize(posi.getCandidatePositions());
-      Iterator<CandidatePosition> iterator = posi.getCandidatePositions().iterator();
+      Hibernate.initialize(position.getCandidatePositions());
+      Iterator<CandidatePosition> iterator = position.getCandidatePositions().iterator();
       while (iterator.hasNext()) {
         CandidatePosition candpos = iterator.next();
         candpos.setMarkForDelete(true);
       }
-      posi.setMarkForDelete(true);
-      positions.add(posi);
+      position.setMarkForDelete(true);
+      positions.add(position);
     }
-    this.getPositionDao().save(positions);
+    try {
+      this.getPositionDao().save(positions);
+      for (Position position : positions) {
+        eventService.markForDelete(position);
+      }
+    } catch (RuntimeException e) {
+      throw e;
+    }
   }
 
   @Override

@@ -8,10 +8,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.dozer.DozerBeanMapper;
@@ -64,16 +62,26 @@ public class CandidateControllerTest {
   private static final String PHONENUM = "123";
   private static final String EMAIL = "email@email.email";
   private static final Pageable pageable = new PageRequest(0, 4);
-  private ObjectMapper objectMapper;
 
+  public static String getPhoneNumber() {
+    return PHONE_NUMBER;
+  }
+
+  public static String getPositionTitle() {
+    return POSITION_TITLE;
+  }
+
+  private ObjectMapper objectMapper;
   private GdnMapper gdnMapper;
   private MockMvc mockMVC;
   private final Candidate candidate = new Candidate();
   private final List<Candidate> candidates = new LinkedList<>();
-  private final Page<Candidate> pageCandidate = new PageImpl(candidates, pageable, 10);
+  private final Page<Candidate> pageCandidate = new PageImpl<Candidate>(candidates, pageable, 10);
   private final Long start = (long) 1434323587;
   private final Long end = (long) 1465945987;
+
   private final String page = "0";
+
   private final String size = "4";
 
   private final List<CandidateDTOResponse> candidateResponse = new ArrayList<>();
@@ -96,6 +104,7 @@ public class CandidateControllerTest {
     this.mockMVC = standaloneSetup(this.candidateController).build();
     gdnMapper = new GdnMapper() {
 
+      @SuppressWarnings("unchecked")
       @Override
       public <T> T deepCopy(Object source, Class<T> destinationClass) {
         Mapper mapper = new DozerBeanMapper();
@@ -175,8 +184,6 @@ public class CandidateControllerTest {
     candidate.setEmailAddress("blahblah");
     candidate.setFirstName("blahblah");
     candidate.setLastName("blahblah");
-    CandidateDTORequest candidateDTORequest =
-        gdnMapper.deepCopy(candidate, CandidateDTORequest.class);
     List<Position> positions = new ArrayList<>();
     List<String> positionIds = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
@@ -192,19 +199,17 @@ public class CandidateControllerTest {
 
     String listStringJson =
         FileUtils.readFileToString(new File("src/test/resources/JSON/markForDeleteJSON.json"));
-    String candidateDTORequestJson = FileUtils
-        .readFileToString(new File("src/test/resources/JSON/candidateDTORequestString.txt"));
     this.mockMVC
-        .perform(MockMvcRequestBuilders.post(uri).param("clientId", CLIENT_ID)
-            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
-            .param("channelId", CHANNEL_ID).param("username", USERNAME)
-            .content(candidateDTORequestJson).content(listStringJson)
-            .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+        .perform(
+            MockMvcRequestBuilders.post(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
+                .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+                .param("username", USERNAME).param("idCandidate", ID).content(listStringJson)
+                .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.status().isOk());
     this.candidateController.applyNewPosition(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME,
-        candidateDTORequest, listStringRequest);
+        ID, listStringRequest);
 
-    Mockito.verify(this.candidateService, Mockito.times(1)).applyNewPosition(Mockito.matches(ID),
+    Mockito.verify(this.candidateService, Mockito.times(2)).applyNewPosition(Mockito.matches(ID),
         Mockito.anyListOf(String.class));
   }
 
@@ -249,7 +254,7 @@ public class CandidateControllerTest {
     candidates.add(newCandidate2);
     candidates.add(newCandidate3);
     Page<Candidate> pageCandidate =
-        new PageImpl(candidates, PageableHelper.generatePageable(0, 4), 10);
+        new PageImpl<Candidate>(candidates, PageableHelper.generatePageable(0, 4), 10);
     String uri = "/api/candidate/findCandidateByFirstNameContainAndStoreId";
     Mockito
         .when(this.candidateService.searchByFirstNameContainAndStoreId("John", STORE_ID, pageable))
@@ -285,6 +290,7 @@ public class CandidateControllerTest {
         .searchByFirstNameContainAndStoreId("John", STORE_ID, pageable);
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testFindCandidateById() throws Exception {
     String uri = "/api/candidate/findCandidateByIdDeprecated";
@@ -310,11 +316,11 @@ public class CandidateControllerTest {
     Candidate cand = new Candidate();
     cand.setStoreId(STORE_ID);
     cand.setId(ID);
-    Set<CandidatePosition> candPositions = new HashSet<CandidatePosition>();
+    List<CandidatePosition> candPositions = new ArrayList<CandidatePosition>();
     Position position = new Position();
     position.setId(ID);
     position.setTitle("koko");
-    candPositions.add(new CandidatePosition(cand, position));
+    candPositions.add(new CandidatePosition(cand, position, STORE_ID));
     cand.setCandidatePositions(candPositions);
     position.setCandidatePositions(candPositions);
     Mockito.when(this.candidateService.getCandidateByIdAndStoreIdEager(ID, STORE_ID))
@@ -351,30 +357,6 @@ public class CandidateControllerTest {
         STORE_ID);
   }
 
-  // DEPRECATED : Diganti sama findCandidateByPhoneNumberContainAndStoreId
-  // @Test
-  // public void testFindCandidateByPhoneNumber() throws Exception {
-  // String uri = "/api/candidate/findCandidateByPhoneNumber";
-  // Mockito.when(this.candidateService.searchCandidateByPhoneNumber(PHONE_NUMBER))
-  // .thenReturn(candidates);
-  // this.mockMVC
-  // .perform(
-  // MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
-  // .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-  // .param("username", USERNAME).param("phoneNumber", PHONE_NUMBER))
-  // .andExpect(status().isOk());
-  // GdnRestListResponse<CandidateDTOResponse> res =
-  // this.candidateController.findCandidateByPhoneNumber(CLIENT_ID, STORE_ID, REQUEST_ID,
-  // CHANNEL_ID, USERNAME, PHONE_NUMBER);
-  // GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
-  // candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
-  // for (CandidateDTOResponse candidateDTOResponse : res.getContent()) {
-  // expectedRes.getContent().iterator().next().getId().equals(candidateDTOResponse.getId());
-  // }
-  // Mockito.verify(this.candidateService, Mockito.times(2))
-  // .searchCandidateByPhoneNumber(PHONE_NUMBER);
-  // }
-
   @Test
   public void testFindCandidateByPhoneNumberContainAndStoreId() throws Exception {
     String uri = "/api/candidate/findCandidateByPhoneNumberContainAndStoreId";
@@ -400,6 +382,7 @@ public class CandidateControllerTest {
   }
 
   // DEPRECATED udah diganti pake getAllCandidateByStoreIdWithPageable
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetAllCandidate() throws Exception {
     String uri = "/api/candidate/getAllCandidateDepr";
@@ -417,34 +400,6 @@ public class CandidateControllerTest {
     }
     Mockito.verify(this.candidateService, Mockito.times(2)).getAllCandidates();
   }
-
-  // List<CandidateDTOResponse> candidatesDTO = new ArrayList<CandidateDTOResponse>();
-  // List<Candidate> candidates = this.candidateService.getAllCandidatesByStoreId(storeId);
-  // for (Candidate candidate : candidates) {
-  // CandidateDTOResponse candidateDTOResponse = new CandidateDTOResponse();
-  // CandidateMapper.mapLazy(candidate, candidateDTOResponse, dozerMapper);
-  // }
-  // return new GdnRestListResponse<CandidateDTOResponse>(candidatesDTO,
-  // new PageMetaData(50, 0, candidatesDTO.size()), requestId);
-  // }
-  // @Test
-  // public void testGetAllCandidateByStoreId() throws Exception {
-  // String uri = "/api/candidate/getAllCandidateByStoreId";
-  // List<Candidate> candidates = new ArrayList<Candidate>();
-  // candidates.add(this.candidate);
-  // Mockito.when(this.candidateService.getAllCandidatesByStoreIdPageable(STORE_ID, pageable))
-  // .thenReturn(pageCandidate);
-  // this.mockMVC
-  // .perform(MockMvcRequestBuilders.get(uri).accept(MediaType.APPLICATION_JSON)
-  // .contentType(MediaType.APPLICATION_JSON).param("clientId", CLIENT_ID)
-  // .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
-  // .param("channelId", CHANNEL_ID).param("username", USERNAME))
-  // .andExpect(MockMvcResultMatchers.status().isOk());
-  //
-  // Mockito.verify(this.candidateService, Mockito.times(1))
-  // .getAllCandidatesByStoreIdPageable(STORE_ID, pageable);
-  // }
-
 
   @Test
   public void testGetAllCandidateByStoreIdAndMarkForDeleteWithPageable() throws Exception {
@@ -501,6 +456,7 @@ public class CandidateControllerTest {
         .getAllCandidatesByStoreIdPageable(STORE_ID, pageable);
   }
 
+
   @Test
   public void testGetCandidatePositionDetailWithLogs() throws Exception {
     String uri = "/api/candidate/getCandidatePositionDetailByStoreIdWithLogs";
@@ -515,7 +471,7 @@ public class CandidateControllerTest {
     post.setStoreId(ID);
     candPost.setCandidate(cand);
     candPost.setPosition(post);
-    Set<CandidatePosition> sets = new HashSet<CandidatePosition>();
+    List<CandidatePosition> sets = new ArrayList<CandidatePosition>();
     sets.add(candPost);
     cand.setCandidatePositions(sets);
     post.setCandidatePositions(sets);
@@ -588,7 +544,6 @@ public class CandidateControllerTest {
     Mockito.verify(candidateService, Mockito.times(2)).createNew(newCandidate, positionIds);
   }
 
-
   @Test
   public void testMarkForDelete() throws Exception {
     String uri = "/api/candidate/markForDelete";
@@ -640,7 +595,6 @@ public class CandidateControllerTest {
   public void testUpdateCandidatesStatus() throws Exception {
     String uri = "/api/candidate/updateCandidateStatus";
     String content = "{  \"values\": [    \"1\" ]}";
-    // CandidatesPositionDTOWrapper contentWrapper = new CandidatesPositionDTOWrapper();
     List<String> idCandidates = new ArrayList<String>();
     idCandidates.add("1");
     String idPosition = "1";

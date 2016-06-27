@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +21,10 @@ import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.CandidateDAO;
 import com.gdn.x.beirut.dao.PositionDAO;
+import com.gdn.x.beirut.domain.event.model.ApplyNewPosition;
+import com.gdn.x.beirut.domain.event.model.CandidateMarkForDelete;
 import com.gdn.x.beirut.domain.event.model.CandidateNewInsert;
+import com.gdn.x.beirut.domain.event.model.CandidateUpdateStatus;
 import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
@@ -30,22 +32,18 @@ import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.entities.StatusLog;
-import com.gdn.x.beirut.solr.dao.CandidatePositionSolrRepository;
-import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
+
 
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
 public class CandidateServiceImpl implements CandidateService {
 
+  public static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
+
   private static final Logger LOG = LoggerFactory.getLogger(CandidateServiceImpl.class);
-  private static final String ID_SHOULD_EMPTY_FOR_NEW_RECORD = "id should empty for new record";
-  private static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
 
   @Autowired
   private CandidateDAO candidateDAO;
-
-  @Autowired
-  private CandidatePositionSolrRepository candidatePositionSolrRepository;
 
   @Autowired
   private PositionDAO positionDAO;
@@ -60,33 +58,64 @@ public class CandidateServiceImpl implements CandidateService {
   @Transactional(readOnly = false)
   public Candidate applyNewPosition(String candidateId, List<String> positionIds) throws Exception {
     Candidate existingCandidate = getCandidate(candidateId);
+    if (positionIds == null || positionIds.size() == 0) {
+      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER, "position must not empty");
+    }
     List<Position> positions = positionDAO.findAll(positionIds);
+    if (positions == null || positions.size() == 0) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "position not found");
+    }
     for (Position position : positions) {
       existingCandidate.getCandidatePositions()
-          .add(new CandidatePosition(existingCandidate, position));
+          .add(new CandidatePosition(existingCandidate, position, existingCandidate.getStoreId()));
     }
-    return candidateDAO.save(existingCandidate);
+    Candidate result = candidateDAO.save(existingCandidate);
+    for (Position position : positions) {
+      ApplyNewPosition objectToPublish = new ApplyNewPosition();
+      BeanUtils.copyProperties(result, objectToPublish, "candidateDetail", "candidatePositions");
+      BeanUtils.copyProperties(position, objectToPublish, "candidatePositions");
+      objectToPublish.setIdCandidate(result.getId());
+      objectToPublish.setStatus(Status.APPLY.toString());
+      objectToPublish.setIdPosition(position.getId());
+      domainEventPublisher.publish(objectToPublish, DomainEventName.CANDIDATE_APPLY_NEW_POSITION,
+          ApplyNewPosition.class);
+    }
+    return result;
   }
 
   @Override
   @Transactional(readOnly = false)
   public Candidate createNew(Candidate candidate, List<String> positionIds) throws Exception {
+    if (positionIds == null || positionIds.size() == 0) {
+      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER,
+          "position id must not empty");
+    }
     List<Position> positions = positionDAO.findAll(positionIds);
-    for (Position position : positions) {
-      candidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
+    candidate.setCandidatePositions(new ArrayList<CandidatePosition>());
+    if (positions == null || positions.size() == 0) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "position not found");
     }
-    Candidate newCandidate = candidateDAO.save(candidate);
     for (Position position : positions) {
-      CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
-      BeanUtils.copyProperties(newCandidate, candidateNewInsert, "candidateDetail",
-          "candidatePositions");
-      BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
-      candidateNewInsert.setIdCandidate(newCandidate.getId());
-      candidateNewInsert.setIdPosition(position.getId());
-      domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
-          CandidateNewInsert.class);
+      candidate.getCandidatePositions()
+          .add(new CandidatePosition(candidate, position, candidate.getStoreId()));
     }
-    return newCandidate;
+    try {
+      Candidate newCandidate = candidateDAO.save(candidate);
+      for (Position position : positions) {
+        CandidateNewInsert candidateNewInsert = new CandidateNewInsert();
+        BeanUtils.copyProperties(newCandidate, candidateNewInsert, "candidateDetail",
+            "candidatePositions");
+        BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
+        candidateNewInsert.setIdCandidate(newCandidate.getId());
+        candidateNewInsert.setStatus(Status.APPLY.toString());
+        candidateNewInsert.setIdPosition(position.getId());
+        domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
+            CandidateNewInsert.class);
+      }
+      return newCandidate;
+    } catch (RuntimeException e) {
+      throw e;
+    }
   }
 
   @Override
@@ -106,7 +135,6 @@ public class CandidateServiceImpl implements CandidateService {
       throws Exception {
     return this.candidateDAO.findByStoreId(storeId, pageable);
   }
-
 
   @Override
   @Deprecated
@@ -231,6 +259,16 @@ public class CandidateServiceImpl implements CandidateService {
     }
     candidate.setMarkForDelete(true);
     this.candidateDAO.save(candidate);
+
+    CandidateMarkForDelete candidateMarkForDelete =
+        this.gdnMapper.deepCopy(candidate, CandidateMarkForDelete.class);
+    candidateMarkForDelete.setTimestamp(System.currentTimeMillis());
+    LOG.info("%%COBA MAU DI PUBLISH... = [id:" + candidateMarkForDelete.getId() + ", storeId:"
+        + candidateMarkForDelete.getStoreId() + ", markForDelete:"
+        + candidateMarkForDelete.isMarkForDelete() + ", timestamp(FROM PARENT):"
+        + candidateMarkForDelete.getTimestamp() + "] %%");
+    domainEventPublisher.publish(candidateMarkForDelete, DomainEventName.CANDIDATE_MARK_FOR_DELETE,
+        CandidateMarkForDelete.class);
   }
 
   @Override
@@ -242,15 +280,7 @@ public class CandidateServiceImpl implements CandidateService {
   @Override
   public Page<Candidate> searchByFirstNameContainAndStoreId(String firstName, String storeId,
       Pageable pageable) throws Exception {
-    Page<CandidatePositionSolr> resultFromSolr = candidatePositionSolrRepository
-        .findIdCandidateDistinctByFirstNameContainingAndStoreId(firstName, storeId, pageable);
-    List<Candidate> candidates = new ArrayList<>();
-    for (CandidatePositionSolr candidatePositionSolr : resultFromSolr.getContent()) {
-      Candidate newCandidate = getGdnMapper().deepCopy(candidatePositionSolr, Candidate.class);
-      newCandidate.setId(candidatePositionSolr.getIdCandidate());
-      candidates.add(newCandidate);
-    }
-    return new PageImpl<>(candidates, pageable, candidates.size());
+    return this.candidateDAO.findByFirstNameContainingAndStoreId(firstName, storeId, pageable);
   }
 
   @Override
@@ -324,13 +354,25 @@ public class CandidateServiceImpl implements CandidateService {
     }
     Position existingPosition = positionDAO.findOne(idPosition);
     Hibernate.initialize(existingCandidate.getCandidatePositions());
+    CandidateUpdateStatus candidateUpdateStatus =
+        this.gdnMapper.deepCopy(existingCandidate, CandidateUpdateStatus.class);
+    candidateUpdateStatus.setIdCandidate(existingCandidate.getId());
+    candidateUpdateStatus.setIdPosition(existingPosition.getId());
     existingCandidate.getCandidatePositions().stream()
         .filter(candidatePosition -> candidatePosition.getPosition().equals(existingPosition))
         .forEach(candidatePosition -> {
-          candidatePosition.getStatusLogs().add(new StatusLog(candidatePosition, status));
+          StatusLog statusLog = new StatusLog(candidatePosition, status);
+          statusLog.setStoreId(storeId);
+          candidatePosition.getStatusLogs().add(statusLog);
           candidatePosition.setStatus(status); // add missing setter zal
+          candidatePosition.setStoreId(storeId);
+          candidateUpdateStatus.setStatus(status.toString());
         });
     candidateDAO.save(existingCandidate);
+    LOG.info("SAMPEI MAU PUBLISH WOOI, YANG DI PUBLISNYA INI OIII : ",
+        new Object[] {candidateUpdateStatus});
+    domainEventPublisher.publish(candidateUpdateStatus, DomainEventName.CANDIDATE_UPDATE_STATUS,
+        CandidateUpdateStatus.class);
   }
 
   @Override

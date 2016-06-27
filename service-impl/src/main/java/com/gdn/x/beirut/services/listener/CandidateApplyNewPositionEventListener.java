@@ -18,15 +18,17 @@ import com.gdn.common.base.domainevent.subscriber.SubscribeDomainEvent;
 import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
-import com.gdn.x.beirut.domain.event.model.CandidateNewInsert;
+import com.gdn.x.beirut.domain.event.model.ApplyNewPosition;
 import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 
 @Service
-@SubscribeDomainEvent(DomainEventName.CANDIDATE_NEW_INSERT)
-public class CandidateInsertNewEventListener implements DomainEventListener<CandidateNewInsert> {
+@SubscribeDomainEvent(DomainEventName.CANDIDATE_APPLY_NEW_POSITION)
+public class CandidateApplyNewPositionEventListener
+    implements DomainEventListener<ApplyNewPosition> {
 
-  private static final Logger LOG = LoggerFactory.getLogger(CandidateInsertNewEventListener.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(CandidateApplyNewPositionEventListener.class);
 
   @Resource(name = "xcandidatePositionTemplate")
   private SolrTemplate candidatePositionTemplate;
@@ -35,7 +37,8 @@ public class CandidateInsertNewEventListener implements DomainEventListener<Cand
   private GdnMapper gdnMapper;
 
   @Override
-  public void onDomainEventConsumed(CandidateNewInsert message) throws Exception {
+  public void onDomainEventConsumed(ApplyNewPosition message) throws Exception {
+    LOG.info("consuming message from kafka : {}", new Object[] {message});
     ScoredPage<CandidatePositionSolr> existingSolrData = candidatePositionTemplate.queryForPage(
         new SimpleQuery(
             new SimpleStringCriteria("STORE_ID:" + message.getStoreId() + " AND idCandidate:"
@@ -45,11 +48,12 @@ public class CandidateInsertNewEventListener implements DomainEventListener<Cand
       throw new ApplicationException(ErrorCategory.UNSPECIFIED, "Data Already Existed");
     }
 
-    LOG.info("consuming message from kafka : {}", new Object[] {message});
+
     CandidatePositionSolr newCandidateSolr =
         gdnMapper.deepCopy(message, CandidatePositionSolr.class);
     newCandidateSolr.setId(UUID.randomUUID().toString());
     candidatePositionTemplate.saveBean(newCandidateSolr);
     candidatePositionTemplate.commit();
   }
+
 }

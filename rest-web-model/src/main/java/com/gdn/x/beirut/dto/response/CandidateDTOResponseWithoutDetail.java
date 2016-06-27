@@ -4,6 +4,10 @@ import com.gdn.common.web.base.BaseResponse;
 
 public class CandidateDTOResponseWithoutDetail extends BaseResponse {
 
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1755465438016959587L;
   private String emailAddress;
   private String firstName;
   private String lastName;

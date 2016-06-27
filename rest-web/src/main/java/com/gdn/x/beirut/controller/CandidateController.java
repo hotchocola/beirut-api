@@ -31,15 +31,16 @@ import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
-import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
+import com.gdn.x.beirut.dto.response.CandidatePositionSolrDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateWithPositionsDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.services.CandidateService;
-import com.gdn.x.beirut.services.PositionService;
+import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
+import com.gdn.x.beirut.solr.services.CandidatePositionSolrService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
@@ -52,13 +53,13 @@ public class CandidateController {
   private CandidateService candidateService;
 
   @Autowired
-  private PositionService positionService;
-
-  @Autowired
   private GdnMapper gdnMapper;
 
   @Autowired
   private ObjectMapper objectMapper;
+
+  @Autowired
+  private CandidatePositionSolrService candidatePositionSolrService;
 
   @RequestMapping(value = "applyNewPosition", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
@@ -67,11 +68,10 @@ public class CandidateController {
   @ResponseBody
   public GdnBaseRestResponse applyNewPosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody CandidateDTORequest candidateDTORequest,
+      @RequestParam String username, @RequestParam String idCandidate,
       @RequestBody ListStringRequest listPositionIdStrings) throws Exception {
     try {
-      this.candidateService.applyNewPosition(candidateDTORequest.getId(),
-          listPositionIdStrings.getValues());
+      this.candidateService.applyNewPosition(idCandidate, listPositionIdStrings.getValues());
       return new GdnBaseRestResponse(true);
     } catch (Exception e) {
       return new GdnBaseRestResponse(e.getMessage(), "", false, requestId);
@@ -271,19 +271,20 @@ public class CandidateController {
 
 
   @RequestMapping(value = "findCandidateDetailAndStoreId", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
-      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+      produces = {"application/pdf", "application/msword", "image/jpeg", "text/plain"})
   @ApiOperation(value = "Mencari detail kandidat", notes = "")
-
   @ResponseBody
-  public GdnRestSingleResponse<CandidateDetailDTOResponse> findCandidateDetailAndStoreId(
-      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
-      @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
-          throws Exception {
+  public byte[] findCandidateDetailAndStoreId(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestParam String id) throws Exception {
     CandidateDetail candidate = this.candidateService.getCandidateDetailAndStoreId(id, storeId);
-    CandidateDetailDTOResponse candetres =
-        getGdnMapper().deepCopy(candidate, CandidateDetailDTOResponse.class);
-    return new GdnRestSingleResponse<CandidateDetailDTOResponse>(candetres, requestId);
+    // CandidateDetailDTOResponse candetres =
+    // getGdnMapper().deepCopy(candidate, CandidateDetailDTOResponse.class);
+    // File file = new File("");
+    // FileUtils.writeByteArrayToFile(file, candidate.getContent());
+    // return new CommonsMultipartFile(new DiskFileItemFactory(12000, file).createItem(
+    // "Curriculum Vitae", MediaType.MULTIPART_FORM_DATA_VALUE, true, "CurriculumVitae"));
+    return candidate.getContent();
   }
 
 
@@ -353,6 +354,27 @@ public class CandidateController {
     }
     return new GdnRestListResponse<CandidateDTOResponseWithoutDetail>(toShow,
         new PageMetaData(50, 0, toShow.size()), requestId);
+  }
+
+  @RequestMapping(value = "getCandidatePositionBySolrQuery", method = RequestMethod.GET,
+      consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+  @ApiOperation(value = "Mendapatkan candidatePosition dari data yang ada id Solr",
+      notes = "contoh Query = \"firstName:values1 AND lastName:values2")
+  @ResponseBody
+  public GdnRestListResponse<CandidatePositionSolrDTOResponse> getCandidatePositionBySolrQuery(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam String query,
+      @RequestParam int page, @RequestParam int size) {
+    Page<CandidatePositionSolr> result = this.candidatePositionSolrService.executeSolrQuery(query,
+        storeId, PageableHelper.generatePageable(page, size));
+    List<CandidatePositionSolrDTOResponse> candidatePositionSolrDTOResponses = new ArrayList<>();
+    for (CandidatePositionSolr candidatePositionSolr : result.getContent()) {
+      CandidatePositionSolrDTOResponse candidatePositionSolrDTOResponse =
+          gdnMapper.deepCopy(candidatePositionSolr, CandidatePositionSolrDTOResponse.class);
+      candidatePositionSolrDTOResponses.add(candidatePositionSolrDTOResponse);
+    }
+    return new GdnRestListResponse<>(candidatePositionSolrDTOResponses,
+        new PageMetaData(50, 0, candidatePositionSolrDTOResponses.size()), requestId);
   }
 
   @RequestMapping(value = "getCandidatePositionDetailByStoreIdWithLogs", method = RequestMethod.GET,
@@ -443,10 +465,6 @@ public class CandidateController {
 
   public void setObjectMapper(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
-  }
-
-  public void setPositionService(PositionService positionService) {
-    this.positionService = positionService;
   }
 
   @RequestMapping(value = "updateCandidateDetail", method = RequestMethod.POST,

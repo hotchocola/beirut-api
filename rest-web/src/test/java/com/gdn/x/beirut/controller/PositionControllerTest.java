@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -26,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.common.web.param.PageableHelper;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
@@ -63,11 +63,9 @@ public class PositionControllerTest {
   @Mock
   private PositionService positionService;
 
-  private final Mapper dm = new DozerBeanMapper();
+  private GdnMapper gdnMapper;
 
   private MockMvc mockMVC;
-
-  private final Mapper dozerMapper = new DozerBeanMapper();
 
   private final PositionDTORequest positionDTORequest = new PositionDTORequest();
 
@@ -81,7 +79,24 @@ public class PositionControllerTest {
   public void initialize() throws Exception {
     initMocks(this);
     this.mockMVC = standaloneSetup(this.positionController).build();
-    this.positionController.setDozerMapper(dm);
+    this.gdnMapper = new GdnMapper() {
+      @SuppressWarnings("unchecked")
+      @Override
+      public <T> T deepCopy(Object source, Class<T> destinationClass) {
+        Mapper mapper = new DozerBeanMapper();
+        T destination;
+        try {
+          destination = destinationClass.newInstance();
+        } catch (InstantiationException e) {
+          return (T) source;
+        } catch (IllegalAccessException e) {
+          return (T) source;
+        }
+        mapper.map(source, destination);
+        return destination;
+      }
+    };
+    this.positionController.setGdnMapper(this.gdnMapper);
     this.position.setId(ID);
     this.position.setTitle(TITLE);
     this.positions.add(this.position);
@@ -89,6 +104,7 @@ public class PositionControllerTest {
     this.positionDTORequests.add(positionDTORequest);
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void testDeletePosition() throws Exception {
     String uri = "deletePosition";
@@ -188,7 +204,7 @@ public class PositionControllerTest {
     shouldBeReturned.setId(ID);
     shouldBeReturned.setStoreId(STORE_ID);
     shouldBeReturned.setCreatedBy("dummy");
-    shouldBeReturned.setCandidatePositions(new HashSet<CandidatePosition>());
+    shouldBeReturned.setCandidatePositions(new ArrayList<CandidatePosition>());
     shouldBeReturned.getCandidatePositions().add(candidatePosition);
     shouldBeReturned.setMarkForDelete(false);
     shouldBeReturned.setTitle("This is a dummy");
@@ -223,9 +239,8 @@ public class PositionControllerTest {
   @Test
   public void testInsertNewPosition() throws Exception {
     String uri = "insertNewPosition";
-    Position temp = new Position();
     String positionDTORequestJson = "{\"title\":\"title\"}";
-    dozerMapper.map(this.positionDTORequest, temp);
+    Position temp = this.gdnMapper.deepCopy(this.positionDTORequest, Position.class);
     Mockito.when(this.positionService.insertNewPosition(temp)).thenReturn(temp);
     this.mockMVC.perform(MockMvcRequestBuilders.post(UriBasePath + uri)
         .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
