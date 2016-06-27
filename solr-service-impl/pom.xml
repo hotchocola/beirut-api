@@ -15,9 +15,9 @@ http://maven.apache.org/maven-v4_0_0.xsd">
 	<build>
 	</build>
 	<dependencies>
-		<dependency>
-	      <groupId>com.gdn.x.beirut</groupId>
-	      <artifactId>beirut-solr-service-api</artifactId>
-	    </dependency>
+	  <dependency>
+        <groupId>com.gdn.x.beirut</groupId>
+        <artifactId>beirut-solr-service-api</artifactId>
+      </dependency>
 	</dependencies>
 </project>

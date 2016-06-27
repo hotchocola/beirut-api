@@ -1,7 +1,7 @@
 package com.gdn.x.beirut.entities;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -42,7 +42,7 @@ public class Candidate extends GdnBaseEntity {
   private String phoneNumber;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "candidate")
-  private Set<CandidatePosition> candidatePositions = new HashSet<CandidatePosition>();
+  private List<CandidatePosition> candidatePositions = new ArrayList<CandidatePosition>();
 
   public Candidate() {
     // nothing to do here
@@ -53,13 +53,14 @@ public class Candidate extends GdnBaseEntity {
     return candidateDetail;
   }
 
-  public Set<CandidatePosition> getCandidatePositions() {
+  public List<CandidatePosition> getCandidatePositions() {
     return candidatePositions;
   }
 
   public String getEmailAddress() {
     return emailAddress;
   }
+
 
   public String getFirstName() {
     return firstName;
@@ -77,9 +78,10 @@ public class Candidate extends GdnBaseEntity {
     this.candidateDetail = candidateDetail;
   }
 
-  public void setCandidatePositions(Set<CandidatePosition> candidatePositions) {
+  public void setCandidatePositions(List<CandidatePosition> candidatePositions) {
     this.candidatePositions = candidatePositions;
   }
+
 
   public void setEmailAddress(String emailAddress) {
     this.emailAddress = emailAddress;

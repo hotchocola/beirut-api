@@ -1,5 +1,6 @@
 package com.gdn.x.beirut.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -20,8 +21,10 @@ import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.CandidateDAO;
 import com.gdn.x.beirut.dao.PositionDAO;
+import com.gdn.x.beirut.domain.event.model.ApplyNewPosition;
 import com.gdn.x.beirut.domain.event.model.CandidateMarkForDelete;
 import com.gdn.x.beirut.domain.event.model.CandidateNewInsert;
+import com.gdn.x.beirut.domain.event.model.CandidateUpdateStatus;
 import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
@@ -30,13 +33,14 @@ import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.entities.StatusLog;
 
+
 @Service(value = "candidateService")
 @Transactional(readOnly = true)
 public class CandidateServiceImpl implements CandidateService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Candidate.class);
-
   public static final String ID_SHOULD_NOT_BE_EMPTY = "id should not be empty";
+
+  private static final Logger LOG = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
   @Autowired
   private CandidateDAO candidateDAO;
@@ -54,20 +58,46 @@ public class CandidateServiceImpl implements CandidateService {
   @Transactional(readOnly = false)
   public Candidate applyNewPosition(String candidateId, List<String> positionIds) throws Exception {
     Candidate existingCandidate = getCandidate(candidateId);
+    if (positionIds == null || positionIds.size() == 0) {
+      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER, "position must not empty");
+    }
     List<Position> positions = positionDAO.findAll(positionIds);
+    if (positions == null || positions.size() == 0) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "position not found");
+    }
     for (Position position : positions) {
       existingCandidate.getCandidatePositions()
-          .add(new CandidatePosition(existingCandidate, position));
+          .add(new CandidatePosition(existingCandidate, position, existingCandidate.getStoreId()));
     }
-    return candidateDAO.save(existingCandidate);
+    Candidate result = candidateDAO.save(existingCandidate);
+    for (Position position : positions) {
+      ApplyNewPosition objectToPublish = new ApplyNewPosition();
+      BeanUtils.copyProperties(result, objectToPublish, "candidateDetail", "candidatePositions");
+      BeanUtils.copyProperties(position, objectToPublish, "candidatePositions");
+      objectToPublish.setIdCandidate(result.getId());
+      objectToPublish.setStatus(Status.APPLY.toString());
+      objectToPublish.setIdPosition(position.getId());
+      domainEventPublisher.publish(objectToPublish, DomainEventName.CANDIDATE_APPLY_NEW_POSITION,
+          ApplyNewPosition.class);
+    }
+    return result;
   }
 
   @Override
   @Transactional(readOnly = false)
   public Candidate createNew(Candidate candidate, List<String> positionIds) throws Exception {
+    if (positionIds == null || positionIds.size() == 0) {
+      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER,
+          "position id must not empty");
+    }
     List<Position> positions = positionDAO.findAll(positionIds);
+    candidate.setCandidatePositions(new ArrayList<CandidatePosition>());
+    if (positions == null || positions.size() == 0) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "position not found");
+    }
     for (Position position : positions) {
-      candidate.getCandidatePositions().add(new CandidatePosition(candidate, position));
+      candidate.getCandidatePositions()
+          .add(new CandidatePosition(candidate, position, candidate.getStoreId()));
     }
     try {
       Candidate newCandidate = candidateDAO.save(candidate);
@@ -77,6 +107,7 @@ public class CandidateServiceImpl implements CandidateService {
             "candidatePositions");
         BeanUtils.copyProperties(position, candidateNewInsert, "candidatePositions");
         candidateNewInsert.setIdCandidate(newCandidate.getId());
+        candidateNewInsert.setStatus(Status.APPLY.toString());
         candidateNewInsert.setIdPosition(position.getId());
         domainEventPublisher.publish(candidateNewInsert, DomainEventName.CANDIDATE_NEW_INSERT,
             CandidateNewInsert.class);
@@ -323,13 +354,25 @@ public class CandidateServiceImpl implements CandidateService {
     }
     Position existingPosition = positionDAO.findOne(idPosition);
     Hibernate.initialize(existingCandidate.getCandidatePositions());
+    CandidateUpdateStatus candidateUpdateStatus =
+        this.gdnMapper.deepCopy(existingCandidate, CandidateUpdateStatus.class);
+    candidateUpdateStatus.setIdCandidate(existingCandidate.getId());
+    candidateUpdateStatus.setIdPosition(existingPosition.getId());
     existingCandidate.getCandidatePositions().stream()
         .filter(candidatePosition -> candidatePosition.getPosition().equals(existingPosition))
         .forEach(candidatePosition -> {
-          candidatePosition.getStatusLogs().add(new StatusLog(candidatePosition, status));
+          StatusLog statusLog = new StatusLog(candidatePosition, status);
+          statusLog.setStoreId(storeId);
+          candidatePosition.getStatusLogs().add(statusLog);
           candidatePosition.setStatus(status); // add missing setter zal
+          candidatePosition.setStoreId(storeId);
+          candidateUpdateStatus.setStatus(status.toString());
         });
     candidateDAO.save(existingCandidate);
+    LOG.info("SAMPEI MAU PUBLISH WOOI, YANG DI PUBLISNYA INI OIII : ",
+        new Object[] {candidateUpdateStatus});
+    domainEventPublisher.publish(candidateUpdateStatus, DomainEventName.CANDIDATE_UPDATE_STATUS,
+        CandidateUpdateStatus.class);
   }
 
   @Override

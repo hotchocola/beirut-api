@@ -45,9 +45,10 @@ public class CandidatePosition extends GdnBaseEntity {
     this.status = Status.APPLY;
   }
 
-  public CandidatePosition(Candidate candidate, Position position) {
+  public CandidatePosition(Candidate candidate, Position position, String storeId) {
     this.candidate = candidate;
     this.position = position;
+    this.setStoreId(storeId);
     this.status = Status.APPLY;
   }
 

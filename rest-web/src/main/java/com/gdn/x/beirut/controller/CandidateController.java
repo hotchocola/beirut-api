@@ -31,7 +31,6 @@ import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
-import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionSolrDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateWithPositionsDTOResponse;
@@ -69,11 +68,10 @@ public class CandidateController {
   @ResponseBody
   public GdnBaseRestResponse applyNewPosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody CandidateDTORequest candidateDTORequest,
+      @RequestParam String username, @RequestParam String idCandidate,
       @RequestBody ListStringRequest listPositionIdStrings) throws Exception {
     try {
-      this.candidateService.applyNewPosition(candidateDTORequest.getId(),
-          listPositionIdStrings.getValues());
+      this.candidateService.applyNewPosition(idCandidate, listPositionIdStrings.getValues());
       return new GdnBaseRestResponse(true);
     } catch (Exception e) {
       return new GdnBaseRestResponse(e.getMessage(), "", false, requestId);
@@ -270,21 +268,25 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
-  @RequestMapping(value = "findCandidateDetailAndStoreId", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
-      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "Mencari detail kandidat", notes = "")
 
+
+  @RequestMapping(value = "findCandidateDetailAndStoreId", method = RequestMethod.GET,
+      produces = {"application/pdf", "application/msword", "image/jpeg", "text/plain"})
+  @ApiOperation(value = "Mencari detail kandidat", notes = "")
   @ResponseBody
-  public GdnRestSingleResponse<CandidateDetailDTOResponse> findCandidateDetailAndStoreId(
-      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
-      @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
-          throws Exception {
+  public byte[] findCandidateDetailAndStoreId(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestParam String id) throws Exception {
     CandidateDetail candidate = this.candidateService.getCandidateDetailAndStoreId(id, storeId);
-    CandidateDetailDTOResponse candetres =
-        getGdnMapper().deepCopy(candidate, CandidateDetailDTOResponse.class);
-    return new GdnRestSingleResponse<CandidateDetailDTOResponse>(candetres, requestId);
+    // CandidateDetailDTOResponse candetres =
+    // getGdnMapper().deepCopy(candidate, CandidateDetailDTOResponse.class);
+    // File file = new File("");
+    // FileUtils.writeByteArrayToFile(file, candidate.getContent());
+    // return new CommonsMultipartFile(new DiskFileItemFactory(12000, file).createItem(
+    // "Curriculum Vitae", MediaType.MULTIPART_FORM_DATA_VALUE, true, "CurriculumVitae"));
+    return candidate.getContent();
   }
+
 
   // DEPRECATED udah diganti pake getAllCandidateByStoreIdWithPageable
   @Deprecated
@@ -354,8 +356,6 @@ public class CandidateController {
         new PageMetaData(50, 0, toShow.size()), requestId);
   }
 
-
-
   @RequestMapping(value = "getCandidatePositionBySolrQuery", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "Mendapatkan candidatePosition dari data yang ada id Solr",
@@ -365,7 +365,6 @@ public class CandidateController {
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username, @RequestParam String query,
       @RequestParam int page, @RequestParam int size) {
-    // TODO
     Page<CandidatePositionSolr> result = this.candidatePositionSolrService.executeSolrQuery(query,
         storeId, PageableHelper.generatePageable(page, size));
     List<CandidatePositionSolrDTOResponse> candidatePositionSolrDTOResponses = new ArrayList<>();
@@ -377,7 +376,6 @@ public class CandidateController {
     return new GdnRestListResponse<>(candidatePositionSolrDTOResponses,
         new PageMetaData(50, 0, candidatePositionSolrDTOResponses.size()), requestId);
   }
-
 
   @RequestMapping(value = "getCandidatePositionDetailByStoreIdWithLogs", method = RequestMethod.GET,
       consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -457,7 +455,9 @@ public class CandidateController {
     } catch (Exception e) {
       return new GdnBaseRestResponse(e.getMessage(), "", false, requestId);
     }
+
   }
+
 
   public void setGdnMapper(GdnMapper gdnMapper) {
     this.gdnMapper = gdnMapper;
