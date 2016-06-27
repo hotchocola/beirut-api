@@ -10,17 +10,21 @@ import org.springframework.data.domain.Pageable;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.CandidatePosition;
-import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 
 public interface CandidateService {
-  void applyNewPosition(Candidate candidate, Position position) throws Exception;
 
-  Candidate createNew(Candidate candidate, Position position) throws Exception;
+  Candidate applyNewPosition(String candidateId, List<String> positionId) throws Exception;
+
+  Candidate createNew(Candidate candidate, List<String> positionIds) throws Exception;
 
   List<Candidate> getAllCandidates();
 
-  List<Candidate> getAllCandidatesByStoreId(String storeId) throws Exception;
+  Page<Candidate> getAllCandidatesByStoreIdAndMarkForDeletePageable(String storeId,
+      boolean markForDelete, Pageable pageable) throws Exception;
+
+  Page<Candidate> getAllCandidatesByStoreIdPageable(String storeId, Pageable pageable)
+      throws Exception;
 
   Page<Candidate> getAllCandidatesWithPageable(String storeId, Pageable pageable);
 
@@ -32,29 +36,32 @@ public interface CandidateService {
 
   CandidateDetail getCandidateDetailAndStoreId(String id, String storeId) throws Exception;
 
-  CandidatePosition getCandidatePositionWithLogs(String idCandidate, String idPosition)
-      throws Exception;
+  CandidatePosition getCandidatePositionByStoreIdWithLogs(String idCandidate, String idPosition,
+      String storeId) throws Exception;
 
   void markForDelete(List<String> ids) throws Exception;
 
   void markForDelete(String id) throws Exception;
 
-  List<Candidate> searchByCreatedDateBetweenAndStoreId(Date start, Date end, String storeId);
+  Page<Candidate> searchByCreatedDateBetweenAndStoreId(Date start, Date end, String storeId,
+      Pageable pageable);
 
-  List<Candidate> searchByFirstNameContainAndStoreId(String firstname, String storeId)
-      throws Exception;
+  Page<Candidate> searchByFirstNameContainAndStoreId(String firstname, String storeId,
+      Pageable pageable) throws Exception;
 
-  List<Candidate> searchByLastNameContainAndStoreId(String lastname, String storeId);
+  Page<Candidate> searchByLastNameContainAndStoreId(String lastName, String storeId,
+      Pageable pageable);
 
-  List<Candidate> searchCandidateByEmailAddressAndStoreId(String emailAddress, String storeId);
+  Candidate searchCandidateByEmailAddressAndStoreId(String emailAddress, String storeId);
 
   List<Candidate> searchCandidateByPhoneNumber(String phoneNumber);
 
-  List<Candidate> searchCandidateByPhoneNumberContainAndStoreId(String phoneNumber, String storeId);
+  Page<Candidate> searchCandidateByPhoneNumberContainAndStoreId(String phoneNumber, String storeId,
+      Pageable pageable);
 
   void updateCandidateDetail(String storeId, Candidate candidate) throws Exception;
 
-  void updateCandidateStatus(String storeid, Candidate candidate, String idPosition, Status status)
+  void updateCandidateStatus(String storeid, String candidateId, String idPosition, Status status)
       throws Exception;
 
   void updateCandidateStatusBulk(String storeId, List<String> idCandidates, String idPosition,

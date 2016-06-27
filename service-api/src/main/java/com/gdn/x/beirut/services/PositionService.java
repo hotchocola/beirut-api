@@ -9,11 +9,13 @@ import com.gdn.x.beirut.entities.Position;
 
 public interface PositionService {
 
-  List<Position> getAllPosition(String storeId);
+  List<Position> getAllPositionByStoreId(String storeId);
 
-  Page<Position> getAllPositionWithPageable(String storeId, Pageable pageable);
+  Page<Position> getAllPositionByStoreIdWithPageable(String storeId, Pageable pageable);
 
   Position getPosition(String storeId, String positionId) throws Exception;
+
+  List<Position> getPositionByIds(List<String> positionIds);
 
   List<Position> getPositionByStoreIdAndMarkForDelete(String storeId, boolean markForDelete);
 
@@ -21,7 +23,7 @@ public interface PositionService {
 
   Position getPositionDetailByIdAndStoreId(String id, String storeId) throws Exception;
 
-  boolean insertNewPosition(Position position);
+  Position insertNewPosition(Position position);
 
   void markForDeletePosition(String storeId, List<String> id) throws Exception;
 

@@ -3,7 +3,6 @@ package com.gdn.x.beirut.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -14,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.common.web.param.PageableHelper;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
+import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
@@ -36,7 +37,7 @@ public class PositionController {
   private PositionService positionService;
 
   @Autowired
-  private Mapper dozerMapper;
+  private GdnMapper gdnMapper;
 
   @RequestMapping(value = "deletePosition", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
@@ -51,17 +52,17 @@ public class PositionController {
   }
 
   @RequestMapping(value = "getAllPosition", method = RequestMethod.GET,
-      consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "get all position", notes = "mengambil semua posisi.")
   @ResponseBody
-  public GdnRestListResponse<PositionDTOResponse> getAllPosition(@RequestParam String clientId,
-      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username) {
-    List<Position> positions = this.positionService.getAllPosition(storeId);
+  public GdnRestListResponse<PositionDTOResponse> getAllPositionByStoreId(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username) {
+    List<Position> positions = this.positionService.getAllPositionByStoreId(storeId);
     List<PositionDTOResponse> positionDTOResponses = new ArrayList<PositionDTOResponse>();
     for (Position positiones : positions) {
-      PositionDTOResponse positionDTOResponse = new PositionDTOResponse();
-      dozerMapper.map(positiones, positionDTOResponse);
+      PositionDTOResponse positionDTOResponse =
+          this.gdnMapper.deepCopy(positiones, PositionDTOResponse.class);
       positionDTOResponses.add(positionDTOResponse);
     }
 
@@ -78,15 +79,19 @@ public class PositionController {
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username, @RequestParam int page,
       @RequestParam int size) {
-    Page<Position> positions = this.positionService.getAllPositionWithPageable(storeId,
+    Page<Position> positions = this.positionService.getAllPositionByStoreIdWithPageable(storeId,
         PageableHelper.generatePageable(page, size));
     List<PositionDTOResponse> res = new ArrayList<>();
     for (Position position : positions) {
-      PositionDTOResponse positionDTOResponse = new PositionDTOResponse();
-      dozerMapper.map(position, positionDTOResponse);
+      PositionDTOResponse positionDTOResponse =
+          this.gdnMapper.deepCopy(position, PositionDTOResponse.class);
       res.add(positionDTOResponse);
     }
     return new GdnRestListResponse<>(res, new PageMetaData(50, 0, res.size()), requestId);
+  }
+
+  public GdnMapper getGdnMapper() {
+    return gdnMapper;
   }
 
   @RequestMapping(value = "getPositionByStoreIdAndMarkForDelete", method = RequestMethod.GET,
@@ -103,8 +108,8 @@ public class PositionController {
         this.positionService.getPositionByStoreIdAndMarkForDelete(storeId, markForDelete);
     List<PositionDTOResponse> positionDTOResponses = new ArrayList<>();
     for (Position position : positions) {
-      PositionDTOResponse positionDTOResponse = new PositionDTOResponse();
-      dozerMapper.map(position, positionDTOResponse);
+      PositionDTOResponse positionDTOResponse =
+          this.gdnMapper.deepCopy(position, PositionDTOResponse.class);
       positionDTOResponses.add(positionDTOResponse);
     }
     return new GdnRestListResponse<>(positionDTOResponses,
@@ -122,8 +127,8 @@ public class PositionController {
     List<PositionDTOResponse> positionDTOResponses = new ArrayList<PositionDTOResponse>();
 
     for (Position positiones : positions) {
-      PositionDTOResponse positionDTOResponse = new PositionDTOResponse();
-      dozerMapper.map(positiones, positionDTOResponse);
+      PositionDTOResponse positionDTOResponse =
+          this.gdnMapper.deepCopy(positiones, PositionDTOResponse.class);
       positionDTOResponses.add(positionDTOResponse);
     }
 
@@ -156,19 +161,19 @@ public class PositionController {
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "insert new position", notes = "memasukan posisi baru.")
   @ResponseBody
-  public GdnBaseRestResponse insertNewPosition(@RequestParam String clientId,
+  public GdnRestSingleResponse<PositionDTOResponse> insertNewPosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestBody PositionDTORequest positionDTORequest) {
-    Position temp = new Position();
-    dozerMapper.map(positionDTORequest, temp);
-    // System.out.println("DTO : " + positionDTORequest.toString());
-    // System.out.println(temp.toString());
+    Position temp = this.gdnMapper.deepCopy(positionDTORequest, Position.class);
     temp.setStoreId(storeId);
-    return new GdnBaseRestResponse(this.positionService.insertNewPosition(temp));
+    Position result = this.positionService.insertNewPosition(temp);
+    PositionDTOResponse positionDTOResponse =
+        this.gdnMapper.deepCopy(result, PositionDTOResponse.class);
+    return new GdnRestSingleResponse<PositionDTOResponse>(positionDTOResponse, requestId);
   }
 
-  public void setDozerMapper(Mapper dm) {
-    this.dozerMapper = dm;
+  public void setGdnMapper(GdnMapper gdnMapper) {
+    this.gdnMapper = gdnMapper;
   }
 
   @RequestMapping(value = "updatePosition", method = RequestMethod.POST,
@@ -179,10 +184,6 @@ public class PositionController {
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestParam(required = true) String id,
       @RequestBody PositionDTORequest positionDTORequest) throws Exception {
-    Position pos = new Position();
-    dozerMapper.map(positionDTORequest, pos);
-    pos.setStoreId(storeId);
-
     return new GdnBaseRestResponse(
         this.positionService.updatePositionTitle(storeId, id, positionDTORequest.getTitle()));
   }

@@ -1,7 +1,7 @@
 package com.gdn.x.beirut.entities;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,6 +16,7 @@ import com.gdn.common.base.entity.GdnBaseEntity;
 @Table(name = Position.TABLE_NAME)
 public class Position extends GdnBaseEntity {
 
+  private static final long serialVersionUID = 628701914919251441L;
   public static final String TABLE_NAME = "position";
   public static final String COLUMN_TITLE = "title";
 
@@ -23,7 +24,7 @@ public class Position extends GdnBaseEntity {
   private String title;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "position")
-  private Set<CandidatePosition> candidatePositions = new HashSet<CandidatePosition>();
+  private List<CandidatePosition> candidatePositions = new ArrayList<CandidatePosition>();
 
   public Position() {
     // nothing to do here
@@ -33,7 +34,7 @@ public class Position extends GdnBaseEntity {
     this.candidatePositions.add(candpos);
   }
 
-  public Set<CandidatePosition> getCandidatePositions() {
+  public List<CandidatePosition> getCandidatePositions() {
     return candidatePositions;
   }
 
@@ -41,7 +42,7 @@ public class Position extends GdnBaseEntity {
     return title;
   }
 
-  public void setCandidatePositions(Set<CandidatePosition> candidatePositions) {
+  public void setCandidatePositions(List<CandidatePosition> candidatePositions) {
     this.candidatePositions = candidatePositions;
   }
 

@@ -5,6 +5,7 @@ import java.util.Set;
 import com.gdn.common.web.base.BaseResponse;
 
 public class CandidateWithPositionsDTOResponse extends BaseResponse {
+  private static final long serialVersionUID = -2381755997050065098L;
   private String emailAddress;
   private String firstName;
   private String lastName;

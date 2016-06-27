@@ -105,8 +105,8 @@ public class CandidateMapper {
     // candidatePositionResponse.setStatusLogs(statusLogsResponse);
   }
 
-  public static void mapLazy(Candidate candidate, CandidateDTOResponse candidateDTOResponse,
-      Mapper dozerMapper) {
+  @Deprecated
+  public static void mapLazy(Candidate candidate, CandidateDTOResponse candidateDTOResponse) {
     BeanUtils.copyProperties(candidate, candidateDTOResponse, "candidateDetail");
   }
 
