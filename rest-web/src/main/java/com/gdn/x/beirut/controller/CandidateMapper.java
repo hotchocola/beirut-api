@@ -3,6 +3,7 @@ package com.gdn.x.beirut.controller;
 import org.dozer.Mapper;
 import org.springframework.beans.BeanUtils;
 
+import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
@@ -42,14 +43,10 @@ public class CandidateMapper {
   }
 
   public static void map(CandidatePosition candidatePosition,
-      CandidatePositionDTOResponse candidatePositionResponse, Mapper dozerMapper) {
-    dozerMapper.map(candidatePosition, candidatePositionResponse);
+      CandidatePositionDTOResponse candidatePositionResponse, GdnMapper gdnMapper) {
 
-    // Set<StatusLogDTOResponse> statusLogsResponse = new HashSet<StatusLogDTOResponse>();
-    // System.out.println("INI ENT MAP : " + candidatePosition.getStatusLogs().size());
     for (StatusLog statusLog : candidatePosition.getStatusLogs()) {
-      StatusLogDTOResponse statusLogDTO = new StatusLogDTOResponse();
-      dozerMapper.map(statusLog, statusLogDTO);
+      StatusLogDTOResponse statusLogDTO = gdnMapper.deepCopy(statusLog, StatusLogDTOResponse.class);
       switch (statusLog.getStatus()) {
         case APPLY:
           statusLogDTO.setStatus(StatusDTOResponse.APPLY);
@@ -97,12 +94,12 @@ public class CandidateMapper {
           statusLogDTO.setStatus(StatusDTOResponse.APPLY);
           break;
       }
-      // statusLogsResponse.add(statusLogDTO);
+      System.out.println("mapper : " + statusLogDTO.getStatus());
       candidatePositionResponse.getStatusLogs().add(statusLogDTO);
-      //
+      for (StatusLogDTOResponse stat : candidatePositionResponse.getStatusLogs()) {
+        System.out.println("Foreacg Mapper statLog : " + stat.getStatus());
+      }
     }
-    // System.out.println("INI DI MAP : " + statusLogsResponse.size());
-    // candidatePositionResponse.setStatusLogs(statusLogsResponse);
   }
 
   @Deprecated

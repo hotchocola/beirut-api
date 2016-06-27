@@ -66,8 +66,13 @@ public class CandidateServiceImpl implements CandidateService {
       throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "position not found");
     }
     for (Position position : positions) {
-      existingCandidate.getCandidatePositions()
-          .add(new CandidatePosition(existingCandidate, position, existingCandidate.getStoreId()));
+      CandidatePosition candidatePosition =
+          new CandidatePosition(existingCandidate, position, existingCandidate.getStoreId());
+      StatusLog statusLog = new StatusLog();
+      statusLog.setStoreId(existingCandidate.getStoreId());
+      statusLog.setCandidatePosition(candidatePosition);
+      statusLog.setStatus(Status.APPLY);
+      existingCandidate.getCandidatePositions().add(candidatePosition);
     }
     Candidate result = candidateDAO.save(existingCandidate);
     for (Position position : positions) {
@@ -96,8 +101,14 @@ public class CandidateServiceImpl implements CandidateService {
       throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "position not found");
     }
     for (Position position : positions) {
-      candidate.getCandidatePositions()
-          .add(new CandidatePosition(candidate, position, candidate.getStoreId()));
+      CandidatePosition candidatePosition =
+          new CandidatePosition(candidate, position, candidate.getStoreId());
+      StatusLog statusLog = new StatusLog();
+      statusLog.setStatus(Status.APPLY);
+      statusLog.setStoreId(candidate.getStoreId());
+      statusLog.setCandidatePosition(candidatePosition);
+      candidatePosition.getStatusLogs().add(statusLog);
+      candidate.getCandidatePositions().add(candidatePosition);
     }
     try {
       Candidate newCandidate = candidateDAO.save(candidate);
