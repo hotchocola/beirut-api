@@ -77,7 +77,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     return invokeGetSingle(uri, CandidateDTOResponse.class);
   }
 
-  public GdnRestListResponse<CandidateDTOResponse> findCandidateByFirstNameContainAndStoreId(
+  public GdnRestListResponse<CandidateDTOResponse> findCandidateByFirstNameContainAndStoreId1(
       String requestId, String username, String firstName, int page, int size) throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("firstName", firstName);
@@ -143,7 +143,8 @@ public GdnRestSingleResponse<CandidateWithPositionsDTOResponse> findCandidateByI
       throws Exception {
     SimpleRequestHolder request = new SimpleRequestHolder(id);
     URI uri = generateURI("/candidate/findCandidateDetailAndStoreId", requestId, username, null);
-    return invokeGetSingle(uri, byte[].class, request);
+//    return invokeGetSingle(uri, byte[].class, request);
+    return null;
   }
 
   private URI generateURI(String path, String requestId, String username,

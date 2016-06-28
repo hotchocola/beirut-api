@@ -5,6 +5,7 @@ import org.springframework.beans.BeanUtils;
 
 import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
+import com.gdn.x.beirut.dto.request.StatusDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateWithPositionsDTOResponse;
@@ -12,6 +13,7 @@ import com.gdn.x.beirut.dto.response.StatusDTOResponse;
 import com.gdn.x.beirut.dto.response.StatusLogDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidatePosition;
+import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.entities.StatusLog;
 
 public class CandidateMapper {
@@ -101,6 +103,56 @@ public class CandidateMapper {
   @Deprecated
   public static void mapLazy(Candidate candidate, CandidateDTOResponse candidateDTOResponse) {
     BeanUtils.copyProperties(candidate, candidateDTOResponse, "candidateDetail");
+  }
+
+  public static void statusEnumMap(StatusDTORequest source, Status status) {
+    switch (source) {
+      case APPLY:
+        status = Status.APPLY;
+        break;
+      case CALL_CANDIDATE:
+        status = Status.CALL_CANDIDATE;
+        break;
+      case PSIKOTES:
+        status = Status.PSIKOTES;
+        break;
+      case TECHNICAL_TEST:
+        status = Status.TECHNICAL_TEST;
+        break;
+      case USER:
+        status = Status.USER;
+        break;
+      case HRD:
+        status = Status.HRD;
+        break;
+      case ON_HOLD:
+        status = Status.ON_HOLD;
+        break;
+      case HEAD:
+        status = Status.HEAD;
+        break;
+      case CEO:
+        status = Status.CEO;
+        break;
+      case MEDICAL:
+        status = Status.MEDICAL;
+        break;
+      case OFFERING:
+        status = Status.OFFERING;
+        break;
+      case DECLINED:
+        status = Status.DECLINED;
+        break;
+      case JOIN:
+        status = Status.JOIN;
+        break;
+      case WITHDRAWL:
+        status = Status.WITHDRAWL;
+        break;
+      default:
+        status = Status.APPLY;
+        break;
+    }
   }
 
 }
