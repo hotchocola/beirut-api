@@ -106,9 +106,12 @@ public class BeirutApiClientTest {
     URI uri = builder.build();
     System.out.println(uri.toString());
 
-    when(this.clientHelper.getURI(HOST, PORT, CONTEXT_PATH + path, MandatoryRequestParam
-        .generateMandatoryRequestParam(STORE_ID, CHANNEL_ID, CLIENT_ID, REQUEST_ID), map))
-            .thenReturn(uri);
+    when(
+        this.clientHelper
+            .getURI(HOST,
+                PORT, CONTEXT_PATH + path, MandatoryRequestParam.generateMandatoryRequestParam(
+                    STORE_ID, CHANNEL_ID, CLIENT_ID, REQUEST_ID, USERNAME, USERNAME),
+                map)).thenReturn(uri);
     // when(this.clientHelper.invokePost(uri, positionDTORequest, PositionDTOResponse.class,
     // CONNECTION_TIMEOUT_IN_MS)).thenReturn(gdnBaseRestUpdatePosition);
     // this.beirutApiClient.updatePosition(REQUEST_ID, USERNAME, ID, positionDTORequest);
