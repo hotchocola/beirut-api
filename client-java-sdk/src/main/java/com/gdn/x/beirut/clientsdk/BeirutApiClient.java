@@ -40,12 +40,13 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     URI uri = generateURI("/candidate/applyNewPosition", requestId, username, map);
     return invokePost(uri, CandidateDTORequest.class, idCandidate);
   }
-
-  public GdnBaseRestResponse deleteCandidate(String requestId, String username, String id)
-      throws Exception {
-    SimpleRequestHolder request = new SimpleRequestHolder(id);
-    URI uri = generateURI("/candidate/deleteCandidate", requestId, username, null);
-    return invokePost(uri, SimpleRequestHolder.class, request);
+  
+  public GdnBaseRestResponse deleteCandidate(String requestId, String username,
+      ListStringRequest idsRequest) throws Exception {
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put("idsRequest", String.valueOf(idsRequest));
+    URI uri = generateURI("/candidate/deleteCandidate", requestId, username, map);
+    return invokePost(uri, ListStringRequest.class, idsRequest);
   }
 
   public GdnBaseRestResponse deletePosition(String requestId, String username,
@@ -125,7 +126,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
         username, map);
     return invokeGetSummary(uri, CandidateDTOResponse.class);
   }
-
+/*
   // dipertanyakan
   // harusnya ngeluarin byte []
   public byte[] findCandidateDetailAndStoreId(String requestId, String username, String id)
@@ -134,7 +135,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     URI uri = generateURI("/candidate/findCandidateDetailAndStoreId", requestId, username, null);
     return invokeGetSingle(uri, byte[].class, request);
   }
-
+*/
   private URI generateURI(String path, String requestId, String username,
       Map<String, String> additionalParameterMap) throws Exception {
     String location = getContextPath() + path;
@@ -239,14 +240,6 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     map.put("positionDTORequest", String.valueOf(positionDTORequest));
     URI uri = generateURI("/position/insertNewPosition", requestId, username, map);
     return invokePostSingle(uri, PositionDTOResponse.class);
-  }
-
-  public GdnBaseRestResponse markForDelete(String requestId, String username,
-      ListStringRequest idsRequest) throws Exception {
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put("idsRequest", String.valueOf(idsRequest));
-    URI uri = generateURI("/candidate/markForDelete", requestId, username, map);
-    return invokePost(uri, ListStringRequest.class, idsRequest);
   }
 
   public GdnBaseRestResponse updateCandidateDetail(String requestId, String username,
