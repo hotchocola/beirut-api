@@ -13,6 +13,7 @@ import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
+import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.StatusDTORequest;
@@ -40,13 +41,12 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     URI uri = generateURI("/candidate/applyNewPosition", requestId, username, map);
     return invokePost(uri, CandidateDTORequest.class, idCandidate);
   }
-  
+
   public GdnBaseRestResponse deleteCandidate(String requestId, String username,
       ListStringRequest idsRequest) throws Exception {
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put("idsRequest", String.valueOf(idsRequest));
-    URI uri = generateURI("/candidate/deleteCandidate", requestId, username, map);
-    return invokePost(uri, ListStringRequest.class, idsRequest);
+    SimpleRequestHolder request = new SimpleRequestHolder(idsRequest.toString());
+    URI uri = generateURI("/candidate/deleteCandidate", requestId, username, null);
+    return invokePost(uri, ListStringRequest.class, request);
   }
 
   public GdnBaseRestResponse deletePosition(String requestId, String username,
@@ -58,7 +58,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
 
   public GdnRestListResponse<CandidateDTOResponse> findCandidateByCreatedDateBetweenAndStoreId(
       String requestId, String username, Long start, Long end, int page, int size)
-          throws Exception {
+      throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("start", String.valueOf(start));
     map.put("end", String.valueOf(end));
@@ -126,16 +126,14 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
         username, map);
     return invokeGetSummary(uri, CandidateDTOResponse.class);
   }
-/*
-  // dipertanyakan
-  // harusnya ngeluarin byte []
-  public byte[] findCandidateDetailAndStoreId(String requestId, String username, String id)
-      throws Exception {
-    SimpleRequestHolder request = new SimpleRequestHolder(id);
-    URI uri = generateURI("/candidate/findCandidateDetailAndStoreId", requestId, username, null);
-    return invokeGetSingle(uri, byte[].class, request);
-  }
-*/
+
+  /*
+   * // dipertanyakan // harusnya ngeluarin byte [] public byte[]
+   * findCandidateDetailAndStoreId(String requestId, String username, String id) throws Exception {
+   * SimpleRequestHolder request = new SimpleRequestHolder(id); URI uri =
+   * generateURI("/candidate/findCandidateDetailAndStoreId", requestId, username, null); return
+   * invokeGetSingle(uri, byte[].class, request); }
+   */
   private URI generateURI(String path, String requestId, String username,
       Map<String, String> additionalParameterMap) throws Exception {
     String location = getContextPath() + path;
@@ -145,7 +143,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
 
   public GdnRestListResponse<CandidateDTOResponseWithoutDetail> getAllCandidateByStoreIdAndMarkForDeleteWithPageable(
       String requestId, String username, boolean markForDelete, int page, int size)
-          throws Exception {
+      throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("markForDelete", String.valueOf(markForDelete));
     map.put("page", String.valueOf(page));
@@ -168,7 +166,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
   public GdnRestListResponse<PositionDTOResponse> getAllPositionByStoreId(String requestId,
       String username) throws Exception {
     URI uri = generateURI("/candidate/getAllPosition", requestId, username, null);
-    return invokePostSummary(uri, PositionDTOResponse.class);
+    return invokeGetSummary(uri, PositionDTOResponse.class);
   }
 
   public GdnRestListResponse<PositionDTOResponse> getAllPositionWithPageable(String requestId,
@@ -192,7 +190,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
 
   public GdnRestSingleResponse<CandidatePositionDTOResponse> getCandidatePositionDetailByStoreIdWithLogs(
       String requestId, String username, String query, String idCandidate, String idPosition)
-          throws Exception {
+      throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("idCandidate", idCandidate);
     map.put("idPosition", idPosition);
@@ -243,11 +241,11 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
   }
 
   public GdnBaseRestResponse updateCandidateDetail(String requestId, String username,
-      String idCandidate, MultipartFile file) throws Exception {
+      String idCandidate, CandidateDetailDTORequest candidateDetailDTORequest) throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("idCandidate", idCandidate);
     URI uri = generateURI("/candidate/updateCandidateDetail", requestId, username, map);
-    return invokePost(uri, MultipartFile.class, file);
+    return invokePost(uri, CandidateDetailDTORequest.class, candidateDetailDTORequest);
   }
 
   public GdnBaseRestResponse updateCandidatesStatus(String requestId, String username,
@@ -257,7 +255,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     map.put("idPosition", idPosition);
     map.put("idCandidates", String.valueOf(idCandidates));
     URI uri = generateURI("/candidate/updateCandidateStatus", requestId, username, map);
-    return invokePost(uri, CandidateDTOResponse.class, idCandidates);
+    return invokePost(uri, ListStringRequest.class, idCandidates);
   }
 
   public GdnBaseRestResponse updatePosition(String requestId, String username, String id,
@@ -266,6 +264,6 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     map.put("id", id);
     map.put("positionDTORequest", String.valueOf(positionDTORequest));
     URI uri = generateURI("/position/updatePosition", requestId, username, map);
-    return invokePostSingle(uri, PositionDTOResponse.class);
+    return invokePost(uri, PositionDTOResponse.class, positionDTORequest);
   }
 }

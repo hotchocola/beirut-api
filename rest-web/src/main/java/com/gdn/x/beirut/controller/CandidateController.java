@@ -28,9 +28,11 @@ import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
+import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
+import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionSolrDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateWithPositionsDTOResponse;
@@ -73,6 +75,23 @@ public class CandidateController {
     try {
       this.candidateService.applyNewPosition(idCandidate, listPositionIdStrings.getValues());
       return new GdnBaseRestResponse(true);
+    } catch (Exception e) {
+      return new GdnBaseRestResponse(e.getMessage(), "", false, requestId);
+    }
+
+  }
+
+  @RequestMapping(value = "deleteCandidate", method = RequestMethod.POST,
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Delete Id yang ada", notes = "Semua yang ada di list akan di hapus")
+  @ResponseBody
+  public GdnBaseRestResponse deleteCandidate(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestBody ListStringRequest idsRequest) throws Exception {
+    try {
+      this.candidateService.markForDelete(idsRequest.getValues());
+      return new GdnBaseRestResponse(requestId);
     } catch (Exception e) {
       return new GdnBaseRestResponse(e.getMessage(), "", false, requestId);
     }
@@ -147,7 +166,7 @@ public class CandidateController {
   public GdnRestSingleResponse<CandidateDTOResponse> findCandidateById(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
-          throws Exception {
+      throws Exception {
     Candidate candidate = this.candidateService.getCandidate(id);
     CandidateDTOResponse candres = getGdnMapper().deepCopy(candidate, CandidateDTOResponse.class);
     return new GdnRestSingleResponse<CandidateDTOResponse>(candres, requestId);
@@ -230,6 +249,8 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
+
+
   @RequestMapping(value = "findCandidateByPhoneNumberContainAndStoreId", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Find candidate by their phone number that much alike", notes = "")
@@ -238,7 +259,7 @@ public class CandidateController {
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username,
       @RequestParam String phoneNumber, @RequestParam int page, @RequestParam int size)
-          throws Exception {
+      throws Exception {
     Page<Candidate> candidates =
         this.candidateService.searchCandidateByPhoneNumberContainAndStoreId(phoneNumber, storeId,
             PageableHelper.generatePageable(page, size));
@@ -253,12 +274,30 @@ public class CandidateController {
   }
 
 
-
   @RequestMapping(value = "findCandidateDetailAndStoreId", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  @ApiOperation(value = "Mencari detail kandidat", notes = "")
+  @ResponseBody
+  public GdnRestSingleResponse<CandidateDetailDTOResponse> findCandidateDetailAndStoreId(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
+      throws Exception {
+    CandidateDetail candidate = this.candidateService.getCandidateDetailAndStoreId(id, storeId);
+    CandidateDetailDTOResponse candetres =
+        getGdnMapper().deepCopy(candidate, CandidateDetailDTOResponse.class);
+    return new GdnRestSingleResponse<CandidateDetailDTOResponse>(candetres, requestId);
+    // File file = new File("");
+    // FileUtils.writeByteArrayToFile(file, candidate.getContent());
+    // return new CommonsMultipartFile(new DiskFileItemFactory(12000, file).createItem(
+    // "Curriculum Vitae", MediaType.MULTIPART_FORM_DATA_VALUE, true, "CurriculumVitae"));
+    // return candidate.getContent();
+  }
+
+  @RequestMapping(value = "findCandidateDetailAndStoreIdSwagger", method = RequestMethod.GET,
       produces = {"application/pdf", "application/msword", "image/jpeg", "text/plain"})
   @ApiOperation(value = "Mencari detail kandidat", notes = "")
   @ResponseBody
-  public byte[] findCandidateDetailAndStoreId(@RequestParam String clientId,
+  public byte[] findCandidateDetailAndStoreIdSwagger(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestParam String id) throws Exception {
     CandidateDetail candidate = this.candidateService.getCandidateDetailAndStoreId(id, storeId);
@@ -270,7 +309,6 @@ public class CandidateController {
     // "Curriculum Vitae", MediaType.MULTIPART_FORM_DATA_VALUE, true, "CurriculumVitae"));
     return candidate.getContent();
   }
-
 
   // DEPRECATED udah diganti pake getAllCandidateByStoreIdWithPageable
   @Deprecated
@@ -304,7 +342,7 @@ public class CandidateController {
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username,
       @RequestParam boolean markForDelete, @RequestParam int page, @RequestParam int size)
-          throws Exception {
+      throws Exception {
     Pageable pageable = PageableHelper.generatePageable(page, size);
     Page<Candidate> pages = this.candidateService
         .getAllCandidatesByStoreIdAndMarkForDeletePageable(storeId, markForDelete, pageable);
@@ -388,11 +426,40 @@ public class CandidateController {
   }
 
   @RequestMapping(value = "insertNewCandidate", method = RequestMethod.POST,
-      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Insert new Candidate", notes = "memasukan kandidat baru.")
   @ResponseBody
   public GdnBaseRestResponse insertNewCandidate(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestParam String candidateDTORequestString,
+      @RequestBody CandidateDetailDTORequest file) throws Exception {
+    if (file == null || file.getContent().length == 0) {
+      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER,
+          "file content mustbe present");
+    }
+    CandidateDTORequest candidateDTORequest =
+        objectMapper.readValue(candidateDTORequestString, CandidateDTORequest.class);
+    Candidate newCandidate = getGdnMapper().deepCopy(candidateDTORequest, Candidate.class);
+    CandidateDetail candidateDetail = new CandidateDetail();
+    candidateDetail.setContent(file.getContent());
+    candidateDetail.setCandidate(newCandidate);
+    newCandidate.setCandidateDetail(candidateDetail);
+    newCandidate.setStoreId(storeId);
+    Candidate existingCandidate =
+        this.candidateService.createNew(newCandidate, candidateDTORequest.getPositionIds());
+    if (existingCandidate.getId() == null) {
+      return new GdnBaseRestResponse(false);
+    }
+    return new GdnBaseRestResponse(requestId);
+  }
+
+  @RequestMapping(value = "insertNewCandidateSwagger", method = RequestMethod.POST,
+      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Insert new Candidate", notes = "memasukan kandidat baru.")
+  @ResponseBody
+  public GdnBaseRestResponse insertNewCandidateSwagger(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestParam String candidateDTORequestString,
       @RequestPart MultipartFile file) throws Exception {
@@ -416,23 +483,6 @@ public class CandidateController {
     return new GdnBaseRestResponse(requestId);
   }
 
-  @RequestMapping(value = "deleteCandidate", method = RequestMethod.POST,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
-      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "Delete Id yang ada", notes = "Semua yang ada di list akan di hapus")
-  @ResponseBody
-  public GdnBaseRestResponse deleteCandidate(@RequestParam String clientId,
-      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody ListStringRequest idsRequest) throws Exception {
-    try {
-      this.candidateService.markForDelete(idsRequest.getValues());
-      return new GdnBaseRestResponse(requestId);
-    } catch (Exception e) {
-      return new GdnBaseRestResponse(e.getMessage(), "", false, requestId);
-    }
-
-  }
-
   public void setGdnMapper(GdnMapper gdnMapper) {
     this.gdnMapper = gdnMapper;
   }
@@ -442,11 +492,34 @@ public class CandidateController {
   }
 
   @RequestMapping(value = "updateCandidateDetail", method = RequestMethod.POST,
-      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Update candidate detail", notes = "")
   @ResponseBody
   public GdnBaseRestResponse updateCandidateDetail(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestParam String idCandidate,
+      @RequestBody CandidateDetailDTORequest candidateDetailDTORequest) throws Exception {
+    if (candidateDetailDTORequest == null || candidateDetailDTORequest.getContent().length == 0) {
+      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER,
+          "file content mustbe present");
+    }
+    Candidate candidate = this.candidateService.getCandidate(idCandidate);
+    candidate.getCandidateDetail().setContent(candidateDetailDTORequest.getContent());
+    try {
+      this.candidateService.updateCandidateDetail(storeId, candidate);
+      return new GdnBaseRestResponse(true);
+    } catch (Exception e) {
+      return new GdnBaseRestResponse(requestId);
+    }
+  }
+
+  @RequestMapping(value = "updateCandidateDetailSwagger", method = RequestMethod.POST,
+      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Update candidate detail", notes = "")
+  @ResponseBody
+  public GdnBaseRestResponse updateCandidateDetailSwagger(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestParam String idCandidate,
       @RequestPart MultipartFile file) throws Exception {
