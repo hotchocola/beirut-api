@@ -77,17 +77,6 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     return invokeGetSingle(uri, CandidateDTOResponse.class);
   }
 
-  public GdnRestListResponse<CandidateDTOResponse> findCandidateByFirstNameContainAndStoreId1(
-      String requestId, String username, String firstName, int page, int size) throws Exception {
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put("firstName", firstName);
-    map.put("page", String.valueOf(page));
-    map.put("size", String.valueOf(size));
-    URI uri = generateURI("/candidate/findCandidateByFirstNameContainAndStoreId", requestId,
-        username, map);
-    return invokeGetSummary(uri, CandidateDTOResponse.class);
-  }
-
   public GdnRestListResponse<CandidateDTOResponse> findCandidateByFirstNameContainAndStoreId(
       String requestId, String username, String firstName, int page, int size) throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
@@ -99,7 +88,18 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     return invokeGetSummary(uri, CandidateDTOResponse.class);
   }
 
-public GdnRestSingleResponse<CandidateWithPositionsDTOResponse> findCandidateByIdAndStoreIdEager(
+  public GdnRestListResponse<CandidateDTOResponse> findCandidateByFirstNameContainAndStoreId1(
+      String requestId, String username, String firstName, int page, int size) throws Exception {
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put("firstName", firstName);
+    map.put("page", String.valueOf(page));
+    map.put("size", String.valueOf(size));
+    URI uri = generateURI("/candidate/findCandidateByFirstNameContainAndStoreId", requestId,
+        username, map);
+    return invokeGetSummary(uri, CandidateDTOResponse.class);
+  }
+
+  public GdnRestSingleResponse<CandidateWithPositionsDTOResponse> findCandidateByIdAndStoreIdEager(
       String requestId, String username, String idCandidate) throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("idCandidate", String.valueOf(idCandidate));
@@ -143,7 +143,7 @@ public GdnRestSingleResponse<CandidateWithPositionsDTOResponse> findCandidateByI
       throws Exception {
     SimpleRequestHolder request = new SimpleRequestHolder(id);
     URI uri = generateURI("/candidate/findCandidateDetailAndStoreId", requestId, username, null);
-//    return invokeGetSingle(uri, byte[].class, request);
+    // return invokeGetSingle(uri, byte[].class, request);
     return null;
   }
 
@@ -283,8 +283,8 @@ public GdnRestSingleResponse<CandidateWithPositionsDTOResponse> findCandidateByI
       PositionDTORequest positionDTORequest) throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("id", id);
-    map.put("positionDTORequest", String.valueOf(positionDTORequest));
+    // map.put("positionDTORequest", String.valueOf(positionDTORequest));
     URI uri = generateURI("/position/updatePosition", requestId, username, map);
-    return invokePostSingle(uri, PositionDTOResponse.class);
+    return invokePost(uri, PositionDTOResponse.class, positionDTORequest);
   }
 }

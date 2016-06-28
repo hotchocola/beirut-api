@@ -77,7 +77,6 @@ public class CandidateController {
     } catch (Exception e) {
       return new GdnBaseRestResponse(e.getMessage(), "", false, requestId);
     }
-
   }
 
   @RequestMapping(value = "deleteCandidate", method = RequestMethod.POST,
