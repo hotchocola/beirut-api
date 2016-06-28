@@ -545,8 +545,8 @@ public class CandidateControllerTest {
   }
 
   @Test
-  public void testMarkForDelete() throws Exception {
-    String uri = "/api/candidate/markForDelete";
+  public void testDeleteCandidate() throws Exception {
+    String uri = "/api/candidate/deleteCandidate";
     String json =
         FileUtils.readFileToString(new File("src/test/resources/JSON/markForDeleteJSON.json"));
     ListStringRequest listStringIds = objectMapper.readValue(json, ListStringRequest.class);

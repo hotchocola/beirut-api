@@ -79,22 +79,6 @@ public class CandidateController {
 
   }
 
-  @RequestMapping(value = "deleteCandidate", method = RequestMethod.POST,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
-      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "Delete Candidate by Id", notes = "delete kandidat berdasarkan id")
-  @ResponseBody
-  public GdnBaseRestResponse deleteCandidate(@RequestParam String clientId,
-      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestParam String id) throws Exception {
-    try {
-      this.candidateService.markForDelete(id);
-      return new GdnBaseRestResponse();
-    } catch (Exception e) {
-      return new GdnBaseRestResponse(e.getMessage(), "", false, requestId);
-    }
-  }
-
   @RequestMapping(value = "findCandidateByCreatedDateBetweenAndStoreId", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Find candidate which created between day x and day y",
@@ -432,12 +416,12 @@ public class CandidateController {
     return new GdnBaseRestResponse(requestId);
   }
 
-  @RequestMapping(value = "markForDelete", method = RequestMethod.POST,
+  @RequestMapping(value = "deleteCandidate", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Delete Id yang ada", notes = "Semua yang ada di list akan di hapus")
   @ResponseBody
-  public GdnBaseRestResponse markForDelete(@RequestParam String clientId,
+  public GdnBaseRestResponse deleteCandidate(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestBody ListStringRequest idsRequest) throws Exception {
     try {
