@@ -128,12 +128,12 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
 
   // dipertanyakan
   // harusnya ngeluarin byte []
-  public byte[] findCandidateDetailAndStoreId(String requestId, String username, String id)
-      throws Exception {
-    SimpleRequestHolder request = new SimpleRequestHolder(id);
-    URI uri = generateURI("/candidate/findCandidateDetailAndStoreId", requestId, username, null);
-    return invokeGetSingle(uri, byte[].class, request);
-  }
+  // public byte[] findCandidateDetailAndStoreId(String requestId, String username, String id)
+  // throws Exception {
+  // SimpleRequestHolder request = new SimpleRequestHolder(id);
+  // URI uri = generateURI("/candidate/findCandidateDetailAndStoreId", requestId, username, null);
+  // return invokeGetSingle(uri, byte[].class, request);
+  // }
 
   private URI generateURI(String path, String requestId, String username,
       Map<String, String> additionalParameterMap) throws Exception {
