@@ -4,8 +4,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.gdn.common.client.GdnRestClientConfiguration;
 import com.gdn.common.web.client.GdnBaseRestCrudClient;
 import com.gdn.common.web.wrapper.request.SimpleRequestHolder;
@@ -58,7 +56,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
 
   public GdnRestListResponse<CandidateDTOResponse> findCandidateByCreatedDateBetweenAndStoreId(
       String requestId, String username, Long start, Long end, int page, int size)
-      throws Exception {
+          throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("start", String.valueOf(start));
     map.put("end", String.valueOf(end));
@@ -143,7 +141,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
 
   public GdnRestListResponse<CandidateDTOResponseWithoutDetail> getAllCandidateByStoreIdAndMarkForDeleteWithPageable(
       String requestId, String username, boolean markForDelete, int page, int size)
-      throws Exception {
+          throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("markForDelete", String.valueOf(markForDelete));
     map.put("page", String.valueOf(page));
@@ -190,7 +188,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
 
   public GdnRestSingleResponse<CandidatePositionDTOResponse> getCandidatePositionDetailByStoreIdWithLogs(
       String requestId, String username, String query, String idCandidate, String idPosition)
-      throws Exception {
+          throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("idCandidate", idCandidate);
     map.put("idPosition", idPosition);
@@ -225,11 +223,12 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
   }
 
   public GdnBaseRestResponse insertNewCandidate(String requestId, String username,
-      String candidateDTORequestString, MultipartFile file) throws Exception {
+      String candidateDTORequestString, CandidateDetailDTORequest candidateDetailDTORequest)
+          throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("candidateDTORequestString", candidateDTORequestString);
     URI uri = generateURI("/candidate/insertNewCandidate", requestId, username, map);
-    return invokePost(uri, MultipartFile.class, file);
+    return invokePost(uri, CandidateDetailDTORequest.class, candidateDetailDTORequest);
   }
 
   public GdnRestSingleResponse<PositionDTOResponse> insertNewPosition(String requestId,
