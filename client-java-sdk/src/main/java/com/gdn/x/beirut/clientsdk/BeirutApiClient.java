@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.web.multipart.MultipartFile;
+// import org.springframework.web.multipart.MultipartFile;
 
 import com.gdn.common.client.GdnRestClientConfiguration;
 import com.gdn.common.web.client.GdnBaseRestCrudClient;
@@ -237,13 +237,13 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     return invokeGetSummary(uri, PositionDetailDTOResponse.class);
   }
 
-  public GdnBaseRestResponse insertNewCandidate(String requestId, String username,
-      String candidateDTORequestString, MultipartFile file) throws Exception {
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put("candidateDTORequestString", candidateDTORequestString);
-    URI uri = generateURI("/candidate/insertNewCandidate", requestId, username, map);
-    return invokePost(uri, MultipartFile.class, file);
-  }
+  // public GdnBaseRestResponse insertNewCandidate(String requestId, String username,
+  // String candidateDTORequestString, MultipartFile file) throws Exception {
+  // HashMap<String, String> map = new HashMap<String, String>();
+  // map.put("candidateDTORequestString", candidateDTORequestString);
+  // URI uri = generateURI("/candidate/insertNewCandidate", requestId, username, map);
+  // return invokePost(uri, MultipartFile.class, file);
+  // }
 
   public GdnRestSingleResponse<PositionDTOResponse> insertNewPosition(String requestId,
       String username, PositionDTORequest positionDTORequest) throws Exception {
@@ -261,13 +261,13 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     return invokePost(uri, ListStringRequest.class, idsRequest);
   }
 
-  public GdnBaseRestResponse updateCandidateDetail(String requestId, String username,
-      String idCandidate, MultipartFile file) throws Exception {
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put("idCandidate", idCandidate);
-    URI uri = generateURI("/candidate/updateCandidateDetail", requestId, username, map);
-    return invokePost(uri, MultipartFile.class, file);
-  }
+  // public GdnBaseRestResponse updateCandidateDetail(String requestId, String username,
+  // String idCandidate, MultipartFile file) throws Exception {
+  // HashMap<String, String> map = new HashMap<String, String>();
+  // map.put("idCandidate", idCandidate);
+  // URI uri = generateURI("/candidate/updateCandidateDetail", requestId, username, map);
+  // return invokePost(uri, MultipartFile.class, file);
+  // }
 
   public GdnBaseRestResponse updateCandidatesStatus(String requestId, String username,
       StatusDTORequest status, String idPosition, ListStringRequest idCandidates) throws Exception {
