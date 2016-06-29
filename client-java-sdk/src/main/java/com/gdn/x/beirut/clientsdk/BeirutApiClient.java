@@ -13,11 +13,7 @@ import com.gdn.common.web.wrapper.request.SimpleRequestHolder;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
-<<<<<<< HEAD
-=======
-import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
->>>>>>> b805c0523b2673d00638110fe7f06b84bb46db96
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.StatusDTORequest;
@@ -31,6 +27,8 @@ import com.gdn.x.beirut.dto.response.PositionDetailDTOResponse;
 
 public class BeirutApiClient extends GdnBaseRestCrudClient {
   private static final String JSON_TYPE = "application/json";
+  protected TypeReference<GdnBaseRestResponse> typeRef =
+      new TypeReference<GdnBaseRestResponse>() {};
 
   public BeirutApiClient(GdnRestClientConfiguration clientConfig, String contextPath) {
     super(clientConfig);
@@ -42,12 +40,8 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("idCandidate", idCandidate);
     URI uri = generateURI("/candidate/applyNewPosition", requestId, username, map);
-<<<<<<< HEAD
-    return invokePost(uri, ListStringRequest.class, listPositionIdStrings);
-=======
-    return invokePostType(uri, idCandidate, CandidateDTORequest.class,
-        MediaType.APPLICATION_JSON_VALUE, new TypeReference<GdnBaseRestResponse>() {});
->>>>>>> b805c0523b2673d00638110fe7f06b84bb46db96
+    return invokePostType(uri, listPositionIdStrings, ListStringRequest.class,
+        MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 
   public GdnBaseRestResponse deleteCandidate(String requestId, String username,
@@ -55,14 +49,14 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     SimpleRequestHolder request = new SimpleRequestHolder(idsRequest.toString());
     URI uri = generateURI("/candidate/deleteCandidate", requestId, username, null);
     return invokePostType(uri, request, ListStringRequest.class, MediaType.APPLICATION_JSON_VALUE,
-        new TypeReference<GdnBaseRestResponse>() {});
+        typeRef);
   }
 
   public GdnBaseRestResponse deletePosition(String requestId, String username,
       ListStringRequest idsToDelete) throws Exception {
     URI uri = generateURI("/position/deletePosition", requestId, username, null);
     return invokePostType(uri, idsToDelete, ListStringRequest.class,
-        MediaType.APPLICATION_JSON_VALUE, new TypeReference<GdnBaseRestResponse>() {});
+        MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 
   public GdnRestListResponse<CandidateDTOResponse> findCandidateByCreatedDateBetweenAndStoreId(
@@ -148,16 +142,6 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     return invokeGetSummary(uri, CandidateDTOResponse.class, MediaType.APPLICATION_JSON_VALUE);
   }
 
-<<<<<<< HEAD
-  public byte[] findCandidateDetailAndStoreId(String requestId, String username, String id)
-      throws Exception {
-    SimpleRequestHolder request = new SimpleRequestHolder(id);
-    URI uri = generateURI("/candidate/findCandidateDetailAndStoreId", requestId, username, null);
-    // return invokeGetSingle(uri, byte[].class, request);
-    return null;
-  }
-
-=======
   /*
    * // dipertanyakan // harusnya ngeluarin byte [] public byte[]
    * findCandidateDetailAndStoreId(String requestId, String username, String id) throws Exception {
@@ -165,10 +149,14 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
    * generateURI("/candidate/findCandidateDetailAndStoreId", requestId, username, null); return
    * invokeGetSingle(uri, byte[].class, request); }
    */
->>>>>>> b805c0523b2673d00638110fe7f06b84bb46db96
   private URI generateURI(String path, String requestId, String username,
       Map<String, String> additionalParameterMap) throws Exception {
     String location = getContextPath() + path;
+    // System.out.println(location + " %%"); DEBUG
+    // System.out.println(
+    // getClientConfig().getHost() + " " + getClientConfig().getPort() + " " + location + " "
+    // + getMandatoryParameter(requestId, username) + " " + additionalParameterMap.toString());
+    // DEBUG
     return getHttpClientHelper().getURI(getClientConfig().getHost(), getClientConfig().getPort(),
         location, getMandatoryParameter(requestId, username), additionalParameterMap);
   }
@@ -260,6 +248,10 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     return invokeGetSummary(uri, PositionDetailDTOResponse.class, MediaType.APPLICATION_JSON_VALUE);
   }
 
+  public TypeReference<GdnBaseRestResponse> getTypeRef() {
+    return typeRef;
+  }
+
   public GdnBaseRestResponse insertNewCandidate(String requestId, String username,
       String candidateDTORequestString, CandidateDetailDTORequest candidateDetailDTORequest)
           throws Exception {
@@ -267,7 +259,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     map.put("candidateDTORequestString", candidateDTORequestString);
     URI uri = generateURI("/candidate/insertNewCandidate", requestId, username, map);
     return invokePostType(uri, candidateDetailDTORequest, CandidateDetailDTORequest.class,
-        MediaType.APPLICATION_JSON_VALUE, new TypeReference<GdnBaseRestResponse>() {});
+        MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 
   public GdnBaseRestResponse insertNewPosition(String requestId, String username,
@@ -275,7 +267,11 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     URI uri = generateURI("/position/insertNewPosition", requestId, username, null);
     // System.out.println("INI PATHNYAAA :" + uri.toString());
     return invokePostType(uri, positionDTORequest, PositionDTORequest.class,
-        MediaType.APPLICATION_JSON_VALUE, new TypeReference<GdnBaseRestResponse>() {});
+        MediaType.APPLICATION_JSON_VALUE, typeRef);
+  }
+
+  public void setTypeRef(TypeReference<GdnBaseRestResponse> typeRef) {
+    this.typeRef = typeRef;
   }
 
   public GdnBaseRestResponse updateCandidateDetail(String requestId, String username,
@@ -284,7 +280,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     map.put("idCandidate", idCandidate);
     URI uri = generateURI("/candidate/updateCandidateDetail", requestId, username, map);
     return invokePostType(uri, candidateDetailDTORequest, CandidateDetailDTORequest.class,
-        MediaType.APPLICATION_JSON_VALUE, new TypeReference<GdnBaseRestResponse>() {});
+        MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 
   public GdnBaseRestResponse updateCandidatesStatus(String requestId, String username,
@@ -295,7 +291,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     map.put("idCandidates", String.valueOf(idCandidates));
     URI uri = generateURI("/candidate/updateCandidateStatus", requestId, username, map);
     return invokePostType(uri, idCandidates, ListStringRequest.class,
-        MediaType.APPLICATION_JSON_VALUE, new TypeReference<GdnBaseRestResponse>() {});
+        MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 
   public GdnBaseRestResponse updatePosition(String requestId, String username, String id,
@@ -304,11 +300,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     map.put("id", id);
     // map.put("positionDTORequest", String.valueOf(positionDTORequest));
     URI uri = generateURI("/position/updatePosition", requestId, username, map);
-<<<<<<< HEAD
-    return invokePost(uri, PositionDTOResponse.class, positionDTORequest);
-=======
     return invokePostType(uri, positionDTORequest, PositionDTOResponse.class,
-        MediaType.APPLICATION_JSON_VALUE, new TypeReference<GdnBaseRestResponse>() {});
->>>>>>> b805c0523b2673d00638110fe7f06b84bb46db96
+        MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 }
