@@ -1,5 +1,6 @@
 package com.gdn.x.beirut.clientsdk;
 
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -66,7 +67,7 @@ public class BeirutApiClientTest {
   @Before
   public void initialize() {
     initMocks(this);
-    this.beirutApiClient.setContextPath("/beirut/api");
+    this.beirutApiClient.setContextPath("beirut/api");
     when(this.clientConfig.getStoreId()).thenReturn(STORE_ID);
     when(this.clientConfig.getClientId()).thenReturn(CLIENT_ID);
     when(this.clientConfig.getHost()).thenReturn(HOST);
@@ -81,7 +82,7 @@ public class BeirutApiClientTest {
 
   @After
   public void noMoreTransaction() {
-    // verifyNoMoreInteractions(this.clientHelper);
+    verifyNoMoreInteractions(this.clientHelper);
   }
 
   @Test
@@ -106,15 +107,21 @@ public class BeirutApiClientTest {
     URI uri = builder.build();
     System.out.println(uri.toString());
 
+    System.out.println("getUri(" + HOST + "," + PORT + "," + CONTEXT_PATH + path + ","
+        + "MandatoryRequestParam.generateMandatoryRequestParam(" + STORE_ID + "," + CHANNEL_ID + ","
+        + CLIENT_ID + "," + REQUEST_ID + "," + USERNAME + "," + USERNAME + ")");
+
     when(
         this.clientHelper
             .getURI(HOST,
                 PORT, CONTEXT_PATH + path, MandatoryRequestParam.generateMandatoryRequestParam(
                     STORE_ID, CHANNEL_ID, CLIENT_ID, REQUEST_ID, USERNAME, USERNAME),
                 map)).thenReturn(uri);
-    // when(this.clientHelper.invokePost(uri, positionDTORequest, PositionDTOResponse.class,
-    // CONNECTION_TIMEOUT_IN_MS)).thenReturn(gdnBaseRestUpdatePosition);
-    // this.beirutApiClient.updatePosition(REQUEST_ID, USERNAME, ID, positionDTORequest);
+
+    when(this.clientHelper.invokePost(uri, positionDTORequest, PositionDTORequest.class,
+        CONNECTION_TIMEOUT_IN_MS)).thenReturn(gdnBaseRestUpdatePosition);
+
+    this.beirutApiClient.updatePosition(REQUEST_ID, USERNAME, ID, positionDTORequest);
 
   }
 

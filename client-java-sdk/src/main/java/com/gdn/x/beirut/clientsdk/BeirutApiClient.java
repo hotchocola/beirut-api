@@ -150,6 +150,19 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
   private URI generateURI(String path, String requestId, String username,
       Map<String, String> additionalParameterMap) throws Exception {
     String location = getContextPath() + path;
+    System.out.println("getUri(" + getClientConfig().getHost() + "," + getClientConfig().getPort()
+        + "," + location + "," + "getMandatoryParameter(" + requestId + "," + username + ") , "
+        + additionalParameterMap.toString() + ")");
+
+    // MandatoryRequestParam.generateMandatoryRequestParam(this.clientConfig.getStoreId(),
+    // this.clientConfig.getChannelId(), this.clientConfig.getClientId(), requestId, username,
+    // username);
+
+    System.out.println(
+        "MandatoryRequestParam.generateMandatoryRequestParam(" + this.getClientConfig().getStoreId()
+            + "," + getClientConfig().getChannelId() + "," + getClientConfig().getClientId() + ","
+            + "," + requestId + "," + username + "," + username + ")");
+
     return getHttpClientHelper().getURI(getClientConfig().getHost(), getClientConfig().getPort(),
         location, getMandatoryParameter(requestId, username), additionalParameterMap);
   }
@@ -285,6 +298,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     map.put("id", id);
     // map.put("positionDTORequest", String.valueOf(positionDTORequest));
     URI uri = generateURI("/position/updatePosition", requestId, username, map);
+    System.out.println(uri.toString() + "  %%  Debug sec");
     return invokePost(uri, PositionDTOResponse.class, positionDTORequest);
   }
 }

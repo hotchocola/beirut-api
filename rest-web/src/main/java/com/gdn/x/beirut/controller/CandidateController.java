@@ -484,7 +484,7 @@ public class CandidateController {
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "update candidate status",
-      notes = "Update satu atau lebih Status Candidate dengan Position yang diberikan (Jika punya) menjadi status yang diberikan")
+      notes = "Update satu atau lebih Status Candidate dengan Position yang diberikan (jika punya) menjadi status yang diberikan")
   @ResponseBody
   public GdnBaseRestResponse updateCandidatesStatus(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
