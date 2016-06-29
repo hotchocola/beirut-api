@@ -2,6 +2,9 @@ package com.gdn.x.beirut.clientsdk;
 
 public class BeirutApiPath {
   public static final String APPLY_NEW_POSITION = "/candidate/applyNewPosition";
+
+  public static final String DELETE_CANDIDATE = "/candidate/deleteCandidate";
+  public static final String DELETE_POSITION = "/position/deletePosition";
   public static final String FIND_CANDIDATE_BY_CREATED_DATE_BETWEEN_AND_STOREID =
       "/candidate/findCandidateByCreatedDateBetweenAndStoreId";
   public static final String FIND_CANDIDATE_BY_EMAIL_ADDRESS_AND_STOREID =

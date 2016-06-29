@@ -14,7 +14,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.gdn.common.client.GdnRestClientConfiguration;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
+import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
+import com.gdn.x.beirut.dto.request.StatusDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 
@@ -32,6 +34,8 @@ public class BeirutApiClientIT {
   private static final String USERNAME = "I_TEST_USER";
   private static final String REQUEST_ID = "ClientAPITest";
 
+
+  private long timestamp;
   private BeirutApiClient beirutApiClient;
   private List<String> positionIds;
   private List<String> positionIds1;
@@ -43,7 +47,7 @@ public class BeirutApiClientIT {
     beirutApiClient = new BeirutApiClient(new GdnRestClientConfiguration(USERNAME, PASSWORD, HOST,
         PORT, CLIENT_ID, CHANNEL_ID, STORE_ID), CONTEXT_PATH);
 
-    long timestamp = System.currentTimeMillis();
+    timestamp = System.currentTimeMillis();
     // Generate Position
     List<PositionDTORequest> positionDTORequests = new ArrayList<PositionDTORequest>();
     for (int i = 0; i < 5; i++) {
@@ -80,7 +84,6 @@ public class BeirutApiClientIT {
     }
     candidateDTORequestString =
         candidateDTORequestString.substring(0, candidateDTORequestString.length() - 1);
-    System.out.println("INI WOI : " + candidateDTORequestString);
     candidateDTORequestString += "]}";
 
     CandidateDetailDTORequest candidateDetailDTORequestDummy = new CandidateDetailDTORequest();
@@ -115,11 +118,55 @@ public class BeirutApiClientIT {
 
   @Test
   @Ignore
+  public void testApplyNewPosition() throws Exception {
+    String idCandidate = resultCandidate.getContent().get(0).getId();
+    ListStringRequest listPositionIdStrings = new ListStringRequest();
+    List<String> listString = new ArrayList<String>();
+    for (PositionDTOResponse positionDTOResponse : resultPosition.getContent()) {
+      if (positionDTOResponse.getTitle().equals("Software Developer Division 5 " + timestamp)) {
+        listString.add(positionDTOResponse.getId());
+      }
+    }
+    listPositionIdStrings.setValues(listString);
+    beirutApiClient.applyNewPosition(REQUEST_ID, USERNAME, idCandidate, listPositionIdStrings);
+  }
+
+  @Test
+  @Ignore
+  public void testUpdateCandidatesStatus() throws Exception {
+
+    String idPosition = "";
+    for (PositionDTOResponse positionDTOResponse : resultPosition.getContent()) {
+      if (positionDTOResponse.getTitle().equals("Software Developer Division 1 " + timestamp)) {
+        idPosition = positionDTOResponse.getId();
+        break;
+      }
+    }
+    StatusDTORequest status = StatusDTORequest.MEDICAL;
+    ListStringRequest listCandidateIdStrings = new ListStringRequest();
+    List<String> listString = new ArrayList<String>();
+    System.out.println("SIZE RESULTCANDIDATENYA WOI : " + resultCandidate.getContent().size());
+    for (CandidateDTOResponseWithoutDetail candidateDTOResponseWithoutDetail : resultCandidate
+        .getContent()) {
+      if (candidateDTOResponseWithoutDetail.getEmailAddress()
+          .equals("asda@egamail.com1" + timestamp)) {
+        listString.add(candidateDTOResponseWithoutDetail.getId());
+      }
+    }
+    listCandidateIdStrings.setValues(listString);
+    // System.out.println("ini idCandidatenya : " + idCandidate);
+    beirutApiClient.updateCandidatesStatus(REQUEST_ID, USERNAME, status, idPosition,
+        listCandidateIdStrings);
+  }
+
+  @Test
+  @Ignore
   public void testUpdatePosition() throws Exception {
     PositionDTORequest newPosition = new PositionDTORequest();
+    newPosition.setTitle("New Title" + timestamp);
     beirutApiClient.updatePosition(REQUEST_ID, USERNAME, positionIds.get(0), newPosition);
     GdnRestListResponse<PositionDTOResponse> result =
-        beirutApiClient.getPositionByTitle(REQUEST_ID, USERNAME, "New Title");
+        beirutApiClient.getPositionByTitle(REQUEST_ID, USERNAME, "New Title" + timestamp);
     Assert.assertTrue(result.getContent().size() == 1);
   }
 }
