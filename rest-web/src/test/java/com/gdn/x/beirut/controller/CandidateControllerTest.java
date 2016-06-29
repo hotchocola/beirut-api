@@ -161,11 +161,12 @@ public class CandidateControllerTest {
     GdnRestListResponse<CandidateDTOResponse> res = this.candidateController
         .findCandidateByCreatedDateBetweenAndStoreId(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
             USERNAME, start, end, Integer.parseInt(page), Integer.parseInt(size));
-    this.mockMVC.perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
-        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-        .param("username", USERNAME).param("start", startString).param("end", endString)
-        .param("page", page).param("size", size)).andExpect(status().isOk()).andReturn()
-        .equals(res);
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("start", startString)
+            .param("end", endString).param("page", page).param("size", size))
+        .andExpect(status().isOk()).andReturn().equals(res);
 
     GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
         candidateResponse, new PageMetaData(50, 0, candidateResponse.size()), REQUEST_ID);
@@ -280,12 +281,10 @@ public class CandidateControllerTest {
     Mockito
         .when(this.candidateService.searchByFirstNameContainAndStoreId("John", STORE_ID, pageable))
         .thenReturn(pageCandidate);
-    this.mockMVC
-        .perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
-            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
-            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("firstName", "John")
-            .param("page", page).param("size", size))
-        .andExpect(status().isOk());
+    this.mockMVC.perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
+        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+        .param("username", USERNAME).param("firstName", "John").param("page", page)
+        .param("size", size)).andExpect(status().isOk());
     GdnRestListResponse<CandidateDTOResponse> res = this.candidateController
         .findCandidateByFirstNameContainAndStoreId(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
             USERNAME, "John", Integer.parseInt(page), Integer.parseInt(size));;
@@ -301,12 +300,10 @@ public class CandidateControllerTest {
     Mockito
         .when(this.candidateService.searchByFirstNameContainAndStoreId("John", STORE_ID, pageable))
         .thenThrow(new Exception());
-    this.mockMVC
-        .perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
-            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
-            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("firstName", "John")
-            .param("page", page).param("size", size))
-        .andExpect(status().isOk());
+    this.mockMVC.perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
+        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+        .param("username", USERNAME).param("firstName", "John").param("page", page)
+        .param("size", size)).andExpect(status().isOk());
     GdnRestListResponse<CandidateDTOResponse> res = this.candidateController
         .findCandidateByFirstNameContainAndStoreId(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
             USERNAME, CHANNEL_ID, Integer.parseInt(page), Integer.parseInt(size));
@@ -350,10 +347,11 @@ public class CandidateControllerTest {
     position.setCandidatePositions(candPositions);
     Mockito.when(this.candidateService.getCandidateByIdAndStoreIdEager(ID, STORE_ID))
         .thenReturn(cand);
-    this.mockMVC.perform(MockMvcRequestBuilders.get(uri).accept(MediaType.APPLICATION_JSON)
-        .contentType(MediaType.APPLICATION_JSON).param("clientId", CLIENT_ID)
-        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-        .param("username", USERNAME).param("idCandidate", ID))
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.get(uri).accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("idCandidate", ID))
         .andExpect(MockMvcResultMatchers.status().isOk());
     this.candidateController.findCandidateByIdAndStoreIdEager(CLIENT_ID, STORE_ID, REQUEST_ID,
         CHANNEL_ID, USERNAME, ID);
@@ -370,9 +368,10 @@ public class CandidateControllerTest {
     Mockito.when(this.candidateService.getCandidateByIdAndStoreIdLazy(ID, STORE_ID))
         .thenReturn(cand);
 
-    this.mockMVC.perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
-        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-        .param("username", USERNAME).param("idCandidate", ID))
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("idCandidate", ID))
         .andExpect(MockMvcResultMatchers.status().isOk());
     this.candidateController.findCandidateByIdAndStoreIdLazy(CLIENT_ID, STORE_ID, REQUEST_ID,
         CHANNEL_ID, USERNAME, ID);
@@ -455,11 +454,9 @@ public class CandidateControllerTest {
     String uri = "/api/candidate/getAllCandidateDepr";
 
     Mockito.when(this.candidateService.getAllCandidates()).thenReturn(candidates);
-    this.mockMVC
-        .perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
-            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
-            .param("channelId", CHANNEL_ID).param("username", USERNAME))
-        .andExpect(status().isOk());
+    this.mockMVC.perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
+        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+        .param("username", USERNAME)).andExpect(status().isOk());
     GdnRestListResponse<CandidateDTOResponse> res = this.candidateController
         .getAllCandidate(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME);
     GdnRestListResponse<CandidateDTOResponse> expectedRes = new GdnRestListResponse<>(
@@ -612,6 +609,7 @@ public class CandidateControllerTest {
       candidatePosition.setCandidate(newCandidate);
       newCandidate.getCandidatePositions().add(candidatePosition);
       position.getCandidatePositions().add(candidatePosition);
+      newCandidate.setStoreId(STORE_ID);
     }
     Mockito.verify(candidateService, Mockito.times(2)).createNew(newCandidate, positionIds);
   }
@@ -619,7 +617,6 @@ public class CandidateControllerTest {
   @Test
   public void testInsertNewCandidateSwagger() throws Exception {
     String uri = "/api/candidate/insertNewCandidateSwagger";
-
 
     String candidateDTORequestString = FileUtils
         .readFileToString(new File("src/test/resources/JSON/candidateDTORequestString.txt"));
@@ -707,9 +704,10 @@ public class CandidateControllerTest {
     MockMultipartFile file =
         new MockMultipartFile("file", "file.txt", "multipart/form-data", inputFile);
     Mockito.when(this.candidateService.getCandidate(ID)).thenReturn(candidate);
-    this.mockMVC.perform(MockMvcRequestBuilders.fileUpload(uri).file(file)
-        .param("clientId", CLIENT_ID).param("storeId", STORE_ID).param("requestId", REQUEST_ID)
-        .param("channelId", CHANNEL_ID).param("username", USERNAME).param("idCandidate", ID))
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.fileUpload(uri).file(file).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("idCandidate", ID))
         .andExpect(status().isOk());
 
     this.candidateController.updateCandidateDetailSwagger(CLIENT_ID, STORE_ID, REQUEST_ID,
