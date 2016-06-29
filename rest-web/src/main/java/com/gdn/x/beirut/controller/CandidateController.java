@@ -166,7 +166,7 @@ public class CandidateController {
   public GdnRestSingleResponse<CandidateDTOResponse> findCandidateById(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
-      throws Exception {
+          throws Exception {
     Candidate candidate = this.candidateService.getCandidate(id);
     CandidateDTOResponse candres = getGdnMapper().deepCopy(candidate, CandidateDTOResponse.class);
     return new GdnRestSingleResponse<CandidateDTOResponse>(candres, requestId);
@@ -249,8 +249,6 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
-
-
   @RequestMapping(value = "findCandidateByPhoneNumberContainAndStoreId", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Find candidate by their phone number that much alike", notes = "")
@@ -259,7 +257,7 @@ public class CandidateController {
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username,
       @RequestParam String phoneNumber, @RequestParam int page, @RequestParam int size)
-      throws Exception {
+          throws Exception {
     Page<Candidate> candidates =
         this.candidateService.searchCandidateByPhoneNumberContainAndStoreId(phoneNumber, storeId,
             PageableHelper.generatePageable(page, size));
@@ -274,6 +272,7 @@ public class CandidateController {
   }
 
 
+
   @RequestMapping(value = "findCandidateDetailAndStoreId", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   @ApiOperation(value = "Mencari detail kandidat", notes = "")
@@ -281,7 +280,7 @@ public class CandidateController {
   public GdnRestSingleResponse<CandidateDetailDTOResponse> findCandidateDetailAndStoreId(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
-      throws Exception {
+          throws Exception {
     CandidateDetail candidate = this.candidateService.getCandidateDetailAndStoreId(id, storeId);
     CandidateDetailDTOResponse candetres =
         getGdnMapper().deepCopy(candidate, CandidateDetailDTOResponse.class);
@@ -292,6 +291,7 @@ public class CandidateController {
     // "Curriculum Vitae", MediaType.MULTIPART_FORM_DATA_VALUE, true, "CurriculumVitae"));
     // return candidate.getContent();
   }
+
 
   @RequestMapping(value = "findCandidateDetailAndStoreIdSwagger", method = RequestMethod.GET,
       produces = {"application/pdf", "application/msword", "image/jpeg", "text/plain"})
@@ -342,7 +342,7 @@ public class CandidateController {
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username,
       @RequestParam boolean markForDelete, @RequestParam int page, @RequestParam int size)
-      throws Exception {
+          throws Exception {
     Pageable pageable = PageableHelper.generatePageable(page, size);
     Page<Candidate> pages = this.candidateService
         .getAllCandidatesByStoreIdAndMarkForDeletePageable(storeId, markForDelete, pageable);
@@ -535,6 +535,25 @@ public class CandidateController {
     } catch (Exception e) {
       return new GdnBaseRestResponse(requestId);
     }
+  }
+
+  @RequestMapping(value = "updateCandidateInformation", method = RequestMethod.POST,
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Update Informasi kandidat", notes = "")
+  @ResponseBody
+  public GdnBaseRestResponse updateCandidateInformation(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestBody CandidateDTORequest candidateDTORequest)
+          throws Exception {
+    Candidate updatedCandidate = gdnMapper.deepCopy(candidateDTORequest, Candidate.class);
+    try {
+      boolean result = this.candidateService.updateCandidateInformation(updatedCandidate);
+      return new GdnBaseRestResponse(result);
+    } catch (Exception e) {
+      throw e;
+    }
+
   }
 
   @RequestMapping(value = "updateCandidateStatus", method = RequestMethod.POST,

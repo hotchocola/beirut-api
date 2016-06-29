@@ -148,6 +148,7 @@ public class CandidateControllerTest {
 
   }
 
+
   @Test
   public void searchByCreatedDateBetweenTest() throws Exception {
     String uri = "/api/candidate/findCandidateByCreatedDateBetweenAndStoreId";
@@ -467,7 +468,6 @@ public class CandidateControllerTest {
     Mockito.verify(this.candidateService, Mockito.times(2)).getAllCandidates();
   }
 
-
   @Test
   public void testGetAllCandidateByStoreIdAndMarkForDeleteWithPageable() throws Exception {
     String uri = "/api/candidate/getAllCandidatesByStoreIdAndMarkForDeleteWithPageable";
@@ -498,6 +498,7 @@ public class CandidateControllerTest {
     Mockito.verify(this.candidateService, Mockito.times(2))
         .getAllCandidatesByStoreIdAndMarkForDeletePageable(STORE_ID, false, pageable);
   }
+
 
   @Test
   public void testGetAllCandidateByStoreIdWithPageable() throws Exception {
@@ -662,7 +663,6 @@ public class CandidateControllerTest {
     Mockito.verify(candidateService, Mockito.times(2)).createNew(newCandidate, positionIds);
   }
 
-
   @Test
   public void testUpdateCandidateDetail() throws Exception {
     String uri = "/api/candidate/updateCandidateDetail";
@@ -695,6 +695,7 @@ public class CandidateControllerTest {
 
   }
 
+
   @Test
   public void testUpdateCandidateDetailSwagger() throws Exception {
     String uri = "/api/candidate/updateCandidateDetailSwagger";
@@ -720,6 +721,33 @@ public class CandidateControllerTest {
     Mockito.verify(this.candidateService, Mockito.times(2)).updateCandidateDetail(STORE_ID,
         updatedCandidate);
 
+  }
+
+  @Test
+  public void testUpdateCandidateInformation() throws Exception {
+    String uri = "/api/candidate/updateCandidateInformation";
+    CandidateDTORequest newCandidateDTORequest = new CandidateDTORequest();
+    newCandidateDTORequest.setId(ID);
+    String UPDATED = "Updated";
+    newCandidateDTORequest.setEmailAddress(EMAIL + UPDATED);
+    String FIRST_NAME_UPDATED = "FirstNameUpdated";
+    newCandidateDTORequest.setFirstName(FIRST_NAME_UPDATED);
+    String LAST_NAME_UPDATED = "LastNameUpdated";
+    newCandidateDTORequest.setLastName(LAST_NAME_UPDATED);
+    String newCandidateDTORequestString = objectMapper.writeValueAsString(newCandidateDTORequest);
+    Candidate newCandidateInformation = gdnMapper.deepCopy(newCandidateDTORequest, Candidate.class);
+    Mockito.when(this.candidateService.updateCandidateInformation(newCandidateInformation))
+        .thenReturn(true);
+    this.mockMVC.perform(MockMvcRequestBuilders.post(uri).accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON).param("clientId", CLIENT_ID)
+        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
+        .param("username", USERNAME).content(newCandidateDTORequestString))
+        .andExpect(status().isOk());
+
+    this.candidateController.updateCandidateInformation(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
+        USERNAME, newCandidateDTORequest);
+    Mockito.verify(this.candidateService, Mockito.times(2))
+        .updateCandidateInformation(newCandidateInformation);
   }
 
   @Test

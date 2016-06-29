@@ -354,6 +354,26 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
+  public boolean updateCandidateInformation(Candidate newCandidateInformation)
+      throws ApplicationException {
+    Candidate existingCandidate = candidateDAO.findOne(newCandidateInformation.getId());
+    newCandidateInformation.setId(existingCandidate.getId());
+    if (existingCandidate == null || existingCandidate.getId().equals("")) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "Candidate not found");
+    }
+    if (!existingCandidate.getStoreId().equals(newCandidateInformation.getStoreId())) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+          "Candidate exist but storeId not match");
+    }
+    existingCandidate.setEmailAddress(newCandidateInformation.getEmailAddress());
+    existingCandidate.setFirstName(newCandidateInformation.getFirstName());
+    existingCandidate.setLastName(newCandidateInformation.getLastName());
+    existingCandidate.setPhoneNumber(newCandidateInformation.getPhoneNumber());
+    this.candidateDAO.save(existingCandidate);
+    return true;
+  }
+
+  @Override
   @Transactional(readOnly = false)
   public void updateCandidateStatus(String storeId, String idCandidate, String idPosition,
       Status status) throws Exception {
