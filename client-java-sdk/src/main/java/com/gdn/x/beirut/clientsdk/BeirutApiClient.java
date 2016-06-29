@@ -13,7 +13,6 @@ import com.gdn.common.web.wrapper.request.SimpleRequestHolder;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
-import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
@@ -40,7 +39,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     map.put("idCandidate", idCandidate);
     map.put("listPositionIdStrings", String.valueOf(listPositionIdStrings));
     URI uri = generateURI("/candidate/applyNewPosition", requestId, username, map);
-    return invokePostType(uri, idCandidate, CandidateDTORequest.class,
+    return invokePostType(uri, listPositionIdStrings, ListStringRequest.class,
         MediaType.APPLICATION_JSON_VALUE, new TypeReference<GdnBaseRestResponse>() {});
   }
 
