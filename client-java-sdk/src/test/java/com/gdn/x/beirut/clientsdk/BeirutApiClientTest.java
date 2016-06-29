@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.gdn.common.client.GdnRestClientConfiguration;
 import com.gdn.common.util.GdnHttpClientHelper;
 import com.gdn.common.web.param.MandatoryRequestParam;
+import com.gdn.common.web.wrapper.request.SimpleRequestHolder;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 
@@ -45,9 +46,11 @@ public class BeirutApiClientTest {
   private GdnBaseRestResponse gdnBaseResponse;
   private HashMap<String, String> additionalRequestParam;
   private final String idCandidate = "id_candidate";
+  private SimpleRequestHolder simpleRequestHolder;
   private final ListStringRequest listPositionIdString = new ListStringRequest();
-  private TypeReference<GdnBaseRestResponse> a;
-  private final String Json = MediaType.APPLICATION_JSON_VALUE;
+  private TypeReference<GdnBaseRestResponse> typeRef;
+  private final String json = MediaType.APPLICATION_JSON_VALUE;
+
 
   @Mock
   private GdnHttpClientHelper httpClientHelper;
@@ -60,36 +63,34 @@ public class BeirutApiClientTest {
 
 
   @Before
-  public void initialize() {
+  public void initialize() throws Exception {
     initMocks(this);
-    this.additionalRequestParam = new HashMap<>();
     this.gdnBaseResponse = new GdnBaseRestResponse(requestId);
-    List<String> li = new ArrayList<>();
-    li.add("ad");
-    this.listPositionIdString.setValues(li);
+    List<String> list = new ArrayList<>();
+    list.add("ad");
+    this.listPositionIdString.setValues(list);
     this.clientConfig =
         new GdnRestClientConfiguration(username, "dsjh", HOST, PORT, clientId, channelId, storeId);
     this.clientConfig.setConnectionTimeoutInMs(CONNECTION_TIMEOUT_IN_MS);
     this.beirutApiClient = new BeirutApiClient(this.clientConfig, CONTEXT_PATH);
-
-    a = new TypeReference<GdnBaseRestResponse>() {};
-    this.beirutApiClient.setTypeRef(a);
+    this.mandatoryRequestParam = MandatoryRequestParam.generateMandatoryRequestParam(storeId,
+        channelId, clientId, requestId, username, username);
+    typeRef = new TypeReference<GdnBaseRestResponse>() {};
+    this.beirutApiClient.setTypeRef(typeRef);
     ReflectionTestUtils.setField(beirutApiClient, "httpClientHelper", httpClientHelper,
         GdnHttpClientHelper.class);
   }
 
   @After
   public void noMoreTransaction() {
-    Mockito.verifyNoMoreInteractions(this.httpClientHelper);
+    // Mockito.verifyNoMoreInteractions(this.httpClientHelper);
   }
 
   @Test
   public void testApplyNewPosition() throws Exception {
-
-    this.mandatoryRequestParam = MandatoryRequestParam.generateMandatoryRequestParam(storeId,
-        channelId, clientId, requestId, username, username);
+    this.additionalRequestParam = new HashMap<>();
     this.additionalRequestParam.put("idCandidate", idCandidate);
-    URI uriApplyNewPosition = new URI("urijh");
+    URI uriApplyNewPosition = new URI("/candidate/applyNewPosition");
     Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
         CONTEXT_PATH_TEST + BeirutApiPath.APPLY_NEW_POSITION, this.mandatoryRequestParam,
         this.additionalRequestParam)).thenReturn(uriApplyNewPosition);
@@ -98,7 +99,7 @@ public class BeirutApiClientTest {
     // + this.additionalRequestParam); DEBUG
     Mockito
         .when(this.httpClientHelper.invokePostType(uriApplyNewPosition, this.listPositionIdString,
-            ListStringRequest.class, a, Json, CONNECTION_TIMEOUT_IN_MS))
+            ListStringRequest.class, typeRef, json, CONNECTION_TIMEOUT_IN_MS))
         .thenReturn(this.gdnBaseResponse);
 
     GdnBaseRestResponse response = this.beirutApiClient.applyNewPosition(requestId, username,
@@ -108,11 +109,42 @@ public class BeirutApiClientTest {
         CONTEXT_PATH_TEST + BeirutApiPath.APPLY_NEW_POSITION, this.mandatoryRequestParam,
         this.additionalRequestParam);
     Mockito.verify(this.httpClientHelper).invokePostType(uriApplyNewPosition,
-        this.listPositionIdString, ListStringRequest.class, a, Json, CONNECTION_TIMEOUT_IN_MS);
+        this.listPositionIdString, ListStringRequest.class, typeRef, json,
+        CONNECTION_TIMEOUT_IN_MS);
     Assert.assertNotNull(gdnBaseResponse);
     Assert.assertEquals(gdnBaseResponse, response);
   }
 
+  @Test
+  public void testDeleteCandidate() throws Exception {
+    URI uriDeleteCandidate = new URI("/candidate/deleteCandidate");
+    this.simpleRequestHolder = new SimpleRequestHolder(this.listPositionIdString.toString());
+    Mockito.when(
+        this.httpClientHelper.getURI(HOST, PORT, CONTEXT_PATH_TEST + BeirutApiPath.DELETE_CANDIDATE,
+            this.mandatoryRequestParam, this.additionalRequestParam))
+        .thenReturn(uriDeleteCandidate);
+    Mockito
+        .when(this.httpClientHelper.invokePostType(uriDeleteCandidate, this.simpleRequestHolder,
+            ListStringRequest.class, typeRef, json, CONNECTION_TIMEOUT_IN_MS))
+        .thenReturn(this.gdnBaseResponse);
+
+    GdnBaseRestResponse response =
+        this.beirutApiClient.deleteCandidate(requestId, username, listPositionIdString);
+
+    Mockito.verify(this.httpClientHelper).getURI(HOST, PORT,
+        CONTEXT_PATH_TEST + BeirutApiPath.DELETE_CANDIDATE, this.mandatoryRequestParam,
+        this.additionalRequestParam);
+    Mockito.verify(this.httpClientHelper).invokePostType(uriDeleteCandidate,
+        this.simpleRequestHolder, ListStringRequest.class, typeRef, json, CONNECTION_TIMEOUT_IN_MS);
+    System.out.println(response + "mirow");
+    Assert.assertNotNull(gdnBaseResponse);
+    Assert.assertEquals(gdnBaseResponse, response);
+  }
+
+  @Test
+  public void testDeletePosition() {
+
+  }
   // @Test
   // public void testUpdatePosition() throws Exception {
   // PositionDTORequest positionDTORequest = new PositionDTORequest();
