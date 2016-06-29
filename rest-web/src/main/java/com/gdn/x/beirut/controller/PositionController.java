@@ -17,7 +17,6 @@ import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.common.web.param.PageableHelper;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
-import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
@@ -157,19 +156,20 @@ public class PositionController {
   }
 
   @RequestMapping(value = "insertNewPosition", method = RequestMethod.POST,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "insert new position", notes = "memasukan posisi baru.")
   @ResponseBody
-  public GdnRestSingleResponse<PositionDTOResponse> insertNewPosition(@RequestParam String clientId,
+  public GdnBaseRestResponse insertNewPosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestBody PositionDTORequest positionDTORequest) {
     Position temp = this.gdnMapper.deepCopy(positionDTORequest, Position.class);
     temp.setStoreId(storeId);
     Position result = this.positionService.insertNewPosition(temp);
-    PositionDTOResponse positionDTOResponse =
-        this.gdnMapper.deepCopy(result, PositionDTOResponse.class);
-    return new GdnRestSingleResponse<PositionDTOResponse>(positionDTOResponse, requestId);
+    if (result.getId() == null) {
+      return new GdnBaseRestResponse(false);
+    }
+    return new GdnBaseRestResponse(requestId);
   }
 
   public void setGdnMapper(GdnMapper gdnMapper) {
