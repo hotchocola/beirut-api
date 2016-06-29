@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gdn.common.client.GdnRestClientConfiguration;
 import com.gdn.common.web.client.GdnBaseRestCrudClient;
-import com.gdn.common.web.wrapper.request.SimpleRequestHolder;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
@@ -41,19 +40,14 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     map.put("idCandidate", idCandidate);
     URI uri = generateURI("/candidate/applyNewPosition", requestId, username, map);
     return invokePostType(uri, listPositionIdStrings, ListStringRequest.class,
-<<<<<<< HEAD
         MediaType.APPLICATION_JSON_VALUE, typeRef);
-=======
-        MediaType.APPLICATION_JSON_VALUE, new TypeReference<GdnBaseRestResponse>() {});
->>>>>>> 45203cd9ae6235342883aab4f0c6faaddcb55325
   }
 
   public GdnBaseRestResponse deleteCandidate(String requestId, String username,
       ListStringRequest idsRequest) throws Exception {
-    SimpleRequestHolder request = new SimpleRequestHolder(idsRequest.toString());
     URI uri = generateURI("/candidate/deleteCandidate", requestId, username, null);
-    return invokePostType(uri, request, ListStringRequest.class, MediaType.APPLICATION_JSON_VALUE,
-        typeRef);
+    return invokePostType(uri, idsRequest, ListStringRequest.class,
+        MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 
   public GdnBaseRestResponse deletePosition(String requestId, String username,

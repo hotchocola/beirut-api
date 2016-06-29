@@ -1,9 +1,5 @@
 package com.gdn.x.beirut.clientsdk;
 
-<<<<<<< HEAD
-public class BeirutApiClientIT {
-
-=======
 import java.util.ArrayList;
 import java.util.List;
 
@@ -172,5 +168,4 @@ public class BeirutApiClientIT {
         beirutApiClient.getPositionByTitle(REQUEST_ID, USERNAME, "New Title" + timestamp);
     Assert.assertTrue(result.getContent().size() == 1);
   }
->>>>>>> b805c0523b2673d00638110fe7f06b84bb46db96
 }
