@@ -46,7 +46,7 @@ public class BeirutApiClientTest {
   private HashMap<String, String> additionalRequestParam;
   private final String idCandidate = "id_candidate";
   private final ListStringRequest listPositionIdString = new ListStringRequest();
-  private TypeReference<GdnBaseRestResponse> a;
+  private TypeReference<GdnBaseRestResponse> typeRef;
   private final String Json = MediaType.APPLICATION_JSON_VALUE;
 
   @Mock
@@ -85,8 +85,8 @@ public class BeirutApiClientTest {
     this.clientConfig.setConnectionTimeoutInMs(CONNECTION_TIMEOUT_IN_MS);
     this.beirutApiClient = new BeirutApiClient(this.clientConfig, CONTEXT_PATH);
 
-    a = new TypeReference<GdnBaseRestResponse>() {};
-    this.beirutApiClient.setTypeRef(a);
+    typeRef = new TypeReference<GdnBaseRestResponse>() {};
+    this.beirutApiClient.setTypeRef(typeRef);
     ReflectionTestUtils.setField(beirutApiClient, "httpClientHelper", httpClientHelper,
         GdnHttpClientHelper.class);
     // >>>>>>> eed1ab1993304e9749b107cb67d980bbeee671c3
@@ -113,7 +113,7 @@ public class BeirutApiClientTest {
     // + this.additionalRequestParam); DEBUG
     Mockito
         .when(this.httpClientHelper.invokePostType(uriApplyNewPosition, this.listPositionIdString,
-            ListStringRequest.class, a, Json, CONNECTION_TIMEOUT_IN_MS))
+            ListStringRequest.class, typeRef, Json, CONNECTION_TIMEOUT_IN_MS))
         .thenReturn(this.gdnBaseResponse);
 
     GdnBaseRestResponse response = this.beirutApiClient.applyNewPosition(requestId, username,
@@ -123,9 +123,15 @@ public class BeirutApiClientTest {
         CONTEXT_PATH_TEST + BeirutApiPath.APPLY_NEW_POSITION, this.mandatoryRequestParam,
         this.additionalRequestParam);
     Mockito.verify(this.httpClientHelper).invokePostType(uriApplyNewPosition,
-        this.listPositionIdString, ListStringRequest.class, a, Json, CONNECTION_TIMEOUT_IN_MS);
+        this.listPositionIdString, ListStringRequest.class, typeRef, Json, CONNECTION_TIMEOUT_IN_MS);
     Assert.assertNotNull(gdnBaseResponse);
     Assert.assertEquals(gdnBaseResponse, response);
+  }
+  
+  @Test
+  public void testUpdatePosition(){
+	  
+//	  this.beirutApiClient.updatePosition(requestId, username, id, positionDTORequest)
   }
 
   // @Test
