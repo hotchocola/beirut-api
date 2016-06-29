@@ -12,7 +12,6 @@ import com.gdn.common.web.wrapper.request.SimpleRequestHolder;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
-import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.StatusDTORequest;
@@ -36,9 +35,8 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
       ListStringRequest listPositionIdStrings) throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("idCandidate", idCandidate);
-    map.put("listPositionIdStrings", String.valueOf(listPositionIdStrings));
     URI uri = generateURI("/candidate/applyNewPosition", requestId, username, map);
-    return invokePost(uri, CandidateDTORequest.class, idCandidate);
+    return invokePost(uri, ListStringRequest.class, listPositionIdStrings);
   }
 
   public GdnBaseRestResponse deleteCandidate(String requestId, String username,
@@ -79,6 +77,17 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
   }
 
   public GdnRestListResponse<CandidateDTOResponse> findCandidateByFirstNameContainAndStoreId(
+      String requestId, String username, String firstName, int page, int size) throws Exception {
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put("firstName", firstName);
+    map.put("page", String.valueOf(page));
+    map.put("size", String.valueOf(size));
+    URI uri = generateURI("/api/candidate/findCandidateByFirstNameContainAndStoreId", requestId,
+        username, map);
+    return invokeGetSummary(uri, CandidateDTOResponse.class);
+  }
+
+  public GdnRestListResponse<CandidateDTOResponse> findCandidateByFirstNameContainAndStoreId1(
       String requestId, String username, String firstName, int page, int size) throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("firstName", firstName);
@@ -263,8 +272,8 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
       PositionDTORequest positionDTORequest) throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("id", id);
-    map.put("positionDTORequest", String.valueOf(positionDTORequest));
+    // map.put("positionDTORequest", String.valueOf(positionDTORequest));
     URI uri = generateURI("/position/updatePosition", requestId, username, map);
-    return invokePostSingle(uri, PositionDTOResponse.class);
+    return invokePost(uri, PositionDTOResponse.class, positionDTORequest);
   }
 }

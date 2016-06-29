@@ -119,6 +119,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.2.3</version>
@@ -133,9 +137,23 @@
       <artifactId>httpmime</artifactId>
       <version>4.2.3</version>
     </dependency>
+<<<<<<< HEAD
      <dependency>
       <groupId>com.gdn.x.beirut</groupId>
       <artifactId>beirut-dao-jpa</artifactId>
     </dependency>
+=======
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+	    <groupId>commons-io</groupId>
+	    <artifactId>commons-io</artifactId>
+	    <version>2.5</version>
+	</dependency>
+	
+>>>>>>> ed123671c285709e19aae2472f8732d2386cc9e8
   </dependencies>
 </project>
