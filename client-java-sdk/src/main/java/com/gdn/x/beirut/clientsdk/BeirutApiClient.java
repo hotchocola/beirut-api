@@ -41,7 +41,11 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     map.put("idCandidate", idCandidate);
     URI uri = generateURI("/candidate/applyNewPosition", requestId, username, map);
     return invokePostType(uri, listPositionIdStrings, ListStringRequest.class,
+<<<<<<< HEAD
         MediaType.APPLICATION_JSON_VALUE, typeRef);
+=======
+        MediaType.APPLICATION_JSON_VALUE, new TypeReference<GdnBaseRestResponse>() {});
+>>>>>>> 45203cd9ae6235342883aab4f0c6faaddcb55325
   }
 
   public GdnBaseRestResponse deleteCandidate(String requestId, String username,
