@@ -71,6 +71,7 @@ public class BeirutApiClientTest {
   public void initialize() throws Exception {
     initMocks(this);
     this.gdnBaseResponse = new GdnBaseRestResponse(REQUEST_ID);
+    List<String> list = new ArrayList<String>();
     list.add("ad");
     this.listPositionIdString.setValues(list);
     this.clientConfig = new GdnRestClientConfiguration(USERNAME, PASSWORD, HOST, PORT, CLIENT_ID,
@@ -92,6 +93,7 @@ public class BeirutApiClientTest {
 
   @Test
   public void testApplyNewPosition() throws Exception {
+    this.additionalRequestParam = new HashMap<String, String>();
     this.additionalRequestParam.put("idCandidate", ID_CANDIDATE);
     URI uriApplyNewPosition = new URI("/candidate/applyNewPosition");
     Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
@@ -168,41 +170,4 @@ public class BeirutApiClientTest {
     Assert.assertEquals(gdnBaseResponse, response);
   }
 
-
-  // @Test
-  // public void testUpdatePosition() throws Exception {
-  // PositionDTORequest positionDTORequest = new PositionDTORequest();
-  // positionDTORequest.setTitle(TITLE);
-  // GdnBaseRestResponse gdnBaseRestUpdatePosition = new GdnBaseRestResponse(requestId);
-  //
-  // String path = "/position/updatePosition";
-  // Map<String, String> map = new HashMap<String, String>();
-  // map.put("id", ID);
-  //
-  // URIBuilder builder = new URIBuilder().setScheme("http")
-  // .setHost(HOST.replace("http" + "://", "")).setPath(CONTEXT_PATH + path).setPort(PORT)
-  // .addParameter(GdnMandatoryRequestParameterUtil.STORE_ID_KEY_PARAMETER, storeId)
-  // .addParameter(GdnMandatoryRequestParameterUtil.CHANNEL_ID_KEY_PARAMETER, channelId)
-  // .addParameter(GdnMandatoryRequestParameterUtil.REQUEST_ID_KEY_PARAMETER, requestId)
-  // .addParameter(GdnMandatoryRequestParameterUtil.CLIENT_ID_KEY_PARAMETER, clientId)
-  // .addParameter(GdnMandatoryRequestParameterUtil.USERNAME_KEY_PARAMETER, username)
-  // .addParameter(GdnMandatoryRequestParameterUtil.AUTHENTICATOR_KEY, authenticator)
-  // .addParameter("id", ID);
-  // URI uri = builder.build();
-  // System.out.println(uri.toString());
-  //
-  // Mockito
-  // .when(
-  // this.httpClientHelper.getURI(HOST,
-  // PORT, CONTEXT_PATH + path, MandatoryRequestParam.generateMandatoryRequestParam(
-  // storeId, channelId, clientId, requestId, username, username),
-  // map))
-  // .thenReturn(uri);
-  // PositionDTORequest r = new PositionDTORequest();
-  // r.setTitle("title");
-  // Mockito.when(this.httpClientHelper.invokePost(uri, positionDTORequest,
-  // PositionDTOResponse.class, CONNECTION_TIMEOUT_IN_MS)).thenReturn(gdnBaseRestUpdatePosition);
-  // this.beirutApiClient.updatePosition(requestId, username, ID, r);
-  //
-  // }
 }
