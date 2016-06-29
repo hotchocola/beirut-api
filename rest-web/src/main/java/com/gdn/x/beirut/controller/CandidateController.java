@@ -30,6 +30,7 @@ import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
+import com.gdn.x.beirut.dto.request.StatusDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
@@ -78,7 +79,6 @@ public class CandidateController {
     } catch (Exception e) {
       return new GdnBaseRestResponse(e.getMessage(), "", false, requestId);
     }
-
   }
 
   @RequestMapping(value = "deleteCandidate", method = RequestMethod.POST,
@@ -564,13 +564,16 @@ public class CandidateController {
   @ResponseBody
   public GdnBaseRestResponse updateCandidatesStatus(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestParam Status status, @RequestParam String idPosition,
-      @RequestBody ListStringRequest idCandidates) throws Exception {
+      @RequestParam String username, @RequestParam StatusDTORequest status,
+      @RequestParam String idPosition, @RequestBody ListStringRequest idCandidates)
+          throws Exception {
     // CandidateMapper.map(idCandidates, position, objectWrapper, dozerMapper);
     // System.out.println(objectWrapper.toString());
     // System.out.println(idCandidates.get(0)); // DEBUG
+    Status _status = Status.APPLY;
+    CandidateMapper.statusEnumMap(status, _status);
     this.candidateService.updateCandidateStatusBulk(storeId, idCandidates.getValues(), idPosition,
-        status);
+        _status);
     return new GdnBaseRestResponse(true);
   }
 }

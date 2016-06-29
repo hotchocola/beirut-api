@@ -39,6 +39,7 @@ import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
+import com.gdn.x.beirut.dto.request.StatusDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
@@ -770,7 +771,7 @@ public class CandidateControllerTest {
         .andExpect(MockMvcResultMatchers.status().isOk());
 
     this.candidateController.updateCandidatesStatus(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
-        USERNAME, Status.APPLY, idPosition, newListStringRequest);
+        USERNAME, StatusDTORequest.APPLY, idPosition, newListStringRequest);
 
     Mockito.verify(this.candidateService, Mockito.times(2)).updateCandidateStatusBulk(STORE_ID,
         idCandidates, idPosition, Status.APPLY);
