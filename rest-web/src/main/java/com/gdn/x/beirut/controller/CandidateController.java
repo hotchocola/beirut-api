@@ -35,7 +35,6 @@ import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.StatusDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
-import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionSolrDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateWithPositionsDTOResponse;
@@ -274,33 +273,11 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
-
-
   @RequestMapping(value = "findCandidateDetailAndStoreId", method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  @ApiOperation(value = "Mencari detail kandidat", notes = "")
-  @ResponseBody
-  public GdnRestSingleResponse<CandidateDetailDTOResponse> findCandidateDetailAndStoreId(
-      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
-      @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
-          throws Exception {
-    CandidateDetail candidate = this.candidateService.getCandidateDetailAndStoreId(id, storeId);
-    CandidateDetailDTOResponse candetres =
-        getGdnMapper().deepCopy(candidate, CandidateDetailDTOResponse.class);
-    return new GdnRestSingleResponse<CandidateDetailDTOResponse>(candetres, requestId);
-    // File file = new File("");
-    // FileUtils.writeByteArrayToFile(file, candidate.getContent());
-    // return new CommonsMultipartFile(new DiskFileItemFactory(12000, file).createItem(
-    // "Curriculum Vitae", MediaType.MULTIPART_FORM_DATA_VALUE, true, "CurriculumVitae"));
-    // return candidate.getContent();
-  }
-
-
-  @RequestMapping(value = "findCandidateDetailAndStoreIdSwagger", method = RequestMethod.GET,
       produces = {"application/pdf", "application/msword", "image/jpeg", "text/plain"})
   @ApiOperation(value = "Mencari detail kandidat", notes = "")
   @ResponseBody
-  public byte[] findCandidateDetailAndStoreIdSwagger(@RequestParam String clientId,
+  public byte[] findCandidateDetailAndStoreId(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestParam String id) throws Exception {
     CandidateDetail candidate = this.candidateService.getCandidateDetailAndStoreId(id, storeId);
@@ -429,40 +406,11 @@ public class CandidateController {
   }
 
   @RequestMapping(value = "insertNewCandidate", method = RequestMethod.POST,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
-      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "Insert new Candidate", notes = "memasukan kandidat baru.")
-  @ResponseBody
-  public GdnBaseRestResponse insertNewCandidate(@RequestParam String clientId,
-      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestParam String candidateDTORequestString,
-      @RequestBody CandidateDetailDTORequest file) throws Exception {
-    if (file == null || file.getContent().length == 0) {
-      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER,
-          "file content mustbe present");
-    }
-    CandidateDTORequest candidateDTORequest =
-        objectMapper.readValue(candidateDTORequestString, CandidateDTORequest.class);
-    Candidate newCandidate = getGdnMapper().deepCopy(candidateDTORequest, Candidate.class);
-    CandidateDetail candidateDetail = new CandidateDetail();
-    candidateDetail.setContent(file.getContent());
-    candidateDetail.setCandidate(newCandidate);
-    newCandidate.setCandidateDetail(candidateDetail);
-    newCandidate.setStoreId(storeId);
-    Candidate existingCandidate =
-        this.candidateService.createNew(newCandidate, candidateDTORequest.getPositionIds());
-    if (existingCandidate.getId() == null) {
-      return new GdnBaseRestResponse(false);
-    }
-    return new GdnBaseRestResponse(requestId);
-  }
-
-  @RequestMapping(value = "insertNewCandidateSwagger", method = RequestMethod.POST,
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Insert new Candidate", notes = "memasukan kandidat baru.")
   @ResponseBody
-  public GdnBaseRestResponse insertNewCandidateSwagger(@RequestParam String clientId,
+  public GdnBaseRestResponse insertNewCandidate(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestParam String candidateDTORequestString,
       @RequestPart MultipartFile file) throws Exception {
