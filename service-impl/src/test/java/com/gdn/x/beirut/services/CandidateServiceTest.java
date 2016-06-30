@@ -859,6 +859,20 @@ public class CandidateServiceTest {
     verify(this.candidateDao, times(1)).save(Mockito.any(Candidate.class));
   }
 
+  @Test
+  public void testUpdateCandidateInformation() throws Exception {
+    Candidate newCandidateInformation = new Candidate();
+    String UPDATED = "Updated";
+    newCandidateInformation.setId(ID);
+    newCandidateInformation.setFirstName(FIRST_NAME + UPDATED);
+    newCandidateInformation.setLastName(LAST_NAME + UPDATED);
+    newCandidateInformation.setStoreId(STORE_ID);
+    when(this.candidateDao.findOne(newCandidateInformation.getId())).thenReturn(this.candidate);
+    boolean result = this.candidateService.updateCandidateInformation(newCandidateInformation);
+    verify(this.candidateDao, times(1)).findOne(ID);
+    verify(this.candidateDao, times(1)).save(Mockito.any(Candidate.class));
+    Assert.assertTrue(result);
+  }
 
   @Test
   public void testUpdateCandidateStatus() throws Exception {

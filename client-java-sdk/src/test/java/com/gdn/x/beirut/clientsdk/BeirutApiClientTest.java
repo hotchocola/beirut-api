@@ -138,7 +138,6 @@ public class BeirutApiClientTest {
         .readFileToString(new File("src/test/resources/JSON/applyNewPositionRequest.json"));
     ApplyNewPositionModelDTORequest applyNewPositionModelDTORequest = objectMapper
         .readValue(applyNewPositionModelStringJson, ApplyNewPositionModelDTORequest.class);
-
     URI uriApplyNewPosition = new URI("/candidate/applyNewPosition");
     Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
         CONTEXT_PATH_TEST + BeirutApiPath.APPLY_NEW_POSITION, this.mandatoryRequestParam,

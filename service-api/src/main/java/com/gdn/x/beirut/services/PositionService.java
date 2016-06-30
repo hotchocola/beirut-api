@@ -9,23 +9,23 @@ import com.gdn.x.beirut.entities.Position;
 
 public interface PositionService {
 
-  List<Position> getAllPositionByStoreId(String storeId);
+  public List<Position> getAllPositionByStoreId(String storeId);
 
-  Page<Position> getAllPositionByStoreIdWithPageable(String storeId, Pageable pageable);
+  public Page<Position> getAllPositionByStoreIdWithPageable(String storeId, Pageable pageable);
 
-  Position getPosition(String storeId, String positionId) throws Exception;
+  public Position getPosition(String storeId, String positionId) throws Exception;
 
-  List<Position> getPositionByIds(List<String> positionIds);
+  public List<Position> getPositionByIds(List<String> positionIds);
 
-  List<Position> getPositionByStoreIdAndMarkForDelete(String storeId, boolean markForDelete);
+  public List<Position> getPositionByStoreIdAndMarkForDelete(String storeId, boolean markForDelete);
 
-  List<Position> getPositionByTitle(String title, String storeId);
+  public List<Position> getPositionByTitle(String title, String storeId);
 
-  Position getPositionDetailByIdAndStoreId(String id, String storeId) throws Exception;
+  public Position getPositionDetailByIdAndStoreId(String id, String storeId) throws Exception;
 
-  Position insertNewPosition(Position position);
+  public Position insertNewPosition(Position position);
 
-  void markForDeletePosition(String storeId, List<String> id) throws Exception;
+  public void markForDeletePosition(String storeId, List<String> id) throws Exception;
 
-  boolean updatePositionTitle(String storeId, String id, String title) throws Exception;
+  public boolean updatePositionTitle(String storeId, String id, String title) throws Exception;
 }
