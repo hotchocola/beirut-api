@@ -18,6 +18,7 @@ import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.StatusDTORequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
+import com.gdn.x.beirut.dto.request.UpdatePositionModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 
@@ -178,9 +179,15 @@ public class BeirutApiClientIT {
   @Test
   @Ignore
   public void testUpdatePosition() throws Exception {
-    PositionDTORequest newPosition = new PositionDTORequest();
-    newPosition.setTitle("New Title" + timestamp);
-    beirutApiClient.updatePosition(REQUEST_ID, USERNAME, positionIds.get(0), newPosition);
+    // PositionDTORequest newPosition = new PositionDTORequest();
+    // newPosition.setTitle("New Title" + timestamp);
+
+    UpdatePositionModelDTORequest updatePositionModelDTORequest =
+        new UpdatePositionModelDTORequest();
+    updatePositionModelDTORequest.setIdPositionTarget(positionIds.get(0));
+    updatePositionModelDTORequest.setTitle("New Title" + timestamp);
+
+    beirutApiClient.updatePosition(REQUEST_ID, USERNAME, updatePositionModelDTORequest);
     GdnRestListResponse<PositionDTOResponse> result =
         beirutApiClient.getPositionByTitle(REQUEST_ID, USERNAME, "New Title" + timestamp);
     Assert.assertTrue(result.getContent().size() == 1);
