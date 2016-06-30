@@ -215,6 +215,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
       String requestId, String username, String query, String idCandidate, String idPosition)
           throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
+    map.put("query", query);
     map.put("idCandidate", idCandidate);
     map.put("idPosition", idPosition);
     URI uri = generateURI("/candidate/getCandidatePositionDetailByStoreIdWithLogs", requestId,

@@ -25,7 +25,7 @@ public class BeirutApiPath {
       "/candidate/getAllCandidatesByStoreIdAndMarkForDeleteWithPageable";
   public static final String GET_ALL_CANDIDATE_BY_STORE_ID_WITH_PAGEABLE =
       "/candidate/getAllCandidatesByStoreIdWithPageable";
-  public static final String GET_ALL_POSITION_BY_STOREID = "/candidate/getAllPosition";
+  public static final String GET_ALL_POSITION_BY_STOREID = "/position/getAllPosition";
   public static final String GET_ALL_POSITION_WITH_PAGEABLE =
       "/position/getAllPositionWithPageable";
   public static final String GET_CANDIDATE_POSITION_BY_SOLR_QUERY =
