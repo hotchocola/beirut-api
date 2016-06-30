@@ -33,17 +33,14 @@ import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
+import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
-<<<<<<< HEAD
+import com.gdn.x.beirut.dto.request.UpdatePositionModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionSolrDTOResponse;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 import com.gdn.x.beirut.dto.response.PositionDetailDTOResponse;
-=======
-import com.gdn.x.beirut.dto.request.UpdatePositionModelDTORequest;
-import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
->>>>>>> d79328804669cfa5880d0e999567d3bf8ced4348
 
 
 
@@ -141,7 +138,6 @@ public class BeirutApiClientTest {
         .readFileToString(new File("src/test/resources/JSON/applyNewPositionRequest.json"));
     ApplyNewPositionModelDTORequest applyNewPositionModelDTORequest = objectMapper
         .readValue(applyNewPositionModelStringJson, ApplyNewPositionModelDTORequest.class);
-
     URI uriApplyNewPosition = new URI("/candidate/applyNewPosition");
     Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
         CONTEXT_PATH_TEST + BeirutApiPath.APPLY_NEW_POSITION, this.mandatoryRequestParam,

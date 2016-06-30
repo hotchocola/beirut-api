@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,7 +36,6 @@ import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
-import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionSolrDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateWithPositionsDTOResponse;
@@ -53,6 +54,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 @Api(value = "CandidateController", description = "Controller untuk Candidate")
 public class CandidateController {
 
+  private static final Logger LOG = LoggerFactory.getLogger(CandidateController.class);
   @Autowired
   private CandidateService candidateService;
 
@@ -251,8 +253,6 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
-
-
   @RequestMapping(value = "findCandidateByPhoneNumberContainAndStoreId", method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Find candidate by their phone number that much alike", notes = "")
@@ -275,31 +275,11 @@ public class CandidateController {
         new PageMetaData(50, 0, candidateResponse.size()), requestId);
   }
 
-
   @RequestMapping(value = "findCandidateDetailAndStoreId", method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  @ApiOperation(value = "Mencari detail kandidat", notes = "")
-  @ResponseBody
-  public GdnRestSingleResponse<CandidateDetailDTOResponse> findCandidateDetailAndStoreId(
-      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
-      @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
-          throws Exception {
-    CandidateDetail candidate = this.candidateService.getCandidateDetailAndStoreId(id, storeId);
-    CandidateDetailDTOResponse candetres =
-        getGdnMapper().deepCopy(candidate, CandidateDetailDTOResponse.class);
-    return new GdnRestSingleResponse<CandidateDetailDTOResponse>(candetres, requestId);
-    // File file = new File("");
-    // FileUtils.writeByteArrayToFile(file, candidate.getContent());
-    // return new CommonsMultipartFile(new DiskFileItemFactory(12000, file).createItem(
-    // "Curriculum Vitae", MediaType.MULTIPART_FORM_DATA_VALUE, true, "CurriculumVitae"));
-    // return candidate.getContent();
-  }
-
-  @RequestMapping(value = "findCandidateDetailAndStoreIdSwagger", method = RequestMethod.GET,
       produces = {"application/pdf", "application/msword", "image/jpeg", "text/plain"})
   @ApiOperation(value = "Mencari detail kandidat", notes = "")
   @ResponseBody
-  public byte[] findCandidateDetailAndStoreIdSwagger(@RequestParam String clientId,
+  public byte[] findCandidateDetailAndStoreId(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestParam String id) throws Exception {
     CandidateDetail candidate = this.candidateService.getCandidateDetailAndStoreId(id, storeId);
@@ -428,40 +408,11 @@ public class CandidateController {
   }
 
   @RequestMapping(value = "insertNewCandidate", method = RequestMethod.POST,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
-      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "Insert new Candidate", notes = "memasukan kandidat baru.")
-  @ResponseBody
-  public GdnBaseRestResponse insertNewCandidate(@RequestParam String clientId,
-      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestParam String candidateDTORequestString,
-      @RequestBody CandidateDetailDTORequest file) throws Exception {
-    if (file == null || file.getContent().length == 0) {
-      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER,
-          "file content mustbe present");
-    }
-    CandidateDTORequest candidateDTORequest =
-        objectMapper.readValue(candidateDTORequestString, CandidateDTORequest.class);
-    Candidate newCandidate = getGdnMapper().deepCopy(candidateDTORequest, Candidate.class);
-    CandidateDetail candidateDetail = new CandidateDetail();
-    candidateDetail.setContent(file.getContent());
-    candidateDetail.setCandidate(newCandidate);
-    newCandidate.setCandidateDetail(candidateDetail);
-    newCandidate.setStoreId(storeId);
-    Candidate existingCandidate =
-        this.candidateService.createNew(newCandidate, candidateDTORequest.getPositionIds());
-    if (existingCandidate.getId() == null) {
-      return new GdnBaseRestResponse(false);
-    }
-    return new GdnBaseRestResponse(requestId);
-  }
-
-  @RequestMapping(value = "insertNewCandidateSwagger", method = RequestMethod.POST,
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Insert new Candidate", notes = "memasukan kandidat baru.")
   @ResponseBody
-  public GdnBaseRestResponse insertNewCandidateSwagger(@RequestParam String clientId,
+  public GdnBaseRestResponse insertNewCandidate(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestParam String candidateDTORequestString,
       @RequestPart MultipartFile file) throws Exception {
@@ -537,6 +488,28 @@ public class CandidateController {
     } catch (Exception e) {
       return new GdnBaseRestResponse(requestId);
     }
+  }
+
+  @RequestMapping(value = "updateCandidateInformation", method = RequestMethod.POST,
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "Update Informasi kandidat", notes = "")
+  @ResponseBody
+  public GdnBaseRestResponse updateCandidateInformation(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestBody CandidateDTORequest candidateDTORequest)
+          throws Exception {
+    Candidate updatedCandidate = gdnMapper.deepCopy(candidateDTORequest, Candidate.class);
+    LOG.info(candidateDTORequest.toString());
+    updatedCandidate.setStoreId(storeId);
+    LOG.info(updatedCandidate.toString());
+    try {
+      boolean result = this.candidateService.updateCandidateInformation(updatedCandidate);
+      return new GdnBaseRestResponse(result);
+    } catch (Exception e) {
+      throw e;
+    }
+
   }
 
   @RequestMapping(value = "updateCandidateStatus", method = RequestMethod.POST,
