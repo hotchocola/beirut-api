@@ -137,12 +137,6 @@
       <artifactId>httpmime</artifactId>
       <version>4.2.3</version>
     </dependency>
-<<<<<<< HEAD
-     <dependency>
-      <groupId>com.gdn.x.beirut</groupId>
-      <artifactId>beirut-dao-jpa</artifactId>
-    </dependency>
-=======
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
@@ -153,7 +147,5 @@
 	    <artifactId>commons-io</artifactId>
 	    <version>2.5</version>
 	</dependency>
-	
->>>>>>> ed123671c285709e19aae2472f8732d2386cc9e8
   </dependencies>
 </project>
