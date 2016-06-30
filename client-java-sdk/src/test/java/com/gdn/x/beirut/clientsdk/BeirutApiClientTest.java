@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +32,6 @@ import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
-import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
@@ -41,8 +41,6 @@ import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionSolrDTOResponse;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 import com.gdn.x.beirut.dto.response.PositionDetailDTOResponse;
-
-
 
 public class BeirutApiClientTest {
 
@@ -69,8 +67,8 @@ public class BeirutApiClientTest {
 
   private MandatoryRequestParam mandatoryRequestParam;
   private GdnBaseRestResponse gdnBaseResponse;
-  private CandidateDetailDTORequest candidateDetailDTORequest;
   private PositionDTORequest positionDTORequest;
+  private MultipartFile file;
   private TypeReference<GdnBaseRestResponse> typeRef;
 
   private GdnRestListResponse<CandidatePositionSolrDTOResponse> gdnRestListCandidatePositionSolrDTOResponse;
@@ -491,20 +489,19 @@ public class BeirutApiClientTest {
     Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
         CONTEXT_PATH_TEST + BeirutApiPath.INSERT_NEW_CANDIDATE, this.mandatoryRequestParam,
         this.additionalRequestParam)).thenReturn(uriInsertNewCandidate);
-    Mockito.when(
-        this.httpClientHelper.invokePostType(uriInsertNewCandidate, this.candidateDetailDTORequest,
-            CandidateDetailDTORequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS))
+    Mockito
+        .when(this.httpClientHelper.invokePostType(uriInsertNewCandidate, this.file,
+            MultipartFile.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS))
         .thenReturn(this.gdnBaseResponse);
 
     GdnBaseRestResponse response = this.beirutApiClient.insertNewCandidate(REQUEST_ID, USERNAME,
-        candidateDTORequestString, candidateDetailDTORequest);
+        candidateDTORequestString, file);
 
     Mockito.verify(this.httpClientHelper).getURI(HOST, PORT,
         CONTEXT_PATH_TEST + BeirutApiPath.INSERT_NEW_CANDIDATE, this.mandatoryRequestParam,
         this.additionalRequestParam);
-    Mockito.verify(this.httpClientHelper).invokePostType(uriInsertNewCandidate,
-        this.candidateDetailDTORequest, CandidateDetailDTORequest.class, typeRef, JSON,
-        CONNECTION_TIMEOUT_IN_MS);
+    Mockito.verify(this.httpClientHelper).invokePostType(uriInsertNewCandidate, this.file,
+        MultipartFile.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS);
     Assert.assertNotNull(gdnBaseResponse);
     Assert.assertEquals(gdnBaseResponse, response);
   }
@@ -530,6 +527,32 @@ public class BeirutApiClientTest {
         this.positionDTORequest, PositionDTORequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS);
     Assert.assertNotNull(gdnBaseResponse);
     Assert.assertEquals(gdnBaseResponse, response);
+  }
+
+  @Test
+  public void testUpdateCandidateDetail() throws Exception {
+    this.additionalRequestParam = new HashMap<String, String>();
+    this.additionalRequestParam.put("idCandidate", ID_CANDIDATE);
+    URI uriUpdateCandidateDetail = new URI("/candidate/updateCandidateDetail");
+    Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
+        CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_CANDIDATE_DETAIL, this.mandatoryRequestParam,
+        this.additionalRequestParam)).thenReturn(uriUpdateCandidateDetail);
+    Mockito
+        .when(this.httpClientHelper.invokePostType(uriUpdateCandidateDetail, this.file,
+            MultipartFile.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS))
+        .thenReturn(this.gdnBaseResponse);
+
+    GdnBaseRestResponse response =
+        this.beirutApiClient.updateCandidateDetail(REQUEST_ID, USERNAME, ID_CANDIDATE, this.file);
+
+    Mockito.verify(this.httpClientHelper).getURI(HOST, PORT,
+        CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_CANDIDATE_DETAIL, this.mandatoryRequestParam,
+        this.additionalRequestParam);
+    Mockito.verify(this.httpClientHelper).invokePostType(uriUpdateCandidateDetail, this.file,
+        MultipartFile.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS);
+    Assert.assertNotNull(gdnBaseResponse);
+    Assert.assertEquals(gdnBaseResponse, response);
+
   }
 
   @Test

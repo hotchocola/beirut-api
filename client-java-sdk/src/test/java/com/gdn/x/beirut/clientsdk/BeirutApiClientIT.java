@@ -202,7 +202,6 @@ public class BeirutApiClientIT {
     updateCandidateStatusModelDTORequest.setStatusDTORequest(status.name());
     updateCandidateStatusModelDTORequest.setIdCandidates(listString);
 
-
     GdnBaseRestResponse response = beirutApiClient.updateCandidatesStatus(REQUEST_ID, USERNAME,
         updateCandidateStatusModelDTORequest);
     Assert.assertTrue(response.isSuccess());
