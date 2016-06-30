@@ -31,7 +31,6 @@ import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
-import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
@@ -445,34 +444,11 @@ public class CandidateController {
   }
 
   @RequestMapping(value = "updateCandidateDetail", method = RequestMethod.POST,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
-      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-  @ApiOperation(value = "Update candidate detail", notes = "")
-  @ResponseBody
-  public GdnBaseRestResponse updateCandidateDetail(@RequestParam String clientId,
-      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestParam String idCandidate,
-      @RequestBody CandidateDetailDTORequest candidateDetailDTORequest) throws Exception {
-    if (candidateDetailDTORequest == null || candidateDetailDTORequest.getContent().length == 0) {
-      throw new ApplicationException(ErrorCategory.REQUIRED_PARAMETER,
-          "file content mustbe present");
-    }
-    Candidate candidate = this.candidateService.getCandidate(idCandidate);
-    candidate.getCandidateDetail().setContent(candidateDetailDTORequest.getContent());
-    try {
-      this.candidateService.updateCandidateDetail(storeId, candidate);
-      return new GdnBaseRestResponse(true);
-    } catch (Exception e) {
-      return new GdnBaseRestResponse(requestId);
-    }
-  }
-
-  @RequestMapping(value = "updateCandidateDetailSwagger", method = RequestMethod.POST,
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "Update candidate detail", notes = "")
   @ResponseBody
-  public GdnBaseRestResponse updateCandidateDetailSwagger(@RequestParam String clientId,
+  public GdnBaseRestResponse updateCandidateDetail(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestParam String idCandidate,
       @RequestPart MultipartFile file) throws Exception {
