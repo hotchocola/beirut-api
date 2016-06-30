@@ -113,6 +113,8 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
     return "CandidateNewInsert [storeId=" + storeId + ", idPosition=" + idPosition
         + ", idCandidate=" + idCandidate + ", emailAddress=" + emailAddress + ", firstName="
         + firstName + ", lastName=" + lastName + ", phoneNumber=" + phoneNumber + ", createdDate="
-        + createdDate + ", title=" + title + ", status=" + status + "]";
+        + createdDate + ", title=" + title + ", status=" + status + ", toString()="
+        + super.toString() + "]";
   }
+
 }

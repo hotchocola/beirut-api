@@ -12,14 +12,26 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.gdn.common.client.GdnRestClientConfiguration;
+import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
+<<<<<<< HEAD
 import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
+=======
+import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
+import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
+import com.gdn.x.beirut.dto.request.CandidateDTORequest;
+>>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
 import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.StatusDTORequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
 import com.gdn.x.beirut.dto.request.UpdatePositionModelDTORequest;
+<<<<<<< HEAD
+=======
+import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
+>>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
+import com.gdn.x.beirut.dto.response.CandidatePositionSolrDTOResponse;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -130,14 +142,49 @@ public class BeirutApiClientIT {
         listString.add(positionDTOResponse.getId());
       }
     }
+<<<<<<< HEAD
     // listPositionIdStrings.setValues(listString);
+=======
+>>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
 
     ApplyNewPositionModelDTORequest applyNewPositionModelDTORequest =
         new ApplyNewPositionModelDTORequest();
     applyNewPositionModelDTORequest.setIdCandidate(idCandidate);
     applyNewPositionModelDTORequest.setListPositionIds(listString);
 
+<<<<<<< HEAD
     beirutApiClient.applyNewPosition(REQUEST_ID, USERNAME, applyNewPositionModelDTORequest);
+=======
+    GdnBaseRestResponse result =
+        beirutApiClient.applyNewPosition(REQUEST_ID, USERNAME, applyNewPositionModelDTORequest);
+    Assert.assertTrue(result.isSuccess());
+    GdnRestListResponse<CandidatePositionSolrDTOResponse> resultCandidatePosition =
+        beirutApiClient.getCandidatePositionBySolrQuery(REQUEST_ID, USERNAME,
+            "emailAddress:" + this.resultCandidate.getContent().get(0).getEmailAddress()
+                + " AND title:Software Developer Division 5 " + timestamp,
+            0, 10);
+    Assert.assertTrue(resultCandidatePosition.getContent().size() != 0);
+>>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
+  }
+
+  // UPDATED IZAL DONE
+  @Test
+  public void testUpdateCandidateInformation() throws Exception {
+    CandidateDTORequest updatedCandidate = new CandidateDTORequest();
+    updatedCandidate.setId(resultCandidate.getContent().get(0).getId());
+    String UPDATED = "Updated";
+    updatedCandidate
+        .setEmailAddress(resultCandidate.getContent().get(0).getEmailAddress() + UPDATED);
+    updatedCandidate.setFirstName(resultCandidate.getContent().get(0).getFirstName() + UPDATED);
+    updatedCandidate.setLastName(resultCandidate.getContent().get(0).getLastName() + UPDATED);
+    GdnBaseRestResponse response =
+        this.beirutApiClient.updateCandidateInformation(REQUEST_ID, USERNAME, updatedCandidate);
+    Assert.assertTrue(response.isSuccess());
+    GdnRestSingleResponse<CandidateDTOResponse> result =
+        this.beirutApiClient.findCandidateByEmailAddressAndStoreId(REQUEST_ID, USERNAME,
+            resultCandidate.getContent().get(0).getEmailAddress() + UPDATED);
+    Assert
+        .assertTrue(result.getValue().getId().equals(resultCandidate.getContent().get(0).getId()));
   }
 
   // UPDATED IZAL DONE
@@ -172,8 +219,20 @@ public class BeirutApiClientIT {
     updateCandidateStatusModelDTORequest.setIdCandidates(listString);
 
     // System.out.println("ini idCandidatenya : " + idCandidate);
+<<<<<<< HEAD
     beirutApiClient.updateCandidatesStatus(REQUEST_ID, USERNAME,
         updateCandidateStatusModelDTORequest);
+=======
+    GdnBaseRestResponse response = beirutApiClient.updateCandidatesStatus(REQUEST_ID, USERNAME,
+        updateCandidateStatusModelDTORequest);
+    Assert.assertTrue(response.isSuccess());
+
+    GdnRestListResponse<CandidatePositionSolrDTOResponse> result =
+        beirutApiClient.getCandidatePositionBySolrQuery(REQUEST_ID, USERNAME,
+            "status:" + StatusDTORequest.MEDICAL.toString() + " AND STORE_ID:" + STORE_ID, 0, 10);
+
+    Assert.assertTrue(result.getContent().size() == 1);
+>>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
   }
 
   @Test

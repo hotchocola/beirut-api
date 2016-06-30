@@ -23,4 +23,10 @@ public class PositionMarkForDelete extends GdnBaseDomainEventModel {
   public void setStoreId(String storeId) {
     this.storeId = storeId;
   }
+
+  @Override
+  public String toString() {
+    return "PositionMarkForDelete [id=" + id + ", storeId=" + storeId + ", toString()="
+        + super.toString() + "]";
+  }
 }

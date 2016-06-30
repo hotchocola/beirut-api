@@ -24,6 +24,7 @@ import com.gdn.x.beirut.dao.PositionDAO;
 import com.gdn.x.beirut.domain.event.model.ApplyNewPosition;
 import com.gdn.x.beirut.domain.event.model.CandidateMarkForDelete;
 import com.gdn.x.beirut.domain.event.model.CandidateNewInsert;
+import com.gdn.x.beirut.domain.event.model.CandidateUpdateInformation;
 import com.gdn.x.beirut.domain.event.model.CandidateUpdateStatus;
 import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.entities.Candidate;
@@ -351,6 +352,32 @@ public class CandidateServiceImpl implements CandidateService {
     } else {
       throw new ApplicationException(ErrorCategory.VALIDATION, ID_SHOULD_NOT_BE_EMPTY);
     }
+  }
+
+  @Override
+  @Transactional(readOnly = false)
+  public boolean updateCandidateInformation(Candidate newCandidateInformation)
+      throws ApplicationException {
+    Candidate existingCandidate = candidateDAO.findOne(newCandidateInformation.getId());
+    if (existingCandidate == null || existingCandidate.getId().equals("")) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "Candidate not found");
+    }
+    if (!existingCandidate.getStoreId().equals(newCandidateInformation.getStoreId())) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+          "Candidate exist but storeId not match");
+    }
+    existingCandidate.setEmailAddress(newCandidateInformation.getEmailAddress());
+    existingCandidate.setFirstName(newCandidateInformation.getFirstName());
+    existingCandidate.setLastName(newCandidateInformation.getLastName());
+    existingCandidate.setPhoneNumber(newCandidateInformation.getPhoneNumber());
+    LOG.info(existingCandidate.toString());
+    Candidate savedCandidate = this.candidateDAO.save(existingCandidate);
+    CandidateUpdateInformation objectToPublish =
+        gdnMapper.deepCopy(savedCandidate, CandidateUpdateInformation.class);
+    objectToPublish.setIdCandidate(savedCandidate.getId());
+    domainEventPublisher.publish(objectToPublish, DomainEventName.CANDIDATE_UPDATE_INFORMATION,
+        CandidateUpdateInformation.class);
+    return true;
   }
 
   @Override

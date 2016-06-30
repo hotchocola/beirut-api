@@ -41,6 +41,10 @@ import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionSolrDTOResponse;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 import com.gdn.x.beirut.dto.response.PositionDetailDTOResponse;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
 
 
 public class BeirutApiClientTest {
@@ -137,7 +141,10 @@ public class BeirutApiClientTest {
         .readFileToString(new File("src/test/resources/JSON/applyNewPositionRequest.json"));
     ApplyNewPositionModelDTORequest applyNewPositionModelDTORequest = objectMapper
         .readValue(applyNewPositionModelStringJson, ApplyNewPositionModelDTORequest.class);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
     URI uriApplyNewPosition = new URI("/candidate/applyNewPosition");
     Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
         CONTEXT_PATH_TEST + BeirutApiPath.APPLY_NEW_POSITION, this.mandatoryRequestParam,
@@ -211,6 +218,11 @@ public class BeirutApiClientTest {
     Assert.assertEquals(gdnBaseResponse, response);
   }
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
   @Test
   public void testGetAllCandidateByStoreIdAndMarkForDeleteWithPageable() throws Exception {
     this.additionalRequestParam = new HashMap<String, String>();
@@ -483,6 +495,7 @@ public class BeirutApiClientTest {
     Assert.assertEquals(gdnRestListPositionDetailDTOResponse, response);
   }
 
+<<<<<<< HEAD
   // @Test
   // public void testInsertNewCandidate() throws Exception {
   // String insertNewCandidateDTORequestJson = FileUtils
@@ -511,6 +524,33 @@ public class BeirutApiClientTest {
   // Assert.assertNotNull(gdnBaseResponse);
   // Assert.assertEquals(gdnBaseResponse, response);
   // }
+=======
+  @Test
+  public void testInsertNewCandidate() throws Exception {
+    this.additionalRequestParam = new HashMap<String, String>();
+    this.additionalRequestParam.put("candidateDTORequestString", candidateDTORequestString);
+    URI uriInsertNewCandidate = new URI("/candidate/insertNewCandidate");
+    Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
+        CONTEXT_PATH_TEST + BeirutApiPath.INSERT_NEW_CANDIDATE, this.mandatoryRequestParam,
+        this.additionalRequestParam)).thenReturn(uriInsertNewCandidate);
+    Mockito.when(
+        this.httpClientHelper.invokePostType(uriInsertNewCandidate, this.candidateDetailDTORequest,
+            CandidateDetailDTORequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS))
+        .thenReturn(this.gdnBaseResponse);
+
+    GdnBaseRestResponse response = this.beirutApiClient.insertNewCandidate(REQUEST_ID, USERNAME,
+        candidateDTORequestString, candidateDetailDTORequest);
+
+    Mockito.verify(this.httpClientHelper).getURI(HOST, PORT,
+        CONTEXT_PATH_TEST + BeirutApiPath.INSERT_NEW_CANDIDATE, this.mandatoryRequestParam,
+        this.additionalRequestParam);
+    Mockito.verify(this.httpClientHelper).invokePostType(uriInsertNewCandidate,
+        this.candidateDetailDTORequest, CandidateDetailDTORequest.class, typeRef, JSON,
+        CONNECTION_TIMEOUT_IN_MS);
+    Assert.assertNotNull(gdnBaseResponse);
+    Assert.assertEquals(gdnBaseResponse, response);
+  }
+>>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
 
   @Test
   public void testInsertNewPosition() throws Exception {

@@ -147,5 +147,9 @@
 	    <artifactId>commons-io</artifactId>
 	    <version>2.5</version>
 	</dependency>
+<<<<<<< HEAD
+=======
+	
+>>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
   </dependencies>
 </project>
