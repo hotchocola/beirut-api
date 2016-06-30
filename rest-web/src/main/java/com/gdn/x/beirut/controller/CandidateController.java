@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -52,6 +54,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 @Api(value = "CandidateController", description = "Controller untuk Candidate")
 public class CandidateController {
 
+  private static final Logger LOG = LoggerFactory.getLogger(CandidateController.class);
   @Autowired
   private CandidateService candidateService;
 
@@ -547,6 +550,9 @@ public class CandidateController {
       @RequestParam String username, @RequestBody CandidateDTORequest candidateDTORequest)
           throws Exception {
     Candidate updatedCandidate = gdnMapper.deepCopy(candidateDTORequest, Candidate.class);
+    LOG.info(candidateDTORequest.toString());
+    updatedCandidate.setStoreId(storeId);
+    LOG.info(updatedCandidate.toString());
     try {
       boolean result = this.candidateService.updateCandidateInformation(updatedCandidate);
       return new GdnBaseRestResponse(result);

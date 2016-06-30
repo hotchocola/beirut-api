@@ -47,10 +47,11 @@ public class CandidateUpdateStatus extends GdnBaseDomainEventModel {
     this.storeId = storeId;
   }
 
-
   @Override
   public String toString() {
     return "CandidateUpdateStatus [storeId=" + storeId + ", idPosition=" + idPosition
-        + ", idCandidate=" + idCandidate + ", status=" + status + "]";
+        + ", idCandidate=" + idCandidate + ", status=" + status + ", toString()=" + super.toString()
+        + "]";
   }
+
 }

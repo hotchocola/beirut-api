@@ -39,7 +39,9 @@ public class CandidateMarkForDelete extends GdnBaseDomainEventModel {
   @Override
   public String toString() {
     return "CandidateMarkForDelete [id=" + id + ", storeId=" + storeId + ", markForDelete="
-        + markForDelete + "]";
+        + markForDelete + ", toString()=" + super.toString() + "]";
   }
+
+
 
 }
