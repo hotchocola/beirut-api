@@ -13,10 +13,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.gdn.common.client.GdnRestClientConfiguration;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
+import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
-import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.StatusDTORequest;
+import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 
@@ -33,6 +34,7 @@ public class BeirutApiClientIT {
   private static final String PASSWORD = "DUMMY";
   private static final String USERNAME = "I_TEST_USER";
   private static final String REQUEST_ID = "ClientAPITest";
+
 
   private long timestamp;
   private BeirutApiClient beirutApiClient;
@@ -115,22 +117,29 @@ public class BeirutApiClientIT {
 
   }
 
-
+  // UPDATED IZAL DONE
   @Test
   @Ignore
   public void testApplyNewPosition() throws Exception {
     String idCandidate = resultCandidate.getContent().get(0).getId();
-    ListStringRequest listPositionIdStrings = new ListStringRequest();
+    // ListStringRequest listPositionIdStrings = new ListStringRequest();
     List<String> listString = new ArrayList<String>();
     for (PositionDTOResponse positionDTOResponse : resultPosition.getContent()) {
       if (positionDTOResponse.getTitle().equals("Software Developer Division 5 " + timestamp)) {
         listString.add(positionDTOResponse.getId());
       }
     }
-    listPositionIdStrings.setValues(listString);
-    beirutApiClient.applyNewPosition(REQUEST_ID, USERNAME, idCandidate, listPositionIdStrings);
+    // listPositionIdStrings.setValues(listString);
+
+    ApplyNewPositionModelDTORequest applyNewPositionModelDTORequest =
+        new ApplyNewPositionModelDTORequest();
+    applyNewPositionModelDTORequest.setIdCandidate(idCandidate);
+    applyNewPositionModelDTORequest.setListPositionIds(listString);
+
+    beirutApiClient.applyNewPosition(REQUEST_ID, USERNAME, applyNewPositionModelDTORequest);
   }
 
+  // UPDATED IZAL DONE
   @Test
   @Ignore
   public void testUpdateCandidatesStatus() throws Exception {
@@ -143,7 +152,7 @@ public class BeirutApiClientIT {
       }
     }
     StatusDTORequest status = StatusDTORequest.MEDICAL;
-    ListStringRequest listCandidateIdStrings = new ListStringRequest();
+    // ListStringRequest listCandidateIdStrings = new ListStringRequest();
     List<String> listString = new ArrayList<String>();
     System.out.println("SIZE RESULTCANDIDATENYA WOI : " + resultCandidate.getContent().size());
     for (CandidateDTOResponseWithoutDetail candidateDTOResponseWithoutDetail : resultCandidate
@@ -153,13 +162,21 @@ public class BeirutApiClientIT {
         listString.add(candidateDTOResponseWithoutDetail.getId());
       }
     }
-    listCandidateIdStrings.setValues(listString);
+    // listCandidateIdStrings.setValues(listString);
+
+    UpdateCandidateStatusModelDTORequest updateCandidateStatusModelDTORequest =
+        new UpdateCandidateStatusModelDTORequest();
+    updateCandidateStatusModelDTORequest.setIdPosition(idPosition);
+    updateCandidateStatusModelDTORequest.setStatusDTORequest(status.name());
+    updateCandidateStatusModelDTORequest.setIdCandidates(listString);
+
     // System.out.println("ini idCandidatenya : " + idCandidate);
-    beirutApiClient.updateCandidatesStatus(REQUEST_ID, USERNAME, status, idPosition,
-        listCandidateIdStrings);
+    beirutApiClient.updateCandidatesStatus(REQUEST_ID, USERNAME,
+        updateCandidateStatusModelDTORequest);
   }
 
   @Test
+  @Ignore
   public void testUpdatePosition() throws Exception {
     PositionDTORequest newPosition = new PositionDTORequest();
     newPosition.setTitle("New Title" + timestamp);

@@ -3,11 +3,13 @@ package com.gdn.x.beirut.clientsdk;
 
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,13 +21,18 @@ import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+<<<<<<< HEAD
 import com.gdn.client_sdk.shade.org.apache.http.client.methods.HttpRequestBase;
 import com.gdn.client_sdk.shade.org.apache.http.impl.client.CloseableHttpClient;
+=======
+import com.fasterxml.jackson.databind.ObjectMapper;
+>>>>>>> 01bf42f32d754aee46203eaecd8f17c9fa9a7b57
 import com.gdn.common.client.GdnRestClientConfiguration;
 import com.gdn.common.util.GdnHttpClientHelper;
 import com.gdn.common.web.param.MandatoryRequestParam;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
+<<<<<<< HEAD
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
@@ -35,10 +42,18 @@ import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidatePositionSolrDTOResponse;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 import com.gdn.x.beirut.dto.response.PositionDetailDTOResponse;
+=======
+import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
+import com.gdn.x.beirut.dto.request.ListStringRequest;
+import com.gdn.x.beirut.dto.request.PositionDTORequest;
+import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
+import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
+>>>>>>> 01bf42f32d754aee46203eaecd8f17c9fa9a7b57
 
 
 
 public class BeirutApiClientTest {
+
   private static final String REQUEST_ID = "REQUEST_ID";
   private static final String USERNAME = "USERNAME";
   private static final String CLIENT_ID = "CLIENT_ID";
@@ -49,16 +64,24 @@ public class BeirutApiClientTest {
   private static final String CONTEXT_PATH = "beirut/docs/api";
   private static final String CONTEXT_PATH_TEST = "/beirut/docs/api";
   private static final String ID_CANDIDATE = "id_candidate";
+<<<<<<< HEAD
   private static final String ID_POSITION = "id_position";
   private static final String QUERY = "query";
+=======
+  private static final String TITLE = "myTitle";
+>>>>>>> 01bf42f32d754aee46203eaecd8f17c9fa9a7b57
   private static final String JSON = MediaType.APPLICATION_JSON_VALUE;
   private static final Integer PORT = 8080;
   private static final int PAGE = 0;
   private static final int SIZE = 5;
   private static final int CONNECTION_TIMEOUT_IN_MS = 6000;
+<<<<<<< HEAD
   private static final String ID = "ID";
   private static final Boolean MARK_FOR_DELETE = false;
   private static final String TITLE = "TITLE";
+=======
+  private static final String ID = "id";
+>>>>>>> 01bf42f32d754aee46203eaecd8f17c9fa9a7b57
 
   private MandatoryRequestParam mandatoryRequestParam;
   private GdnBaseRestResponse gdnBaseResponse;
@@ -78,6 +101,8 @@ public class BeirutApiClientTest {
   private final Long start = new Long(0);
   private final Long end = new Long(99999999);
 
+  private ObjectMapper objectMapper;
+
   @Mock
   private GdnHttpClientHelper httpClientHelper;
 
@@ -92,7 +117,7 @@ public class BeirutApiClientTest {
   public void initialize() throws Exception {
     initMocks(this);
     this.gdnBaseResponse = new GdnBaseRestResponse(REQUEST_ID);
-    List<String> list = new ArrayList<>();
+    List<String> list = new ArrayList<String>();
     list.add("ad");
     this.listPositionIdString.setValues(list);
 
@@ -124,28 +149,30 @@ public class BeirutApiClientTest {
 
   @Test
   public void testApplyNewPosition() throws Exception {
-    this.additionalRequestParam = new HashMap<>();
-    this.additionalRequestParam.put("idCandidate", ID_CANDIDATE);
+    objectMapper = new ObjectMapper();
+    String applyNewPositionModelStringJson = FileUtils
+        .readFileToString(new File("src/test/resources/JSON/applyNewPositionRequest.json"));
+    ApplyNewPositionModelDTORequest applyNewPositionModelDTORequest = objectMapper
+        .readValue(applyNewPositionModelStringJson, ApplyNewPositionModelDTORequest.class);
+
     URI uriApplyNewPosition = new URI("/candidate/applyNewPosition");
     Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
         CONTEXT_PATH_TEST + BeirutApiPath.APPLY_NEW_POSITION, this.mandatoryRequestParam,
         this.additionalRequestParam)).thenReturn(uriApplyNewPosition);
-    // System.out.println("getURI(" + " " + HOST + "," + PORT + "," + CONTEXT_PATH_TEST
-    // + BeirutApiPath.APPLY_NEW_POSITION + "," + this.mandatoryRequestParam + ","
-    // + this.additionalRequestParam); DEBUG
-    Mockito
-        .when(this.httpClientHelper.invokePostType(uriApplyNewPosition, this.listPositionIdString,
-            ListStringRequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS))
+
+    Mockito.when(
+        this.httpClientHelper.invokePostType(uriApplyNewPosition, applyNewPositionModelDTORequest,
+            ApplyNewPositionModelDTORequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS))
         .thenReturn(this.gdnBaseResponse);
 
     GdnBaseRestResponse response = this.beirutApiClient.applyNewPosition(REQUEST_ID, USERNAME,
-        ID_CANDIDATE, listPositionIdString);
+        applyNewPositionModelDTORequest);
 
     Mockito.verify(this.httpClientHelper).getURI(HOST, PORT,
         CONTEXT_PATH_TEST + BeirutApiPath.APPLY_NEW_POSITION, this.mandatoryRequestParam,
         this.additionalRequestParam);
     Mockito.verify(this.httpClientHelper).invokePostType(uriApplyNewPosition,
-        this.listPositionIdString, ListStringRequest.class, typeRef, JSON,
+        applyNewPositionModelDTORequest, ApplyNewPositionModelDTORequest.class, typeRef, JSON,
         CONNECTION_TIMEOUT_IN_MS);
     Assert.assertNotNull(gdnBaseResponse);
     Assert.assertEquals(gdnBaseResponse, response);
@@ -202,6 +229,7 @@ public class BeirutApiClientTest {
   }
 
   @Test
+<<<<<<< HEAD
   public void testGetAllCandidateByStoreIdAndMarkForDeleteWithPageable() throws Exception {
     this.additionalRequestParam = new HashMap<>();
     this.additionalRequestParam.put("markForDelete", String.valueOf(MARK_FOR_DELETE));
@@ -520,6 +548,62 @@ public class BeirutApiClientTest {
         this.positionDTORequest, PositionDTORequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS);
     Assert.assertNotNull(gdnBaseResponse);
     Assert.assertEquals(gdnBaseResponse, response);
+=======
+  public void testUpdateCandidateStatus() throws Exception {
+    objectMapper = new ObjectMapper();
+
+    String updateCandidateStatusRequestStringJson = FileUtils.readFileToString(
+        new File("src/test/resources/JSON/updateCandidateStatusRequestJson.json"));
+    UpdateCandidateStatusModelDTORequest updateCandidateStatusModelDTORequest =
+        objectMapper.readValue(updateCandidateStatusRequestStringJson,
+            UpdateCandidateStatusModelDTORequest.class);
+
+    URI uriUpdateCandidateStatus = new URI("/candidate/updateCandidateStatus");
+
+    Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
+        CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_CANDIDATE_STATUS, this.mandatoryRequestParam,
+        this.additionalRequestParam)).thenReturn(uriUpdateCandidateStatus);
+    Mockito.when(this.httpClientHelper.invokePostType(uriUpdateCandidateStatus,
+        updateCandidateStatusModelDTORequest, UpdateCandidateStatusModelDTORequest.class, typeRef,
+        JSON, CONNECTION_TIMEOUT_IN_MS)).thenReturn(gdnBaseResponse);
+
+    GdnBaseRestResponse response = this.beirutApiClient.updateCandidatesStatus(REQUEST_ID, USERNAME,
+        updateCandidateStatusModelDTORequest);
+
+    Mockito.verify(this.httpClientHelper).getURI(HOST, PORT,
+        CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_CANDIDATE_STATUS, this.mandatoryRequestParam,
+        this.additionalRequestParam);
+    Mockito.verify(this.httpClientHelper).invokePostType(uriUpdateCandidateStatus,
+        updateCandidateStatusModelDTORequest, UpdateCandidateStatusModelDTORequest.class, typeRef,
+        JSON, CONNECTION_TIMEOUT_IN_MS);
+  }
+
+  @Test
+  public void testUpdatePosition() throws Exception {
+    PositionDTORequest positionDTORequest = new PositionDTORequest();
+    positionDTORequest.setTitle(TITLE);
+    this.additionalRequestParam = new HashMap<String, String>();
+    this.additionalRequestParam.put("id", ID_CANDIDATE);
+    URI uriUpdatePosition = new URI("/position/updatePosition");
+    Mockito.when(
+        this.httpClientHelper.getURI(HOST, PORT, CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_POSITION,
+            this.mandatoryRequestParam, this.additionalRequestParam))
+        .thenReturn(uriUpdatePosition);
+    Mockito
+        .when(this.httpClientHelper.invokePostType(uriUpdatePosition, positionDTORequest,
+            PositionDTORequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS))
+        .thenReturn(gdnBaseResponse);
+    GdnBaseRestResponse response =
+        this.beirutApiClient.updatePosition(REQUEST_ID, USERNAME, ID_CANDIDATE, positionDTORequest);
+    Mockito.verify(this.httpClientHelper).getURI(HOST, PORT,
+        CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_POSITION, this.mandatoryRequestParam,
+        this.additionalRequestParam);
+    Mockito.verify(this.httpClientHelper).invokePostType(uriUpdatePosition, positionDTORequest,
+        PositionDTORequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS);
+    Assert.assertNotNull(response);
+    Assert.assertEquals(gdnBaseResponse, response);
+    // this.beirutApiClient.updatePosition(requestId, username, id, positionDTORequest)
+>>>>>>> 01bf42f32d754aee46203eaecd8f17c9fa9a7b57
   }
 
 }
