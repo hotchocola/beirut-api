@@ -14,6 +14,7 @@ import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
+import com.gdn.x.beirut.dto.request.InsertNewCandidateDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
@@ -254,12 +255,9 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
   }
 
   public GdnBaseRestResponse insertNewCandidate(String requestId, String username,
-      String candidateDTORequestString, CandidateDetailDTORequest candidateDetailDTORequest)
-          throws Exception {
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put("candidateDTORequestString", candidateDTORequestString);
-    URI uri = generateURI("/candidate/insertNewCandidate", requestId, username, map);
-    return invokePostType(uri, candidateDetailDTORequest, CandidateDetailDTORequest.class,
+      InsertNewCandidateDTORequest insertNewCandidateDTORequest) throws Exception {
+    URI uri = generateURI("/candidate/insertNewCandidate", requestId, username, null);
+    return invokePostType(uri, insertNewCandidateDTORequest, InsertNewCandidateDTORequest.class,
         MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 
@@ -286,10 +284,6 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
 
   public GdnBaseRestResponse updateCandidatesStatus(String requestId, String username,
       UpdateCandidateStatusModelDTORequest updateCandidateStatusModelDTORequest) throws Exception {
-    // HashMap<String, String> map = new HashMap<String, String>();
-    // map.put("status", String.valueOf(status));
-    // map.put("idPosition", idPosition);
-    // map.put("idCandidates", String.valueOf(idCandidates));
     URI uri = generateURI("/candidate/updateCandidateStatus", requestId, username, null);
     return invokePostType(uri, updateCandidateStatusModelDTORequest,
         UpdateCandidateStatusModelDTORequest.class, MediaType.APPLICATION_JSON_VALUE, typeRef);
