@@ -275,6 +275,28 @@ public class CandidateController {
   }
 
   @RequestMapping(value = "findCandidateDetailAndStoreId", method = RequestMethod.GET,
+<<<<<<< HEAD
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  @ApiOperation(value = "Mencari detail kandidat", notes = "")
+  @ResponseBody
+  public GdnRestSingleResponse<CandidateDetailDTOResponse> findCandidateDetailAndStoreId(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
+          throws Exception {
+    CandidateDetail candidate = this.candidateService.getCandidateDetailAndStoreId(id, storeId);
+    CandidateDetailDTOResponse candetres =
+        getGdnMapper().deepCopy(candidate, CandidateDetailDTOResponse.class);
+    return new GdnRestSingleResponse<CandidateDetailDTOResponse>(candetres, requestId);
+    // File file = new File("");
+    // FileUtils.writeByteArrayToFile(file, candidate.getContent());
+    // return new CommonsMultipartFile(new DiskFileItemFactory(12000, file).createItem(
+    // "Curriculum Vitae", MediaType.MULTIPART_FORM_DATA_VALUE, true, "CurriculumVitae"));
+    // return candidate.getContent();
+  }
+
+  @RequestMapping(value = "findCandidateDetailAndStoreIdSwagger", method = RequestMethod.GET,
+=======
+>>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
       produces = {"application/pdf", "application/msword", "image/jpeg", "text/plain"})
   @ApiOperation(value = "Mencari detail kandidat", notes = "")
   @ResponseBody

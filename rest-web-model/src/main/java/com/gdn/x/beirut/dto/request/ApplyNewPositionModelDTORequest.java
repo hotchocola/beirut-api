@@ -6,6 +6,11 @@ import com.gdn.common.web.base.BaseRequest;
 
 public class ApplyNewPositionModelDTORequest extends BaseRequest {
 
+<<<<<<< HEAD
+  private static final long serialVersionUID = 1811559521358261676L;
+
+=======
+>>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
   private String idCandidate;
 
   private List<String> listPositionIds;
