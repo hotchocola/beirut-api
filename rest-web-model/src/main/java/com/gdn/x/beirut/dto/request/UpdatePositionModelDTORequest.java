@@ -4,6 +4,8 @@ import com.gdn.common.web.base.BaseRequest;
 
 public class UpdatePositionModelDTORequest extends BaseRequest {
 
+  private static final long serialVersionUID = 7420292554287067130L;
+
   private String idPositionTarget;
 
   private String title;
