@@ -27,10 +27,11 @@ import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
+import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
-import com.gdn.x.beirut.dto.request.StatusDTORequest;
+import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.dto.response.CandidateDetailDTOResponse;
@@ -71,10 +72,11 @@ public class CandidateController {
   @ResponseBody
   public GdnBaseRestResponse applyNewPosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestParam String idCandidate,
-      @RequestBody ListStringRequest listPositionIdStrings) throws Exception {
+      @RequestParam String username, @RequestBody ApplyNewPositionModelDTORequest content)
+          throws Exception {
     try {
-      this.candidateService.applyNewPosition(idCandidate, listPositionIdStrings.getValues());
+      this.candidateService.applyNewPosition(content.getIdCandidate(),
+          content.getListPositionIds());
       return new GdnBaseRestResponse(true);
     } catch (Exception e) {
       return new GdnBaseRestResponse(e.getMessage(), "", false, requestId);
@@ -166,7 +168,7 @@ public class CandidateController {
   public GdnRestSingleResponse<CandidateDTOResponse> findCandidateById(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
-      throws Exception {
+          throws Exception {
     Candidate candidate = this.candidateService.getCandidate(id);
     CandidateDTOResponse candres = getGdnMapper().deepCopy(candidate, CandidateDTOResponse.class);
     return new GdnRestSingleResponse<CandidateDTOResponse>(candres, requestId);
@@ -259,7 +261,7 @@ public class CandidateController {
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username,
       @RequestParam String phoneNumber, @RequestParam int page, @RequestParam int size)
-      throws Exception {
+          throws Exception {
     Page<Candidate> candidates =
         this.candidateService.searchCandidateByPhoneNumberContainAndStoreId(phoneNumber, storeId,
             PageableHelper.generatePageable(page, size));
@@ -281,7 +283,7 @@ public class CandidateController {
   public GdnRestSingleResponse<CandidateDetailDTOResponse> findCandidateDetailAndStoreId(
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username, @RequestParam String id)
-      throws Exception {
+          throws Exception {
     CandidateDetail candidate = this.candidateService.getCandidateDetailAndStoreId(id, storeId);
     CandidateDetailDTOResponse candetres =
         getGdnMapper().deepCopy(candidate, CandidateDetailDTOResponse.class);
@@ -342,7 +344,7 @@ public class CandidateController {
       @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
       @RequestParam String channelId, @RequestParam String username,
       @RequestParam boolean markForDelete, @RequestParam int page, @RequestParam int size)
-      throws Exception {
+          throws Exception {
     Pageable pageable = PageableHelper.generatePageable(page, size);
     Page<Candidate> pages = this.candidateService
         .getAllCandidatesByStoreIdAndMarkForDeletePageable(storeId, markForDelete, pageable);
@@ -541,20 +543,16 @@ public class CandidateController {
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "update candidate status",
-      notes = "Update satu atau lebih Status Candidate dengan Position yang diberikan (Jika punya) menjadi status yang diberikan")
+      notes = "Update satu atau lebih Status Candidate dengan Position yang diberikan (jika punya) menjadi status yang diberikan")
   @ResponseBody
   public GdnBaseRestResponse updateCandidatesStatus(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestParam StatusDTORequest status,
-      @RequestParam String idPosition, @RequestBody ListStringRequest idCandidates)
+      @RequestParam String username, @RequestBody UpdateCandidateStatusModelDTORequest content)
           throws Exception {
-    // CandidateMapper.map(idCandidates, position, objectWrapper, dozerMapper);
-    // System.out.println(objectWrapper.toString());
-    // System.out.println(idCandidates.get(0)); // DEBUG
-    Status _status = Status.APPLY;
-    CandidateMapper.statusEnumMap(status, _status);
-    this.candidateService.updateCandidateStatusBulk(storeId, idCandidates.getValues(), idPosition,
-        _status);
+    Status status = Status.valueOf(content.getStatusDTORequest());
+    // CandidateMapper.statusEnumMap(status, _status);
+    this.candidateService.updateCandidateStatusBulk(storeId, content.getIdCandidates(),
+        content.getIdPosition(), status);
     return new GdnBaseRestResponse(true);
   }
 }

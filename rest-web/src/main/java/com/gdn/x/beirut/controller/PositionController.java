@@ -156,7 +156,7 @@ public class PositionController {
   }
 
   @RequestMapping(value = "insertNewPosition", method = RequestMethod.POST,
-      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "insert new position", notes = "memasukan posisi baru.")
   @ResponseBody
