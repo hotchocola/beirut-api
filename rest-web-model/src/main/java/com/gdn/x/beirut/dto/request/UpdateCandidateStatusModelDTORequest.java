@@ -6,6 +6,8 @@ import com.gdn.common.web.base.BaseRequest;
 
 public class UpdateCandidateStatusModelDTORequest extends BaseRequest {
 
+  private static final long serialVersionUID = -4152825937934296238L;
+
   private String statusDTORequest;
 
   private String idPosition;

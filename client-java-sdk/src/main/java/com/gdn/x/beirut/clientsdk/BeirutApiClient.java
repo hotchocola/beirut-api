@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gdn.common.client.GdnRestClientConfiguration;
@@ -13,12 +14,7 @@ import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
-<<<<<<< HEAD
-=======
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
->>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
-import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
-import com.gdn.x.beirut.dto.request.InsertNewCandidateDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
@@ -145,15 +141,6 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
   private URI generateURI(String path, String requestId, String username,
       Map<String, String> additionalParameterMap) throws Exception {
     String location = getContextPath() + path;
-<<<<<<< HEAD
-
-    // System.out.println(location + " %%"); DEBUG
-    // System.out.println(
-    // getClientConfig().getHost() + " " + getClientConfig().getPort() + " " + location + " "
-    // + getMandatoryParameter(requestId, username) + " " + additionalParameterMap.toString());
-    // DEBUG
-=======
->>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
     return getHttpClientHelper().getURI(getClientConfig().getHost(), getClientConfig().getPort(),
         location, getMandatoryParameter(requestId, username), additionalParameterMap);
   }
@@ -251,10 +238,12 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
   }
 
   public GdnBaseRestResponse insertNewCandidate(String requestId, String username,
-      InsertNewCandidateDTORequest insertNewCandidateDTORequest) throws Exception {
-    URI uri = generateURI("/candidate/insertNewCandidate", requestId, username, null);
-    return invokePostType(uri, insertNewCandidateDTORequest, InsertNewCandidateDTORequest.class,
-        MediaType.APPLICATION_JSON_VALUE, typeRef);
+      String candidateDTORequestString, MultipartFile file) throws Exception {
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put("candidateDTORequestString", candidateDTORequestString);
+    URI uri = generateURI("/candidate/insertNewCandidate", requestId, username, map);
+    return invokePostType(uri, file, MultipartFile.class, MediaType.APPLICATION_JSON_VALUE,
+        typeRef);
   }
 
   public GdnBaseRestResponse insertNewPosition(String requestId, String username,
@@ -270,12 +259,12 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
   }
 
   public GdnBaseRestResponse updateCandidateDetail(String requestId, String username,
-      String idCandidate, CandidateDetailDTORequest candidateDetailDTORequest) throws Exception {
+      String idCandidate, MultipartFile file) throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("idCandidate", idCandidate);
     URI uri = generateURI("/candidate/updateCandidateDetail", requestId, username, map);
-    return invokePostType(uri, candidateDetailDTORequest, CandidateDetailDTORequest.class,
-        MediaType.APPLICATION_JSON_VALUE, typeRef);
+    return invokePostType(uri, file, MultipartFile.class, MediaType.APPLICATION_JSON_VALUE,
+        typeRef);
   }
 
   public GdnBaseRestResponse updateCandidateInformation(String requestId, String username,
@@ -287,13 +276,6 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
 
   public GdnBaseRestResponse updateCandidatesStatus(String requestId, String username,
       UpdateCandidateStatusModelDTORequest updateCandidateStatusModelDTORequest) throws Exception {
-<<<<<<< HEAD
-=======
-    // HashMap<String, String> map = new HashMap<String, String>();
-    // map.put("status", String.valueOf(status));
-    // map.put("idPosition", idPosition);
-    // map.put("idCandidates", String.valueOf(idCandidates));
->>>>>>> 325be72c041807113d5dc77ea6f7b57d72bdca7d
     URI uri = generateURI("/candidate/updateCandidateStatus", requestId, username, null);
     return invokePostType(uri, updateCandidateStatusModelDTORequest,
         UpdateCandidateStatusModelDTORequest.class, MediaType.APPLICATION_JSON_VALUE, typeRef);
