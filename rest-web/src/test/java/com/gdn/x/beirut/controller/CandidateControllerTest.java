@@ -38,7 +38,6 @@ import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
-import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
@@ -577,39 +576,6 @@ public class CandidateControllerTest {
   @Test
   public void testUpdateCandidateDetail() throws Exception {
     String uri = "/api/candidate/updateCandidateDetail";
-
-
-    Mockito.when(this.candidateService.getCandidate(ID)).thenReturn(candidate);
-    String mockCandidateDetailDTORequestString = "{\"content\":[123, 45, 67]}";
-
-    CandidateDetail mockCandidateDetail = new CandidateDetail();
-    mockCandidateDetail.setCandidate(candidate);
-    mockCandidateDetail.setContent(new byte[] {123, 45, 67});
-
-    CandidateDetailDTORequest candidateDetailDTORequest = new CandidateDetailDTORequest();
-    candidateDetailDTORequest.setContent(mockCandidateDetail.getContent());
-    this.mockMVC.perform(MockMvcRequestBuilders.post(uri).param("clientId", CLIENT_ID)
-        .param("storeId", STORE_ID).param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-        .param("username", USERNAME).param("idCandidate", ID)
-        .content(mockCandidateDetailDTORequestString).accept(MediaType.APPLICATION_JSON_VALUE)
-        .contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-
-    this.candidateController.updateCandidateDetail(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
-        USERNAME, ID, candidateDetailDTORequest);
-    Mockito.verify(this.candidateService, Mockito.times(2)).getCandidate(ID);
-    Candidate updatedCandidate = gdnMapper.deepCopy(candidate, Candidate.class);
-    updatedCandidate.getCandidateDetail().setContent(candidateDetailDTORequest.getContent());
-    Assert.assertArrayEquals(candidate.getCandidateDetail().getContent(),
-        updatedCandidate.getCandidateDetail().getContent());
-    Mockito.verify(this.candidateService, Mockito.times(2)).updateCandidateDetail(STORE_ID,
-        updatedCandidate);
-
-  }
-
-
-  @Test
-  public void testUpdateCandidateDetailSwagger() throws Exception {
-    String uri = "/api/candidate/updateCandidateDetailSwagger";
     FileInputStream inputFile =
         new FileInputStream(new File("src/test/resources/JSON/updatedFile.txt"));
 
@@ -622,8 +588,8 @@ public class CandidateControllerTest {
             .param("channelId", CHANNEL_ID).param("username", USERNAME).param("idCandidate", ID))
         .andExpect(status().isOk());
 
-    this.candidateController.updateCandidateDetailSwagger(CLIENT_ID, STORE_ID, REQUEST_ID,
-        CHANNEL_ID, USERNAME, ID, file);
+    this.candidateController.updateCandidateDetail(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
+        USERNAME, ID, file);
     Mockito.verify(this.candidateService, Mockito.times(2)).getCandidate(ID);
     Candidate updatedCandidate = gdnMapper.deepCopy(candidate, Candidate.class);
     updatedCandidate.getCandidateDetail().setContent(file.getBytes());
