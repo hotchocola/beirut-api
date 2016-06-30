@@ -97,8 +97,8 @@ public class BeirutApiClientIT {
     candidateDetailDTORequestDummy.setContent(new byte[] {67, 68, 69});
 
     // inserting new candidate1
-    beirutApiClient.insertNewCandidate(REQUEST_ID, USERNAME, candidateDTORequestString,
-        candidateDetailDTORequestDummy);
+    // beirutApiClient.insertNewCandidate(REQUEST_ID, USERNAME, candidateDTORequestString,
+    // candidateDetailDTORequestDummy);
     // assign positionIds1 to the new candidate1
     String candidateDTORequestString1 = "{\"emailAddress\": \"asda@egamail.com1" + timestamp
         + "\",\"firstName\": \"asducup\",\"lastName\": \"sanusias\",\"phoneNumber\": \"11\",\"positionIds\": [";
@@ -113,8 +113,8 @@ public class BeirutApiClientIT {
     candidateDetailDTORequestDummy1.setContent(new byte[] {98, 99, 100});
 
     // inserting new candidate1
-    beirutApiClient.insertNewCandidate(REQUEST_ID, USERNAME, candidateDTORequestString1,
-        candidateDetailDTORequestDummy1);
+    // beirutApiClient.insertNewCandidate(REQUEST_ID, USERNAME, candidateDTORequestString1,
+    // candidateDetailDTORequestDummy1);
 
     // get candidate
     resultCandidate =
