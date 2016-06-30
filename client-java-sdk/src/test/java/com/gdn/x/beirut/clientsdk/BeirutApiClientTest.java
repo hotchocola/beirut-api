@@ -3,11 +3,13 @@ package com.gdn.x.beirut.clientsdk;
 
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,14 +21,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdn.common.client.GdnRestClientConfiguration;
 import com.gdn.common.util.GdnHttpClientHelper;
 import com.gdn.common.web.param.MandatoryRequestParam;
 import com.gdn.common.web.wrapper.request.SimpleRequestHolder;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
+import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
+import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 
 
@@ -60,6 +65,8 @@ public class BeirutApiClientTest {
   private final ListStringRequest listPositionIdString = new ListStringRequest();
   private final Long start = new Long(0);
   private final Long end = new Long(99999999);
+
+  private ObjectMapper objectMapper;
 
   @Mock
   private GdnHttpClientHelper httpClientHelper;
@@ -97,31 +104,30 @@ public class BeirutApiClientTest {
 
   @Test
   public void testApplyNewPosition() throws Exception {
+    objectMapper = new ObjectMapper();
+    String applyNewPositionModelStringJson = FileUtils
+        .readFileToString(new File("src/test/resources/JSON/applyNewPositionRequest.json"));
+    ApplyNewPositionModelDTORequest applyNewPositionModelDTORequest = objectMapper
+        .readValue(applyNewPositionModelStringJson, ApplyNewPositionModelDTORequest.class);
 
-    this.additionalRequestParam = new HashMap<String, String>();
-    this.additionalRequestParam.put("idCandidate", ID_CANDIDATE);
     URI uriApplyNewPosition = new URI("/candidate/applyNewPosition");
     Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
         CONTEXT_PATH_TEST + BeirutApiPath.APPLY_NEW_POSITION, this.mandatoryRequestParam,
         this.additionalRequestParam)).thenReturn(uriApplyNewPosition);
-    // System.out.println("getURI(" + " " + HOST + "," + PORT + "," + CONTEXT_PATH_TEST
-    // + BeirutApiPath.APPLY_NEW_POSITION + "," + this.mandatoryRequestParam + ","
-    // + this.additionalRequestParam); DEBUG
-    Mockito
-        .when(this.httpClientHelper.invokePostType(uriApplyNewPosition, this.listPositionIdString,
 
-            ListStringRequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS))
+    Mockito.when(
+        this.httpClientHelper.invokePostType(uriApplyNewPosition, applyNewPositionModelDTORequest,
+            ApplyNewPositionModelDTORequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS))
         .thenReturn(this.gdnBaseResponse);
 
     GdnBaseRestResponse response = this.beirutApiClient.applyNewPosition(REQUEST_ID, USERNAME,
-        ID_CANDIDATE, listPositionIdString);
+        applyNewPositionModelDTORequest);
 
     Mockito.verify(this.httpClientHelper).getURI(HOST, PORT,
         CONTEXT_PATH_TEST + BeirutApiPath.APPLY_NEW_POSITION, this.mandatoryRequestParam,
         this.additionalRequestParam);
     Mockito.verify(this.httpClientHelper).invokePostType(uriApplyNewPosition,
-
-        this.listPositionIdString, ListStringRequest.class, typeRef, JSON,
+        applyNewPositionModelDTORequest, ApplyNewPositionModelDTORequest.class, typeRef, JSON,
         CONNECTION_TIMEOUT_IN_MS);
     Assert.assertNotNull(gdnBaseResponse);
     Assert.assertEquals(gdnBaseResponse, response);
@@ -177,31 +183,35 @@ public class BeirutApiClientTest {
     Assert.assertEquals(gdnBaseResponse, response);
   }
 
-  // GdnBaseRestResponse updateCandidatesStatus(String requestId, String username,
-  // StatusDTORequest status, String idPosition, ListStringRequest idCandidates)
-  // @Test
-  // public void testUpdateCandidateStatus() throws Exception {
-  // StatusDTORequest statusDTORequest = StatusDTORequest.HEAD;
-  // this.additionalRequestParam = new HashMap<String, String>();
-  // this.additionalRequestParam.put("status", "");
-  // URI uriUpdateCandidateStatus = new URI("/position/updateCandidateStatus");
-  // Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
-  // CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_CANDIDATE_STATUS, this.mandatoryRequestParam,
-  // this.additionalRequestParam)).thenReturn(uriUpdateCandidateStatus);
-  // Mockito.when(
-  // this.httpClientHelper.invokePostType(uriUpdateCandidateStatus, this.listPositionIdString,
-  // ListStringRequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS))
-  // .thenReturn(this.gdnBaseResponse);
-  // GdnBaseRestResponse response = this.beirutApiClient.updateCandidatesStatus(REQUEST_ID,
-  // USERNAME,
-  // statusDTORequest, ID_CANDIDATE, listPositionIdString);
-  // Mockito.verify(this.httpClientHelper).getURI(HOST, PORT,
-  // CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_CANDIDATE_STATUS, this.mandatoryRequestParam,
-  // this.additionalRequestParam);
-  // Mockito.verify(this.httpClientHelper).invokePostType(uriUpdateCandidateStatus,
-  // this.listPositionIdString, ListStringRequest.class, typeRef, JSON,
-  // CONNECTION_TIMEOUT_IN_MS);
-  // }
+  @Test
+  public void testUpdateCandidateStatus() throws Exception {
+    objectMapper = new ObjectMapper();
+
+    String updateCandidateStatusRequestStringJson = FileUtils.readFileToString(
+        new File("src/test/resources/JSON/updateCandidateStatusRequestJson.json"));
+    UpdateCandidateStatusModelDTORequest updateCandidateStatusModelDTORequest =
+        objectMapper.readValue(updateCandidateStatusRequestStringJson,
+            UpdateCandidateStatusModelDTORequest.class);
+
+    URI uriUpdateCandidateStatus = new URI("/candidate/updateCandidateStatus");
+
+    Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
+        CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_CANDIDATE_STATUS, this.mandatoryRequestParam,
+        this.additionalRequestParam)).thenReturn(uriUpdateCandidateStatus);
+    Mockito.when(this.httpClientHelper.invokePostType(uriUpdateCandidateStatus,
+        updateCandidateStatusModelDTORequest, UpdateCandidateStatusModelDTORequest.class, typeRef,
+        JSON, CONNECTION_TIMEOUT_IN_MS)).thenReturn(gdnBaseResponse);
+
+    GdnBaseRestResponse response = this.beirutApiClient.updateCandidatesStatus(REQUEST_ID, USERNAME,
+        updateCandidateStatusModelDTORequest);
+
+    Mockito.verify(this.httpClientHelper).getURI(HOST, PORT,
+        CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_CANDIDATE_STATUS, this.mandatoryRequestParam,
+        this.additionalRequestParam);
+    Mockito.verify(this.httpClientHelper).invokePostType(uriUpdateCandidateStatus,
+        updateCandidateStatusModelDTORequest, UpdateCandidateStatusModelDTORequest.class, typeRef,
+        JSON, CONNECTION_TIMEOUT_IN_MS);
+  }
 
   @Test
   public void testUpdatePosition() throws Exception {
@@ -230,71 +240,4 @@ public class BeirutApiClientTest {
     // this.beirutApiClient.updatePosition(requestId, username, id, positionDTORequest)
   }
 
-  // @Test
-  // public void testFindCandidateByCreatedDateBetweenAndStoreId() throws Exception {
-  // URI uriFindCandidateByCreatedDate =
-  // new URI("/candidate/findCandidateByCreatedDateBetweenAndStoreId");
-  // this.additionalRequestParam = new HashMap<>();
-  // this.additionalRequestParam.put("start", String.valueOf(start));
-  // this.additionalRequestParam.put("end", String.valueOf(end));
-  // this.additionalRequestParam.put("page", String.valueOf(PAGE));
-  // this.additionalRequestParam.put("size", String.valueOf(SIZE));
-  // Mockito
-  // .when(this.httpClientHelper.getURI(HOST, PORT,
-  // CONTEXT_PATH_TEST + BeirutApiPath.FIND_CANDIDATE_BY_CREATED_DATE_BETWEEN_AND_STOREID,
-  // this.mandatoryRequestParam, this.additionalRequestParam))
-  // .thenReturn(uriFindCandidateByCreatedDate);
-  // Mockito
-  // .when(this.httpClientHelper.invokeGetSummary(uriFindCandidateByCreatedDate,
-  // CandidateDTOResponse.class, CONNECTION_TIMEOUT_IN_MS))
-  // .thenReturn(this.gdnRestListCandidate);
-  //
-  // GdnRestListResponse<CandidateDTOResponse> response = this.beirutApiClient
-  // .findCandidateByCreatedDateBetweenAndStoreId(REQUEST_ID, USERNAME, start, end, PAGE, SIZE);
-  //
-  // Mockito.verify(this.httpClientHelper).getURI(HOST, PORT,
-  // CONTEXT_PATH_TEST + BeirutApiPath.FIND_CANDIDATE_BY_CREATED_DATE_BETWEEN_AND_STOREID,
-  // this.mandatoryRequestParam, this.additionalRequestParam);
-  // Mockito.verify(this.httpClientHelper).invokeGetSummary(uriFindCandidateByCreatedDate,
-  // CandidateDTOResponse.class, CONNECTION_TIMEOUT_IN_MS);
-  // Assert.assertNotNull(gdnRestListCandidate);
-  // Assert.assertEquals(gdnRestListCandidate, response);
-  // }
-
-  // @Test
-  // public void testUpdatePosition() throws Exception {
-  // PositionDTORequest positionDTORequest = new PositionDTORequest();
-  // positionDTORequest.setTitle(TITLE);
-  // GdnBaseRestResponse gdnBaseRestUpdatePosition = new GdnBaseRestResponse(requestId);
-  //
-  // String path = "/position/updatePosition";
-  // Map<String, String> map = new HashMap<String, String>();
-  // map.put("id", ID);
-  //
-  // URIBuilder builder = new URIBuilder().setScheme("http")
-  // .setHost(HOST.replace("http" + "://", "")).setPath(CONTEXT_PATH + path).setPort(PORT)
-  // .addParameter(GdnMandatoryRequestParameterUtil.STORE_ID_KEY_PARAMETER, storeId)
-  // .addParameter(GdnMandatoryRequestParameterUtil.CHANNEL_ID_KEY_PARAMETER, channelId)
-  // .addParameter(GdnMandatoryRequestParameterUtil.REQUEST_ID_KEY_PARAMETER, requestId)
-  // .addParameter(GdnMandatoryRequestParameterUtil.CLIENT_ID_KEY_PARAMETER, clientId)
-  // .addParameter(GdnMandatoryRequestParameterUtil.USERNAME_KEY_PARAMETER, username)
-  // .addParameter(GdnMandatoryRequestParameterUtil.AUTHENTICATOR_KEY, authenticator)
-  // .addParameter("id", ID);
-  // URI uri = builder.build();
-  // System.out.println(uri.toString());
-  //
-  // Mockito
-  // .when(
-  // this.httpClientHelper.getURI(HOST,
-  // PORT, CONTEXT_PATH + path, MandatoryRequestParam.generateMandatoryRequestParam(
-  // storeId, channelId, clientId, requestId, username, username),
-  // map))
-  // .thenReturn(uri);
-  // PositionDTORequest r = new PositionDTORequest();
-  // r.setTitle("title");
-  // Mockito.when(this.httpClientHelper.invokePost(uri, positionDTORequest,
-  // PositionDTOResponse.class, CONNECTION_TIMEOUT_IN_MS)).thenReturn(gdnBaseRestUpdatePosition);
-  // this.beirutApiClient.updatePosition(requestId, username, ID, r);
-  //
-  // }
 }
