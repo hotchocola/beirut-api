@@ -12,11 +12,13 @@ import com.gdn.common.web.client.GdnBaseRestCrudClient;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
+import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
-import com.gdn.x.beirut.dto.request.StatusDTORequest;
+import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
+import com.gdn.x.beirut.dto.request.UpdatePositionModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
@@ -35,17 +37,16 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     setContextPath(contextPath);
   }
 
-  public GdnBaseRestResponse applyNewPosition(String requestId, String username, String idCandidate,
-      ListStringRequest listPositionIdStrings) throws Exception {
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put("idCandidate", idCandidate);
-    URI uri = generateURI("/candidate/applyNewPosition", requestId, username, map);
-    return invokePostType(uri, listPositionIdStrings, ListStringRequest.class,
-        MediaType.APPLICATION_JSON_VALUE, typeRef);
+  public GdnBaseRestResponse applyNewPosition(String requestId, String username,
+      ApplyNewPositionModelDTORequest applyNewPositionModelDTORequest) throws Exception {
+    URI uri = generateURI("/candidate/applyNewPosition", requestId, username, null);
+    return invokePostType(uri, applyNewPositionModelDTORequest,
+        ApplyNewPositionModelDTORequest.class, MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 
   public GdnBaseRestResponse deleteCandidate(String requestId, String username,
       ListStringRequest idsRequest) throws Exception {
+
     URI uri = generateURI("/candidate/deleteCandidate", requestId, username, null);
     return invokePostType(uri, idsRequest, ListStringRequest.class,
         MediaType.APPLICATION_JSON_VALUE, typeRef);
@@ -198,6 +199,7 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
       String requestId, String username, String query, String idCandidate, String idPosition)
           throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
+    map.put("query", query);
     map.put("idCandidate", idCandidate);
     map.put("idPosition", idPosition);
     URI uri = generateURI("/candidate/getCandidatePositionDetailByStoreIdWithLogs", requestId,
@@ -274,22 +276,20 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
   }
 
   public GdnBaseRestResponse updateCandidatesStatus(String requestId, String username,
-      StatusDTORequest status, String idPosition, ListStringRequest idCandidates) throws Exception {
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put("status", String.valueOf(status));
-    map.put("idPosition", idPosition);
-    map.put("idCandidates", String.valueOf(idCandidates));
-    URI uri = generateURI("/candidate/updateCandidateStatus", requestId, username, map);
-    return invokePostType(uri, idCandidates, ListStringRequest.class,
-        MediaType.APPLICATION_JSON_VALUE, typeRef);
+      UpdateCandidateStatusModelDTORequest updateCandidateStatusModelDTORequest) throws Exception {
+    // HashMap<String, String> map = new HashMap<String, String>();
+    // map.put("status", String.valueOf(status));
+    // map.put("idPosition", idPosition);
+    // map.put("idCandidates", String.valueOf(idCandidates));
+    URI uri = generateURI("/candidate/updateCandidateStatus", requestId, username, null);
+    return invokePostType(uri, updateCandidateStatusModelDTORequest,
+        UpdateCandidateStatusModelDTORequest.class, MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 
-  public GdnBaseRestResponse updatePosition(String requestId, String username, String id,
-      PositionDTORequest positionDTORequest) throws Exception {
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put("id", id);
-    URI uri = generateURI("/position/updatePosition", requestId, username, map);
-    return invokePostType(uri, positionDTORequest, PositionDTOResponse.class,
+  public GdnBaseRestResponse updatePosition(String requestId, String username,
+      UpdatePositionModelDTORequest updatePositionModelDTORequest) throws Exception {
+    URI uri = generateURI("/position/updatePosition", requestId, username, null);
+    return invokePostType(uri, updatePositionModelDTORequest, UpdatePositionModelDTORequest.class,
         MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 }

@@ -36,10 +36,11 @@ import com.gdn.common.web.param.PageableHelper;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
+import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
-import com.gdn.x.beirut.dto.request.StatusDTORequest;
+import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.entities.Candidate;
@@ -182,35 +183,20 @@ public class CandidateControllerTest {
   public void testApplyNewPosition() throws Exception {
     String uri = "/api/candidate/applyNewPosition";
 
-    Candidate candidate = new Candidate();
-    candidate.setId(ID);
-    candidate.setEmailAddress("blahblah");
-    candidate.setFirstName("blahblah");
-    candidate.setLastName("blahblah");
-    List<Position> positions = new ArrayList<>();
-    List<String> positionIds = new ArrayList<>();
-    for (int i = 0; i < 10; i++) {
-      Position position = new Position();
-      position.setTitle("Title : " + i);
-      position.setId(POSITION_ID + i);
-      position.setStoreId(STORE_ID);
-      positions.add(position);
-      positionIds.add(POSITION_ID + i);
-    }
-    ListStringRequest listStringRequest = new ListStringRequest();
-    listStringRequest.setValues(positionIds);
+    String applyNewPositionModelStringJson = FileUtils
+        .readFileToString(new File("src/test/resources/JSON/applyNewPositionRequest.json"));
+    ApplyNewPositionModelDTORequest applyNewPositionModelDTORequest = objectMapper
+        .readValue(applyNewPositionModelStringJson, ApplyNewPositionModelDTORequest.class);
 
-    String listStringJson =
-        FileUtils.readFileToString(new File("src/test/resources/JSON/markForDeleteJSON.json"));
     this.mockMVC
         .perform(
             MockMvcRequestBuilders.post(uri).param("clientId", CLIENT_ID).param("storeId", STORE_ID)
                 .param("requestId", REQUEST_ID).param("channelId", CHANNEL_ID)
-                .param("username", USERNAME).param("idCandidate", ID).content(listStringJson)
+                .param("username", USERNAME).content(applyNewPositionModelStringJson)
                 .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.status().isOk());
     this.candidateController.applyNewPosition(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME,
-        ID, listStringRequest);
+        applyNewPositionModelDTORequest);
 
     Mockito.verify(this.candidateService, Mockito.times(2)).applyNewPosition(Mockito.matches(ID),
         Mockito.anyListOf(String.class));
@@ -678,26 +664,29 @@ public class CandidateControllerTest {
   @Test
   public void testUpdateCandidatesStatus() throws Exception {
     String uri = "/api/candidate/updateCandidateStatus";
-    String content = "{  \"values\": [    \"1\" ]}";
-    List<String> idCandidates = new ArrayList<String>();
-    idCandidates.add("1");
-    String idPosition = "1";
+
+    String updateCandidateStatusStringJson = FileUtils.readFileToString(
+        new File("src/test/resources/JSON/updateCandidateStatusRequestJson.json"));
+    UpdateCandidateStatusModelDTORequest updateCandidateStatusModelDTORequest = objectMapper
+        .readValue(updateCandidateStatusStringJson, UpdateCandidateStatusModelDTORequest.class);
+    Status status = Status.valueOf(updateCandidateStatusModelDTORequest.getStatusDTORequest());
     Mockito.doNothing().when(this.candidateService).updateCandidateStatusBulk(STORE_ID,
-        idCandidates, idPosition, Status.APPLY);
-    ListStringRequest newListStringRequest = new ListStringRequest();
-    newListStringRequest.setValues(idCandidates);
+        updateCandidateStatusModelDTORequest.getIdCandidates(),
+        updateCandidateStatusModelDTORequest.getIdPosition(), status);
+
     this.mockMVC
         .perform(MockMvcRequestBuilders.post(uri).accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON).param("clientId", CLIENT_ID)
             .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
-            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("status", "APPLY")
-            .param("idPosition", idPosition).content(content))
+            .param("channelId", CHANNEL_ID).param("username", USERNAME)
+            .content(updateCandidateStatusStringJson))
         .andExpect(MockMvcResultMatchers.status().isOk());
 
     this.candidateController.updateCandidatesStatus(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
-        USERNAME, StatusDTORequest.APPLY, idPosition, newListStringRequest);
+        USERNAME, updateCandidateStatusModelDTORequest);
 
     Mockito.verify(this.candidateService, Mockito.times(2)).updateCandidateStatusBulk(STORE_ID,
-        idCandidates, idPosition, Status.APPLY);
+        updateCandidateStatusModelDTORequest.getIdCandidates(),
+        updateCandidateStatusModelDTORequest.getIdPosition(), status);
   }
 }

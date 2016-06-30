@@ -2,6 +2,7 @@ package com.gdn.x.beirut.clientsdk;
 
 public class BeirutApiPath {
   public static final String APPLY_NEW_POSITION = "/candidate/applyNewPosition";
+
   public static final String DELETE_CANDIDATE = "/candidate/deleteCandidate";
   public static final String DELETE_POSITION = "/position/deletePosition";
   public static final String FIND_CANDIDATE_BY_CREATED_DATE_BETWEEN_AND_STOREID =
@@ -24,7 +25,7 @@ public class BeirutApiPath {
       "/candidate/getAllCandidatesByStoreIdAndMarkForDeleteWithPageable";
   public static final String GET_ALL_CANDIDATE_BY_STORE_ID_WITH_PAGEABLE =
       "/candidate/getAllCandidatesByStoreIdWithPageable";
-  public static final String GET_ALL_POSITION_BY_STOREID = "/candidate/getAllPosition";
+  public static final String GET_ALL_POSITION_BY_STOREID = "/position/getAllPosition";
   public static final String GET_ALL_POSITION_WITH_PAGEABLE =
       "/position/getAllPositionWithPageable";
   public static final String GET_CANDIDATE_POSITION_BY_SOLR_QUERY =
