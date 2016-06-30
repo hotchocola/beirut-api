@@ -117,7 +117,7 @@ public class BeirutApiClientIT {
 
   }
 
-  // UPDATED IZAL
+  // UPDATED IZAL DONE
   @Test
   @Ignore
   public void testApplyNewPosition() throws Exception {
@@ -139,7 +139,7 @@ public class BeirutApiClientIT {
     beirutApiClient.applyNewPosition(REQUEST_ID, USERNAME, applyNewPositionModelDTORequest);
   }
 
-  // UPDATED IZAL
+  // UPDATED IZAL DONE
   @Test
   @Ignore
   public void testUpdateCandidatesStatus() throws Exception {
