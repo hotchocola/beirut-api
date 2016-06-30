@@ -14,9 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gdn.common.base.domainevent.publisher.DomainEventPublisher;
+import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.common.enums.ErrorCategory;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.PositionDAO;
+import com.gdn.x.beirut.domain.event.model.DomainEventName;
+import com.gdn.x.beirut.domain.event.model.PositionMarkForDelete;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 
@@ -29,10 +32,10 @@ public class PositionServiceImpl implements PositionService {
   private PositionDAO positionDAO;
 
   @Autowired
-  private EventService eventService;
+  private DomainEventPublisher domainEventPublisher;
 
   @Autowired
-  private DomainEventPublisher domainEventPublisher;
+  private GdnMapper gdnMapper;
 
   @Override
   @Deprecated
@@ -124,7 +127,10 @@ public class PositionServiceImpl implements PositionService {
     try {
       this.getPositionDao().save(positions);
       for (Position position : positions) {
-        eventService.markForDelete(position);
+        PositionMarkForDelete objectToPublish =
+            gdnMapper.deepCopy(position, PositionMarkForDelete.class);
+        domainEventPublisher.publish(objectToPublish, DomainEventName.POSITION_MARK_FOR_DELETE,
+            PositionMarkForDelete.class);
       }
     } catch (RuntimeException e) {
       throw e;
