@@ -5,13 +5,12 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -98,12 +97,10 @@ public class BeirutApiClientIT {
 
     FileInputStream inputFile =
         new FileInputStream(new File("src/test/resources/JSON/applyNewPositionRequest.json"));
-    MockMultipartFile mockMultipartFile =
-        new MockMultipartFile("file", "FileName", MediaType.MULTIPART_FORM_DATA_VALUE, inputFile);
 
     // inserting new candidate1
     beirutApiClient.insertNewCandidate(REQUEST_ID, USERNAME, candidateDTORequestString,
-        mockMultipartFile);
+        "applyNewPositionRequest.json", IOUtils.toByteArray(inputFile));
     // assign positionIds1 to the new candidate1
     String candidateDTORequestString1 = "{\"emailAddress\": \"asda@egamail.com1" + timestamp
         + "\",\"firstName\": \"asducup\",\"lastName\": \"sanusias\",\"phoneNumber\": \"11\",\"positionIds\": [";
@@ -116,12 +113,10 @@ public class BeirutApiClientIT {
 
     FileInputStream inputFile1 = new FileInputStream(
         new File("src/test/resources/JSON/updateCandidateStatusRequestJson.json"));
-    MockMultipartFile mockMultipartFile1 =
-        new MockMultipartFile("file", "FileName", MediaType.MULTIPART_FORM_DATA_VALUE, inputFile1);
 
     // inserting new candidate1
     beirutApiClient.insertNewCandidate(REQUEST_ID, USERNAME, candidateDTORequestString1,
-        mockMultipartFile1);
+        "updateCandidateStatusRequestJson.json", IOUtils.toByteArray(inputFile1));
 
     // get candidate
     resultCandidate =
