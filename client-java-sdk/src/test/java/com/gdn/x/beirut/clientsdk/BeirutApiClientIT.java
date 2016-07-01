@@ -1,5 +1,7 @@
 package com.gdn.x.beirut.clientsdk;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -17,7 +21,6 @@ import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
-import com.gdn.x.beirut.dto.request.CandidateDetailDTORequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.StatusDTORequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
@@ -93,12 +96,14 @@ public class BeirutApiClientIT {
         candidateDTORequestString.substring(0, candidateDTORequestString.length() - 1);
     candidateDTORequestString += "]}";
 
-    CandidateDetailDTORequest candidateDetailDTORequestDummy = new CandidateDetailDTORequest();
-    candidateDetailDTORequestDummy.setContent(new byte[] {67, 68, 69});
+    FileInputStream inputFile =
+        new FileInputStream(new File("src/test/resources/JSON/applyNewPositionRequest.json"));
+    MockMultipartFile mockMultipartFile =
+        new MockMultipartFile("file", "FileName", MediaType.MULTIPART_FORM_DATA_VALUE, inputFile);
 
     // inserting new candidate1
     beirutApiClient.insertNewCandidate(REQUEST_ID, USERNAME, candidateDTORequestString,
-        candidateDetailDTORequestDummy);
+        mockMultipartFile);
     // assign positionIds1 to the new candidate1
     String candidateDTORequestString1 = "{\"emailAddress\": \"asda@egamail.com1" + timestamp
         + "\",\"firstName\": \"asducup\",\"lastName\": \"sanusias\",\"phoneNumber\": \"11\",\"positionIds\": [";
@@ -109,12 +114,14 @@ public class BeirutApiClientIT {
         candidateDTORequestString1.substring(0, candidateDTORequestString1.length() - 1);
     candidateDTORequestString1 += "]}";
 
-    CandidateDetailDTORequest candidateDetailDTORequestDummy1 = new CandidateDetailDTORequest();
-    candidateDetailDTORequestDummy1.setContent(new byte[] {98, 99, 100});
+    FileInputStream inputFile1 = new FileInputStream(
+        new File("src/test/resources/JSON/updateCandidateStatusRequestJson.json"));
+    MockMultipartFile mockMultipartFile1 =
+        new MockMultipartFile("file", "FileName", MediaType.MULTIPART_FORM_DATA_VALUE, inputFile1);
 
     // inserting new candidate1
     beirutApiClient.insertNewCandidate(REQUEST_ID, USERNAME, candidateDTORequestString1,
-        candidateDetailDTORequestDummy1);
+        mockMultipartFile1);
 
     // get candidate
     resultCandidate =
