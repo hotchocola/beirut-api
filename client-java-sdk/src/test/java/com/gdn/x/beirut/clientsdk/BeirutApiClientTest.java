@@ -9,10 +9,10 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.entity.ContentType;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -104,7 +104,6 @@ public class BeirutApiClientTest {
   @InjectMocks
   private BeirutApiClient beirutApiClient;
 
-
   @SuppressWarnings("deprecation")
   @Before
   public void initialize() throws Exception {
@@ -147,6 +146,7 @@ public class BeirutApiClientTest {
   @Test
   public void testApplyNewPosition() throws Exception {
     objectMapper = new ObjectMapper();
+    @SuppressWarnings("deprecation")
     String applyNewPositionModelStringJson = FileUtils
         .readFileToString(new File("src/test/resources/JSON/applyNewPositionRequest.json"));
     ApplyNewPositionModelDTORequest applyNewPositionModelDTORequest = objectMapper
@@ -223,6 +223,11 @@ public class BeirutApiClientTest {
         CONNECTION_TIMEOUT_IN_MS);
     Assert.assertNotNull(gdnBaseResponse);
     Assert.assertEquals(gdnBaseResponse, response);
+  }
+
+  @Test
+  public void testFindCandidateByCreatedDateBetweenAndStoreId() throws Exception {
+    // TODO pake start sama end yang ada di attribut
   }
 
   @Test
@@ -497,6 +502,7 @@ public class BeirutApiClientTest {
     Assert.assertEquals(gdnRestListPositionDetailDTOResponse, response);
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void testInsertNewCandidate() throws Exception {
     this.additionalRequestParam = new HashMap<String, String>();
@@ -522,15 +528,13 @@ public class BeirutApiClientTest {
         new FileInputStream(new File("src/test/resources/JSON/applyNewPositionRequest.json"));
     FileInputStream fileMockResponse =
         new FileInputStream(new File("src/test/resources/JSON/fileMockResponse.json"));
-    HttpEntity httpEntity =
-        new ByteArrayEntity(IOUtils.toByteArray(fileMockResponse));
+    HttpEntity httpEntity = new ByteArrayEntity(IOUtils.toByteArray(fileMockResponse));
     Mockito.when(closableHttpResponse.getEntity()).thenReturn(httpEntity);
     GdnBaseRestResponse response = this.beirutApiClient.insertNewCandidate(REQUEST_ID, USERNAME,
         candidateDTORequestString, "exampleFileName", IOUtils.toByteArray(fileToUpload));
-    // TODO verify and assert
-    Mockito.verify(this.httpClientHelper, Mockito.times(1)).getURI(HOST, PORT,
-        CONTEXT_PATH_TEST + BeirutApiPath.INSERT_NEW_CANDIDATE, mandatoryRequestParam,
-        additionalRequestParam);
+    Mockito.verify(this.httpClientHelper, Mockito.times(1)).getURI(Mockito.eq(HOST),
+        Mockito.eq(PORT), Mockito.eq(CONTEXT_PATH_TEST + BeirutApiPath.INSERT_NEW_CANDIDATE),
+        Mockito.eq(mandatoryRequestParam), Mockito.any(Map.class));
     Mockito.verify(this.httpClientHelper, Mockito.times(1)).getClosableHttpConnectionSingleton();
     Mockito.verify(closeableHttpClient, Mockito.times(1)).execute(httpPost);
     Mockito.verify(closableHttpResponse, Mockito.times(1)).getStatusLine();
@@ -589,9 +593,15 @@ public class BeirutApiClientTest {
   }
 
   @Test
+  public void testUpdateCandidateInformation() throws Exception {
+    // TODO
+  }
+
+  @Test
   public void testUpdateCandidateStatus() throws Exception {
     objectMapper = new ObjectMapper();
 
+    @SuppressWarnings("deprecation")
     String updateCandidateStatusRequestStringJson = FileUtils.readFileToString(
         new File("src/test/resources/JSON/updateCandidateStatusRequestJson.json"));
     UpdateCandidateStatusModelDTORequest updateCandidateStatusModelDTORequest =
