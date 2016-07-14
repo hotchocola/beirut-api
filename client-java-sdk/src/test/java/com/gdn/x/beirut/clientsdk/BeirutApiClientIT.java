@@ -153,6 +153,7 @@ public class BeirutApiClientIT {
 
   // UPDATED IZAL DONE
   @Test
+  @Ignore
   public void testUpdateCandidateInformation() throws Exception {
     CandidateDTORequest updatedCandidate = new CandidateDTORequest();
     updatedCandidate.setId(resultCandidate.getContent().get(0).getId());
