@@ -31,7 +31,6 @@ import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
-import com.gdn.x.beirut.dto.request.UpdatePositionModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
@@ -342,9 +341,9 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
   }
 
   public GdnBaseRestResponse updatePosition(String requestId, String username,
-      UpdatePositionModelDTORequest updatePositionModelDTORequest) throws Exception {
+      PositionDTORequest positionDTORequest) throws Exception {
     URI uri = generateURI("/position/updatePosition", requestId, username, null);
-    return invokePostType(uri, updatePositionModelDTORequest, UpdatePositionModelDTORequest.class,
+    return invokePostType(uri, positionDTORequest, PositionDTORequest.class,
         MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 }
