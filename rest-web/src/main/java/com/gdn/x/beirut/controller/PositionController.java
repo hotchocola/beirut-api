@@ -20,7 +20,6 @@ import com.gdn.common.web.wrapper.response.GdnRestListResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
-import com.gdn.x.beirut.dto.request.UpdatePositionModelDTORequest;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 import com.gdn.x.beirut.dto.response.PositionDetailDTOResponse;
 import com.gdn.x.beirut.entities.Position;
@@ -183,10 +182,9 @@ public class PositionController {
   @ResponseBody
   public GdnBaseRestResponse updatePosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username,
-      @RequestBody UpdatePositionModelDTORequest updatePositionModelDTORequest) throws Exception {
+      @RequestParam String username, @RequestBody PositionDTORequest updatePositionModelDTORequest)
+          throws Exception {
     return new GdnBaseRestResponse(this.positionService.updatePositionTitle(storeId,
-        updatePositionModelDTORequest.getIdPositionTarget(),
-        updatePositionModelDTORequest.getTitle()));
+        updatePositionModelDTORequest.getId(), updatePositionModelDTORequest.getTitle()));
   }
 }

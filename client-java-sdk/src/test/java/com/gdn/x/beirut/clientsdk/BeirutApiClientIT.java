@@ -23,7 +23,6 @@ import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.StatusDTORequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
-import com.gdn.x.beirut.dto.request.UpdatePositionModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.dto.response.CandidatePositionSolrDTOResponse;
@@ -137,8 +136,6 @@ public class BeirutApiClientIT {
         listString.add(positionDTOResponse.getId());
       }
     }
-    // listPositionIdStrings.setValues(listString);
-
     ApplyNewPositionModelDTORequest applyNewPositionModelDTORequest =
         new ApplyNewPositionModelDTORequest();
     applyNewPositionModelDTORequest.setIdCandidate(idCandidate);
@@ -157,6 +154,7 @@ public class BeirutApiClientIT {
 
   // UPDATED IZAL DONE
   @Test
+  @Ignore
   public void testUpdateCandidateInformation() throws Exception {
     CandidateDTORequest updatedCandidate = new CandidateDTORequest();
     updatedCandidate.setId(resultCandidate.getContent().get(0).getId());
@@ -206,8 +204,6 @@ public class BeirutApiClientIT {
     updateCandidateStatusModelDTORequest.setStatusDTORequest(status.name());
     updateCandidateStatusModelDTORequest.setIdCandidates(listString);
 
-    // System.out.println("ini idCandidatenya : " + idCandidate);
-
     GdnBaseRestResponse response = beirutApiClient.updateCandidatesStatus(REQUEST_ID, USERNAME,
         updateCandidateStatusModelDTORequest);
     Assert.assertTrue(response.isSuccess());
@@ -225,12 +221,11 @@ public class BeirutApiClientIT {
     // PositionDTORequest newPosition = new PositionDTORequest();
     // newPosition.setTitle("New Title" + timestamp);
 
-    UpdatePositionModelDTORequest updatePositionModelDTORequest =
-        new UpdatePositionModelDTORequest();
-    updatePositionModelDTORequest.setIdPositionTarget(positionIds.get(0));
-    updatePositionModelDTORequest.setTitle("New Title" + timestamp);
+    PositionDTORequest positionDTORequest = new PositionDTORequest();
+    positionDTORequest.setId(positionIds.get(0));
+    positionDTORequest.setTitle("New Title" + timestamp);
 
-    beirutApiClient.updatePosition(REQUEST_ID, USERNAME, updatePositionModelDTORequest);
+    beirutApiClient.updatePosition(REQUEST_ID, USERNAME, positionDTORequest);
     GdnRestListResponse<PositionDTOResponse> result =
         beirutApiClient.getPositionByTitle(REQUEST_ID, USERNAME, "New Title" + timestamp);
     Assert.assertTrue(result.getContent().size() == 1);
