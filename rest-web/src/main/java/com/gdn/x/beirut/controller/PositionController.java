@@ -182,9 +182,9 @@ public class PositionController {
   @ResponseBody
   public GdnBaseRestResponse updatePosition(@RequestParam String clientId,
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
-      @RequestParam String username, @RequestBody PositionDTORequest updatePositionModelDTORequest)
+      @RequestParam String username, @RequestBody PositionDTORequest positionDTORequest)
           throws Exception {
     return new GdnBaseRestResponse(this.positionService.updatePositionTitle(storeId,
-        updatePositionModelDTORequest.getId(), updatePositionModelDTORequest.getTitle()));
+        updatePositionDTORequest.getId(), updatePositionDTORequest.getTitle()));
   }
 }
