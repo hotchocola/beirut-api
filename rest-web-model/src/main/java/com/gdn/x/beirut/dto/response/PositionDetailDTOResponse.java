@@ -7,6 +7,8 @@ public class PositionDetailDTOResponse extends BaseResponse {
   private static final long serialVersionUID = 3862586103531052338L;
   private String idPosition;
   private String positionTitle;
+  private String jobType;
+  private String jobDivision;
   private String candidateFirstName;
   private String candidateLastName;
   private String currentStatus;
@@ -25,6 +27,14 @@ public class PositionDetailDTOResponse extends BaseResponse {
 
   public String getIdPosition() {
     return idPosition;
+  }
+
+  public String getJobDivision() {
+    return jobDivision;
+  }
+
+  public String getJobType() {
+    return jobType;
   }
 
   public String getPositionTitle() {
@@ -47,9 +57,16 @@ public class PositionDetailDTOResponse extends BaseResponse {
     this.idPosition = idPosition;
   }
 
+  public void setJobDivision(String jobDivision) {
+    this.jobDivision = jobDivision;
+  }
+
+  public void setJobType(String jobType) {
+    this.jobType = jobType;
+  }
+
   public void setPositionTitle(String positionTitle) {
     this.positionTitle = positionTitle;
   }
-
 
 }

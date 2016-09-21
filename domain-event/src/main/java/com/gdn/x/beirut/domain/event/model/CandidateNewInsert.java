@@ -20,6 +20,10 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
 
   private String lastName;
 
+  private String jobDivision;
+
+  private String jobType;
+
   private String phoneNumber;
 
   private Date createdDate;
@@ -46,6 +50,14 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
 
   public String getIdPosition() {
     return idPosition;
+  }
+
+  public String getJobDivision() {
+    return jobDivision;
+  }
+
+  public String getJobType() {
+    return jobType;
   }
 
   public String getLastName() {
@@ -88,6 +100,14 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
     this.idPosition = idPosition;
   }
 
+  public void setJobDivision(String jobDivision) {
+    this.jobDivision = jobDivision;
+  }
+
+  public void setJobType(String jobType) {
+    this.jobType = jobType;
+  }
+
   public void setLastName(String lastName) {
     this.lastName = lastName;
   }
@@ -112,9 +132,9 @@ public class CandidateNewInsert extends GdnBaseDomainEventModel {
   public String toString() {
     return "CandidateNewInsert [storeId=" + storeId + ", idPosition=" + idPosition
         + ", idCandidate=" + idCandidate + ", emailAddress=" + emailAddress + ", firstName="
-        + firstName + ", lastName=" + lastName + ", phoneNumber=" + phoneNumber + ", createdDate="
-        + createdDate + ", title=" + title + ", status=" + status + ", toString()="
-        + super.toString() + "]";
+        + firstName + ", lastName=" + lastName + ", jobDivision=" + jobDivision + ", jobType="
+        + jobType + ", phoneNumber=" + phoneNumber + ", createdDate=" + createdDate + ", title="
+        + title + ", status=" + status + ", toString()=" + super.toString() + "]";
   }
 
 }

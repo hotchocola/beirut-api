@@ -14,12 +14,14 @@ import javax.persistence.Table;
 import com.gdn.common.base.entity.GdnBaseEntity;
 
 @Entity
-@Table(name = CandidateDetail.TABLE_NAME)
-public class CandidateDetail implements Serializable {
-
-  private static final long serialVersionUID = -5841108367030595782L;
-  public static final String TABLE_NAME = "candidate_detail";
-  public static final String COLUMN_CONTENT = "content";
+@Table(name = PositionDescription.TABLE_NAME)
+public class PositionDescription implements Serializable {
+  /**
+   *
+   */
+  private static final long serialVersionUID = 6328710858098199379L;
+  public static final String TABLE_NAME = "position_detail";
+  public static final String CONTENT_DESCRIPTION = "content_description";
   public static final String MEDIA_TYPE = "media_type";
   public static final String FILENAME = "filename";
 
@@ -27,34 +29,30 @@ public class CandidateDetail implements Serializable {
   private String id;
 
   @Lob
-  @Column(name = CandidateDetail.COLUMN_CONTENT, nullable = false, length = 12000)
-  private byte[] content;
+  @Column(name = PositionDescription.CONTENT_DESCRIPTION, nullable = false, length = 12000)
+  private byte[] contentDescription;
 
-  @Column(name = CandidateDetail.MEDIA_TYPE)
+  @Column(name = PositionDescription.MEDIA_TYPE)
   private String mediaType;
 
-  @Column(name = CandidateDetail.FILENAME)
+  @Column(name = PositionDescription.FILENAME)
   private String filename;
 
   @MapsId
   @OneToOne
   @JoinColumn(name = GdnBaseEntity.ID)
-  private Candidate candidate;
+  private Position position;
 
-  public CandidateDetail() {
+  public PositionDescription() {
     // nothing to do here
   }
 
-  public CandidateDetail(Candidate candidate) {
-    this.candidate = candidate;
+  public PositionDescription(Position position) {
+    this.position = position;
   }
 
-  public Candidate getCandidate() {
-    return candidate;
-  }
-
-  public byte[] getContent() {
-    return content;
+  public byte[] getContentDescription() {
+    return contentDescription;
   }
 
   public String getFilename() {
@@ -69,12 +67,12 @@ public class CandidateDetail implements Serializable {
     return mediaType;
   }
 
-  public void setCandidate(Candidate candidate) {
-    this.candidate = candidate;
+  public Position getPosition() {
+    return position;
   }
 
-  public void setContent(byte[] content) {
-    this.content = content;
+  public void setContentDescription(byte[] contentDescription) {
+    this.contentDescription = contentDescription;
   }
 
   public void setFilename(String filename) {
@@ -87,5 +85,9 @@ public class CandidateDetail implements Serializable {
 
   public void setMediaType(String mediaType) {
     this.mediaType = mediaType;
+  }
+
+  public void setPosition(Position position) {
+    this.position = position;
   }
 }

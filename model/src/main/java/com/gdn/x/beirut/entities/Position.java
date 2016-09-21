@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.gdn.common.base.entity.GdnBaseEntity;
@@ -22,17 +23,21 @@ public class Position extends GdnBaseEntity {
   public static final String DESCRIPTION = "description";
   public static final String JOB_TYPE = "job_type";
   public static final String JOB_DIVISION = "job_division";
+
   @Column(name = Position.COLUMN_TITLE)
   private String title;
 
-  @Column(name = Position.DESCRIPTION)
-  private String description;
   @Column(name = Position.JOB_TYPE)
   private String jobType;
+
   @Column(name = Position.JOB_DIVISION)
   private String jobDivision;
+
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "position")
   private List<CandidatePosition> candidatePositions = new ArrayList<CandidatePosition>();
+
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "position")
+  private PositionDescription positionDescription;
 
   public Position() {
     // nothing to do here
@@ -46,16 +51,16 @@ public class Position extends GdnBaseEntity {
     return candidatePositions;
   }
 
-  public String getDescription() {
-    return description;
-  }
-
   public String getJobDivision() {
     return jobDivision;
   }
 
   public String getJobType() {
     return jobType;
+  }
+
+  public PositionDescription getPositionDescription() {
+    return positionDescription;
   }
 
   public String getTitle() {
@@ -66,16 +71,16 @@ public class Position extends GdnBaseEntity {
     this.candidatePositions = candidatePositions;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
   public void setJobDivision(String jobDivision) {
     this.jobDivision = jobDivision;
   }
 
   public void setJobType(String jobType) {
     this.jobType = jobType;
+  }
+
+  public void setPositionDescription(PositionDescription positionDetail) {
+    this.positionDescription = positionDetail;
   }
 
   public void setTitle(String title) {

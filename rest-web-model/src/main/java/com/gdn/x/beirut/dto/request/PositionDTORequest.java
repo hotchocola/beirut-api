@@ -7,23 +7,18 @@ public class PositionDTORequest extends BaseRequest {
   private static final long serialVersionUID = -8589947552434752350L;
   private String id;
   private String title;
-  private String description;
   private String jobType;
   private String jobDivision;
-
-  private String getDescription() {
-    return description;
-  }
 
   public String getId() {
     return id;
   }
 
-  private String getJobDivision() {
+  public String getJobDivision() {
     return jobDivision;
   }
 
-  private String getJobType() {
+  public String getJobType() {
     return jobType;
   }
 
@@ -31,19 +26,15 @@ public class PositionDTORequest extends BaseRequest {
     return title;
   }
 
-  private void setDescription(String description) {
-    this.description = description;
-  }
-
   public void setId(String id) {
     this.id = id;
   }
 
-  private void setJobDivision(String jobDivision) {
+  public void setJobDivision(String jobDivision) {
     this.jobDivision = jobDivision;
   }
 
-  private void setJobType(String jobType) {
+  public void setJobType(String jobType) {
     this.jobType = jobType;
   }
 
@@ -54,4 +45,5 @@ public class PositionDTORequest extends BaseRequest {
   public String toStringz() {
     return "PositionDTORequest [title=" + title + "]";
   }
+
 }
