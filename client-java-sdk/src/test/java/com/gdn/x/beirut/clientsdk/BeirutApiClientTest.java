@@ -94,6 +94,7 @@ public class BeirutApiClientTest {
   private HashMap<String, String> additionalRequestParam;
   private final ListStringRequest listPositionIdString = new ListStringRequest();
   private String candidateDTORequestString;
+  private String positionDTORequestString;
   private final Long start = new Long(0);
   private final Long end = new Long(99999999);
 
@@ -114,6 +115,8 @@ public class BeirutApiClientTest {
     initMocks(this);
     candidateDTORequestString = FileUtils
         .readFileToString(new File("src/test/resources/JSON/candidateDTORequestString.txt"));
+    positionDTORequestString = FileUtils
+        .readFileToString(new File("src/test/resources/JSON/positionDTORequestString.txt"));
     this.gdnBaseResponse = new GdnBaseRestResponse(REQUEST_ID);
     List<String> list = new ArrayList<String>();
     list.add("ad");
@@ -561,27 +564,51 @@ public class BeirutApiClientTest {
     Assert.assertTrue(response.isSuccess());
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void testInsertNewPosition() throws Exception {
+    this.additionalRequestParam = new HashMap<String, String>();
+    this.additionalRequestParam.put("positionDTORequestString", positionDTORequestString);
+    // Generate URI
     URI uriInsertNewPosition = new URI("/position/insertNewPosition");
     Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
-        CONTEXT_PATH_TEST + BeirutApiPath.INSERT_NEW_POSITION, this.mandatoryRequestParam,
-        this.additionalRequestParam)).thenReturn(uriInsertNewPosition);
-    Mockito
-        .when(this.httpClientHelper.invokePostType(uriInsertNewPosition, this.positionDTORequest,
-            PositionDTORequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS))
-        .thenReturn(this.gdnBaseResponse);
+        CONTEXT_PATH_TEST + BeirutApiPath.INSERT_NEW_POSITION, mandatoryRequestParam,
+        additionalRequestParam)).thenReturn(uriInsertNewPosition);
+    // Generate HttpPost
+    HttpPost httpPost = new HttpPost(uriInsertNewPosition);
+    httpPost.setConfig(RequestConfig.custom().setSocketTimeout(CONNECTION_TIMEOUT_IN_MS)
+        .setConnectTimeout(CONNECTION_TIMEOUT_IN_MS).build());
+    // Mock createNewHttpPost
+    Mockito.when(this.httpClientHelper.createNewHttpPost(Mockito.any(URI.class),
+        Mockito.eq(CONNECTION_TIMEOUT_IN_MS))).thenReturn(httpPost);
+    // Mock Closeable
+    CloseableHttpClient closeableHttpClient = Mockito.mock(CloseableHttpClient.class);
+    // Mock getClosable httpConnectionSingleton
+    Mockito.when(this.httpClientHelper.getClosableHttpConnectionSingleton())
+        .thenReturn(closeableHttpClient);
+    // Mock Response
+    CloseableHttpResponse closableHttpResponse = Mockito.mock(CloseableHttpResponse.class);
+    Mockito.when(closeableHttpClient.execute(httpPost)).thenReturn(closableHttpResponse);
+    StatusLine statusLine = Mockito.mock(StatusLine.class);
+    Mockito.when(closableHttpResponse.getStatusLine()).thenReturn(statusLine);
+    Mockito.when(statusLine.getStatusCode()).thenReturn(200);
+    FileInputStream fileMockResponse =
+        new FileInputStream(new File("src/test/resources/JSON/fileMockResponse.json"));
+    HttpEntity httpEntity = new ByteArrayEntity(IOUtils.toByteArray(fileMockResponse));
+    Mockito.when(closableHttpResponse.getEntity()).thenReturn(httpEntity);
 
-    GdnBaseRestResponse response =
-        this.beirutApiClient.insertNewPosition(REQUEST_ID, USERNAME, positionDTORequest);
 
-    Mockito.verify(this.httpClientHelper).getURI(HOST, PORT,
-        CONTEXT_PATH_TEST + BeirutApiPath.INSERT_NEW_POSITION, this.mandatoryRequestParam,
-        this.additionalRequestParam);
-    Mockito.verify(this.httpClientHelper).invokePostType(uriInsertNewPosition,
-        this.positionDTORequest, PositionDTORequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS);
-    Assert.assertNotNull(gdnBaseResponse);
-    Assert.assertEquals(gdnBaseResponse, response);
+    GdnBaseRestResponse response = this.beirutApiClient.insertNewPosition(REQUEST_ID, USERNAME,
+        positionDTORequestString, this.file.getOriginalFilename(), this.file.getBytes());
+    Mockito.verify(this.httpClientHelper, Mockito.times(1)).getURI(Mockito.eq(HOST),
+        Mockito.eq(PORT), Mockito.eq(CONTEXT_PATH_TEST + BeirutApiPath.INSERT_NEW_POSITION),
+        Mockito.eq(mandatoryRequestParam), Mockito.any(Map.class));
+    Mockito.verify(this.httpClientHelper, Mockito.times(1)).getClosableHttpConnectionSingleton();
+    Mockito.verify(closeableHttpClient, Mockito.times(1)).execute(httpPost);
+    Mockito.verify(closableHttpResponse, Mockito.times(1)).getStatusLine();
+    Mockito.verify(statusLine, Mockito.times(1)).getStatusCode();
+    Mockito.verify(closableHttpResponse, Mockito.times(1)).getEntity();
+    Assert.assertTrue(response.isSuccess());
   }
 
   @Test
