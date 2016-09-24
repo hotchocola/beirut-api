@@ -24,6 +24,10 @@ public class ApplyNewPosition extends GdnBaseDomainEventModel {
 
   private Date createdDate;
 
+  private String jobType;
+
+  private String jobDivision;
+
   private String title;
 
   private String status;
@@ -46,6 +50,14 @@ public class ApplyNewPosition extends GdnBaseDomainEventModel {
 
   public String getIdPosition() {
     return idPosition;
+  }
+
+  public String getJobDivision() {
+    return jobDivision;
+  }
+
+  public String getJobType() {
+    return jobType;
   }
 
   public String getLastName() {
@@ -76,6 +88,7 @@ public class ApplyNewPosition extends GdnBaseDomainEventModel {
     this.emailAddress = emailAddress;
   }
 
+
   public void setFirstName(String firstName) {
     this.firstName = firstName;
   }
@@ -84,9 +97,16 @@ public class ApplyNewPosition extends GdnBaseDomainEventModel {
     this.idCandidate = idCandidate;
   }
 
-
   public void setIdPosition(String idPosition) {
     this.idPosition = idPosition;
+  }
+
+  public void setJobDivision(String jobDivision) {
+    this.jobDivision = jobDivision;
+  }
+
+  public void setJobType(String jobType) {
+    this.jobType = jobType;
   }
 
   public void setLastName(String lastName) {
@@ -114,8 +134,8 @@ public class ApplyNewPosition extends GdnBaseDomainEventModel {
     return "ApplyNewPosition [storeId=" + storeId + ", idPosition=" + idPosition + ", idCandidate="
         + idCandidate + ", emailAddress=" + emailAddress + ", firstName=" + firstName
         + ", lastName=" + lastName + ", phoneNumber=" + phoneNumber + ", createdDate=" + createdDate
-        + ", title=" + title + ", status=" + status + ", toString()=" + super.toString() + "]";
+        + ", jobType=" + jobType + ", jobDivision=" + jobDivision + ", title=" + title + ", status="
+        + status + ", toString()=" + super.toString() + "]";
   }
-
 
 }

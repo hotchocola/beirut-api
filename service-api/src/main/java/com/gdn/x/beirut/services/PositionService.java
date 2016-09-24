@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.gdn.x.beirut.entities.Position;
+import com.gdn.x.beirut.entities.PositionDescription;
 
 public interface PositionService {
 
@@ -20,6 +21,9 @@ public interface PositionService {
   public List<Position> getPositionByStoreIdAndMarkForDelete(String storeId, boolean markForDelete);
 
   public List<Position> getPositionByTitle(String title, String storeId);
+
+  public PositionDescription getPositionDescriptionAndStoreId(String id, String storeId)
+      throws Exception;
 
   public Position getPositionDetailByIdAndStoreId(String id, String storeId) throws Exception;
 

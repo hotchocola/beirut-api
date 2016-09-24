@@ -282,12 +282,6 @@ public class CandidateController {
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestParam String id) throws Exception {
     CandidateDetail candidate = this.candidateService.getCandidateDetailAndStoreId(id, storeId);
-    // CandidateDetailDTOResponse candetres =
-    // getGdnMapper().deepCopy(candidate, CandidateDetailDTOResponse.class);
-    // File file = new File("");
-    // FileUtils.writeByteArrayToFile(file, candidate.getContent());
-    // return new CommonsMultipartFile(new DiskFileItemFactory(12000, file).createItem(
-    // "Curriculum Vitae", MediaType.MULTIPART_FORM_DATA_VALUE, true, "CurriculumVitae"));
     return candidate.getContent();
   }
 
@@ -425,6 +419,8 @@ public class CandidateController {
     CandidateDetail candidateDetail = new CandidateDetail();
     candidateDetail.setContent(file.getBytes());
     candidateDetail.setCandidate(newCandidate);
+    candidateDetail.setFilename(file.getOriginalFilename());
+    candidateDetail.setMediaType(file.getContentType());
     newCandidate.setCandidateDetail(candidateDetail);
     newCandidate.setStoreId(storeId);
     Candidate existingCandidate =

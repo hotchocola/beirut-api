@@ -1,6 +1,9 @@
 package com.gdn.x.beirut.services;
 
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.ArrayList;
@@ -16,6 +19,7 @@ import org.mockito.Mockito;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.PositionDAO;
 import com.gdn.x.beirut.entities.Position;
+import com.gdn.x.beirut.entities.PositionDescription;
 
 public class PositionServiceTest {
 
@@ -30,7 +34,12 @@ public class PositionServiceTest {
   private PositionServiceImpl service;
 
   private Position position;
+
   private final List<Position> positions = new ArrayList<Position>();
+
+  private Position positionWithDescription;
+
+  private PositionDescription positionDescription;
 
 
 
@@ -60,6 +69,12 @@ public class PositionServiceTest {
     Mockito.when(this.repository.save(this.position)).thenReturn(this.position);
     List<String> aa = new ArrayList<String>();
     aa.add("1");
+    positionDescription = new PositionDescription();
+    this.positionWithDescription = new Position();
+    this.positionWithDescription.setId(DEFAULT_ID);
+    this.positionWithDescription.setStoreId(STORE_ID);
+    this.positionWithDescription.setPositionDescription(this.positionDescription);
+
   }
 
   @SuppressWarnings("deprecation")
@@ -142,6 +157,18 @@ public class PositionServiceTest {
     this.service.getPositionByTitle("TITLE", STORE_ID);
     Mockito.verify(this.repository, Mockito.times(2))
         .findByTitleContainingAndStoreIdAndMarkForDelete("TITLE", STORE_ID, false);
+  }
+
+  @Test
+  public void testGetPositionDescriptionAndStoreId() throws Exception {
+    when(this.repository.findByStoreIdAndId(STORE_ID, DEFAULT_ID))
+        .thenReturn(this.positionWithDescription);
+    // Black Box Test
+    assertTrue(this.service.getPositionDescriptionAndStoreId(DEFAULT_ID,
+        STORE_ID) == this.positionDescription);
+    // White Box Test
+    this.service.getPositionDescriptionAndStoreId(DEFAULT_ID, STORE_ID);
+    verify(this.repository, times(2)).findByStoreIdAndId(STORE_ID, DEFAULT_ID);
   }
 
   @Test

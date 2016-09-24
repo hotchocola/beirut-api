@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -34,6 +36,7 @@ import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
+import com.gdn.x.beirut.entities.PositionDescription;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.services.PositionService;
 
@@ -98,6 +101,8 @@ public class PositionControllerTest {
         return destination;
       }
     };
+    objectMapper = new ObjectMapper();
+    this.positionController.setObjectMapper(objectMapper);
     this.positionController.setGdnMapper(this.gdnMapper);
     this.position.setId(ID);
     this.position.setTitle(TITLE);
@@ -196,6 +201,28 @@ public class PositionControllerTest {
   }
 
   @Test
+  public void testGetPositionDescriptionAndStoreId() throws Exception {
+    String uri = "/api/position/getPositionDescriptionAndStoreId";
+    PositionDescription mockPositionDescription = new PositionDescription();
+    mockPositionDescription.setPosition(position);
+    mockPositionDescription.setContentDescription(new byte[] {123, 45, 67});
+    Mockito.when(this.positionService.getPositionDescriptionAndStoreId(ID, STORE_ID))
+        .thenReturn(mockPositionDescription);
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.get(uri).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("id", ID))
+        .andExpect(status().isOk());
+    byte[] result = this.positionController.getPositionDescriptionAndStoreId(CLIENT_ID, STORE_ID,
+        REQUEST_ID, CHANNEL_ID, USERNAME, ID);
+    Mockito.verify(this.positionService, Mockito.times(2)).getPositionDescriptionAndStoreId(ID,
+        STORE_ID);
+    Assert.assertTrue(result[0] == 123);
+    Assert.assertTrue(result[1] == 45);
+    Assert.assertTrue(result[2] == 67);
+  }
+
+  @Test
   public void testGetPositionDetailById() throws Exception {
     Candidate candidate = new Candidate();
     candidate.setFirstName("John Doe");
@@ -242,17 +269,33 @@ public class PositionControllerTest {
   @Test
   public void testInsertNewPosition() throws Exception {
     String uri = "insertNewPosition";
-    String positionDTORequestJson = "{\"id\":\"id\",\"title\":\"title\"}";
-    Position temp = this.gdnMapper.deepCopy(this.positionDTORequest, Position.class);
-    Mockito.when(this.positionService.insertNewPosition(temp)).thenReturn(temp);
-    this.mockMVC.perform(MockMvcRequestBuilders.post(UriBasePath + uri)
-        .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
-        .param("clientId", CLIENT_ID).param("storeId", STORE_ID).param("requestId", REQUEST_ID)
-        .param("channelId", CHANNEL_ID).param("username", USERNAME).content(positionDTORequestJson))
-        .andExpect(MockMvcResultMatchers.status().isOk());
+
+    String positionDTORequestString = FileUtils
+        .readFileToString(new File("src/test/resources/JSON/positionDTORequestString.txt"));
+    FileInputStream inputFile = new FileInputStream(new File("src/test/resources/JSON/file.txt"));
+
+    MockMultipartFile file =
+        new MockMultipartFile("file", "file.txt", "multipart/form-data", inputFile);
+
+    PositionDTORequest positionDTORequest =
+        objectMapper.readValue(positionDTORequestString, PositionDTORequest.class);
+    Position newPosition = gdnMapper.deepCopy(positionDTORequest, Position.class);
+
+
+    Mockito.when(this.positionService.insertNewPosition(Mockito.eq(newPosition)))
+        .thenReturn(newPosition);
+
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.fileUpload(UriBasePath + uri).file(file)
+            .param("clientId", CLIENT_ID).param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME)
+            .param("positionDTORequestString", positionDTORequestString))
+        .andExpect(status().isOk());
+
     this.positionController.insertNewPosition(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME,
-        this.positionDTORequest);
-    Mockito.verify(this.positionService, Mockito.times(2)).insertNewPosition(temp);
+        positionDTORequestString, file);
+
+    Mockito.verify(positionService, Mockito.times(2)).insertNewPosition(newPosition);
   }
 
   @Test

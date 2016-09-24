@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdn.common.client.GdnRestClientConfiguration;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
@@ -63,10 +64,12 @@ public class BeirutApiClientIT {
       positionDTORequest.setTitle("Software Developer Division " + i + " " + timestamp);
       positionDTORequests.add(positionDTORequest);
     }
-
     // insert Position
+    ObjectMapper objectMapper = new ObjectMapper();
+    byte[] contentDescription = {69, 103, 97};
     for (PositionDTORequest positionDTORequest : positionDTORequests) {
-      beirutApiClient.insertNewPosition(REQUEST_ID, USERNAME, positionDTORequest);
+      beirutApiClient.insertNewPosition(REQUEST_ID, USERNAME,
+          objectMapper.writeValueAsString(positionDTORequest), "filename.txt", contentDescription);
     }
 
     // get Position ids

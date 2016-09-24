@@ -22,6 +22,7 @@ import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.domain.event.model.PositionMarkForDelete;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
+import com.gdn.x.beirut.entities.PositionDescription;
 
 @Service(value = "positionService")
 @Transactional(readOnly = true)
@@ -79,6 +80,18 @@ public class PositionServiceImpl implements PositionService {
   }
 
   @Override
+  public PositionDescription getPositionDescriptionAndStoreId(String id, String storeId)
+      throws Exception {
+    Position position = this.getPosition(storeId, id);
+    if (position.getStoreId().equals(storeId)) {
+      Hibernate.initialize(position.getPositionDescription());
+      return position.getPositionDescription();
+    } else {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND, "data not found, store id");
+    }
+  }
+
+  @Override
   public Position getPositionDetailByIdAndStoreId(String id, String storeId) throws Exception {
     Position position = this.positionDAO.findByIdAndStoreIdAndMarkForDelete(id, storeId, false);
     if (position == null) {
@@ -97,11 +110,10 @@ public class PositionServiceImpl implements PositionService {
   @Override
   @Transactional(readOnly = false)
   public Position insertNewPosition(Position position) {
-    for (CandidatePosition iterable_element : position.getCandidatePositions()) {
-      iterable_element.setPosition(position);
-    }
+    // for (CandidatePosition iterable_element : position.getCandidatePositions()) {
+    // iterable_element.setPosition(position);
+    // }
     return this.getPositionDao().save(position);
-
   }
 
   @Override

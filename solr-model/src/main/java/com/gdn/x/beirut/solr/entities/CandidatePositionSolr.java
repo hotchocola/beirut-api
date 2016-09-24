@@ -33,6 +33,12 @@ public class CandidatePositionSolr extends GdnBaseSolrEntity {
   private Date createdDate;
 
   @Field
+  private String jobType;
+
+  @Field
+  private String jobDivision;
+
+  @Field
   private String title;
 
   @Field
@@ -56,6 +62,14 @@ public class CandidatePositionSolr extends GdnBaseSolrEntity {
 
   public String getIdPosition() {
     return idPosition;
+  }
+
+  public String getJobDivision() {
+    return jobDivision;
+  }
+
+  public String getJobType() {
+    return jobType;
   }
 
   public String getLastName() {
@@ -94,6 +108,14 @@ public class CandidatePositionSolr extends GdnBaseSolrEntity {
     this.idPosition = idPosition;
   }
 
+  public void setJobDivision(String jobDivision) {
+    this.jobDivision = jobDivision;
+  }
+
+  public void setJobType(String jobType) {
+    this.jobType = jobType;
+  }
+
   public void setLastName(String lastName) {
     this.lastName = lastName;
   }
@@ -112,8 +134,10 @@ public class CandidatePositionSolr extends GdnBaseSolrEntity {
 
   @Override
   public String toString() {
-    return String.format(
-        "CandidateSolr [emailAddress=%s, firstName=%s, lastName=%s, phoneNumber=%s, status=%s, title=%s, toString()=%s]",
-        emailAddress, firstName, lastName, phoneNumber, status, title, super.toString());
+    return "CandidatePositionSolr [idCandidate=" + idCandidate + ", idPosition=" + idPosition
+        + ", emailAddress=" + emailAddress + ", firstName=" + firstName + ", lastName=" + lastName
+        + ", phoneNumber=" + phoneNumber + ", createdDate=" + createdDate + ", jobType=" + jobType
+        + ", jobDivision=" + jobDivision + ", title=" + title + ", status=" + status
+        + ", toString()=" + super.toString() + "]";
   }
 }
