@@ -11,4 +11,6 @@ public class DomainEventName {
       "com.gdn.x.beirut.candidate.apply.new.position";
   public static final String CANDIDATE_UPDATE_INFORMATION =
       "com.gdn.x.beirut.candidate.update.information";
+  public static final String POSITION_UPDATE_INFORMATION =
+      "com.gdn.x.beirut.position.update.information";
 }

@@ -40,7 +40,7 @@ public class BeirutApiPath {
   public static final String INSERT_NEW_POSITION = "/position/insertNewPosition";
   public static final String UPDATE_CANDIDATE_DETAIL = "/candidate/updateCandidateDetail";
   public static final String UPDATE_CANDIDATE_STATUS = "/candidate/updateCandidateStatus";
-  public static final String UPDATE_POSITION = "/position/updatePosition";
+  public static final String UPDATE_POSITION_INFORMATION = "/position/updatePositionInformation";
 
 
 }

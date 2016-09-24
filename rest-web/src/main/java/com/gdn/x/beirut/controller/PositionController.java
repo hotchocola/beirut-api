@@ -224,7 +224,7 @@ public class PositionController {
     this.objectMapper = objectMapper;
   }
 
-  @RequestMapping(value = "updatePosition", method = RequestMethod.POST,
+  @RequestMapping(value = "updatePositionInformation", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "update position", notes = "mengganti posisi.")
@@ -233,7 +233,8 @@ public class PositionController {
       @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
       @RequestParam String username, @RequestBody PositionDTORequest positionDTORequest)
           throws Exception {
-    return new GdnBaseRestResponse(this.positionService.updatePositionTitle(storeId,
-        positionDTORequest.getId(), positionDTORequest.getTitle()));
+    Position position = gdnMapper.deepCopy(positionDTORequest, Position.class);
+    position.setStoreId(storeId);
+    return new GdnBaseRestResponse(this.positionService.updatePositionInformation(position));
   }
 }

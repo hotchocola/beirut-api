@@ -228,7 +228,7 @@ public class BeirutApiClientIT {
     positionDTORequest.setId(positionIds.get(0));
     positionDTORequest.setTitle("New Title" + timestamp);
 
-    beirutApiClient.updatePosition(REQUEST_ID, USERNAME, positionDTORequest);
+    beirutApiClient.updatePositionInformation(REQUEST_ID, USERNAME, positionDTORequest);
     GdnRestListResponse<PositionDTOResponse> result =
         beirutApiClient.getPositionByTitle(REQUEST_ID, USERNAME, "New Title" + timestamp);
     Assert.assertTrue(result.getContent().size() == 1);

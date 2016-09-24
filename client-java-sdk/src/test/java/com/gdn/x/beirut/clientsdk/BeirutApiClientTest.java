@@ -699,25 +699,24 @@ public class BeirutApiClientTest {
   }
 
   @Test
-  public void testUpdatePosition() throws Exception {
+  public void testUpdatePositionInformation() throws Exception {
     objectMapper = new ObjectMapper();
     String updatePositionRequestJson = "{\"id\":\"id\",\"title\":\"title\"}";
     PositionDTORequest positionDTORequest =
         objectMapper.readValue(updatePositionRequestJson, PositionDTORequest.class);
 
-    URI uriUpdatePosition = new URI("/position/updatePosition");
-    Mockito.when(
-        this.httpClientHelper.getURI(HOST, PORT, CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_POSITION,
-            this.mandatoryRequestParam, this.additionalRequestParam))
-        .thenReturn(uriUpdatePosition);
+    URI uriUpdatePosition = new URI("/position/updatePositionInformation");
+    Mockito.when(this.httpClientHelper.getURI(HOST, PORT,
+        CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_POSITION_INFORMATION, this.mandatoryRequestParam,
+        this.additionalRequestParam)).thenReturn(uriUpdatePosition);
     Mockito
         .when(this.httpClientHelper.invokePostType(uriUpdatePosition, positionDTORequest,
             PositionDTORequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS))
         .thenReturn(gdnBaseResponse);
     GdnBaseRestResponse response =
-        this.beirutApiClient.updatePosition(REQUEST_ID, USERNAME, positionDTORequest);
+        this.beirutApiClient.updatePositionInformation(REQUEST_ID, USERNAME, positionDTORequest);
     Mockito.verify(this.httpClientHelper).getURI(HOST, PORT,
-        CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_POSITION, this.mandatoryRequestParam,
+        CONTEXT_PATH_TEST + BeirutApiPath.UPDATE_POSITION_INFORMATION, this.mandatoryRequestParam,
         this.additionalRequestParam);
     Mockito.verify(this.httpClientHelper).invokePostType(uriUpdatePosition, positionDTORequest,
         PositionDTORequest.class, typeRef, JSON, CONNECTION_TIMEOUT_IN_MS);

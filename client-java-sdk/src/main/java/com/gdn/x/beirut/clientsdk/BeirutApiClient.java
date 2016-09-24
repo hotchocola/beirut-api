@@ -350,9 +350,18 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
         UpdateCandidateStatusModelDTORequest.class, MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 
-  public GdnBaseRestResponse updatePosition(String requestId, String username,
+  public GdnBaseRestResponse updatePositionDescription(String requestId, String username,
+      String idPosition, String filename, byte[] content) throws Exception {
+    HashMap<String, String> additionalParameterMap = new HashMap<String, String>();
+    additionalParameterMap.put("idPosition", idPosition);
+    HttpPost httpPost = generateMultipartHttpPost("/position/updatePositionDescription", content,
+        requestId, filename, username, additionalParameterMap);
+    return sendMultipartFile(httpPost);
+  }
+
+  public GdnBaseRestResponse updatePositionInformation(String requestId, String username,
       PositionDTORequest positionDTORequest) throws Exception {
-    URI uri = generateURI("/position/updatePosition", requestId, username, null);
+    URI uri = generateURI("/position/updatePositionInformation", requestId, username, null);
     return invokePostType(uri, positionDTORequest, PositionDTORequest.class,
         MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
