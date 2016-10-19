@@ -16,7 +16,7 @@ public interface PositionService {
 
   public Position getPosition(String storeId, String positionId) throws Exception;
 
-  public List<Position> getPositionByIds(List<String> positionIds);
+  public Position getPositionByStoreIdAndId(String storeId, String id);
 
   public List<Position> getPositionByStoreIdAndMarkForDelete(String storeId, boolean markForDelete);
 
@@ -31,5 +31,5 @@ public interface PositionService {
 
   public void markForDeletePosition(String storeId, List<String> id) throws Exception;
 
-  public boolean updatePositionTitle(String storeId, String id, String title) throws Exception;
+  public boolean updatePositionInformation(Position position) throws Exception;
 }

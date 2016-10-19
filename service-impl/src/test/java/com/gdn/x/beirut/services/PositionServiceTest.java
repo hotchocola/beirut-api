@@ -9,6 +9,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dozer.DozerBeanMapper;
+import org.dozer.Mapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +18,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import com.gdn.common.base.domainevent.publisher.DomainEventPublisher;
+import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.dao.PositionDAO;
 import com.gdn.x.beirut.entities.Position;
@@ -30,6 +34,9 @@ public class PositionServiceTest {
   @Mock
   private PositionDAO repository;
 
+  @Mock
+  private DomainEventPublisher domainEventPublisher;
+
   @InjectMocks
   private PositionServiceImpl service;
 
@@ -41,6 +48,7 @@ public class PositionServiceTest {
 
   private PositionDescription positionDescription;
 
+  private GdnMapper gdnMapper;
 
 
   // @Test
@@ -56,6 +64,23 @@ public class PositionServiceTest {
 
   @Before
   public void initialize() throws Exception {
+    this.gdnMapper = new GdnMapper() {
+      @SuppressWarnings("unchecked")
+      @Override
+      public <T> T deepCopy(Object source, Class<T> destinationClass) {
+        Mapper mapper = new DozerBeanMapper();
+        T destination;
+        try {
+          destination = destinationClass.newInstance();
+        } catch (InstantiationException e) {
+          return (T) source;
+        } catch (IllegalAccessException e) {
+          return (T) source;
+        }
+        mapper.map(source, destination);
+        return destination;
+      }
+    };
     initMocks(this);
     this.position = new Position();
     this.position.setTitle("Choa");
@@ -108,22 +133,11 @@ public class PositionServiceTest {
 
   @Test
   public void testGetPositionByIds() {
-    Position position1 = new Position();
-    position1.setId(DEFAULT_ID);
-    position1.setStoreId(STORE_ID);
-    Position position2 = new Position();
-    position2.setId(DEFAULT_ID);
-    position2.setStoreId(STORE_ID);
-    List<String> positionIds = new ArrayList<String>();
-    positionIds.add(position1.getId());
-    positionIds.add(position2.getId());
-    List<Position> positions = new ArrayList<Position>();
-    positions.add(position1);
-    positions.add(position2);
-    Mockito.when(this.repository.findAll(positionIds)).thenReturn(positions);
-    Assert.assertTrue(this.service.getPositionByIds(positionIds) == positions);
-    this.service.getPositionByIds(positionIds);
-    Mockito.verify(this.repository, Mockito.times(2)).findAll(positionIds);
+    Mockito.when(this.repository.findByStoreIdAndId(STORE_ID, DEFAULT_ID)).thenReturn(position);
+    Assert
+        .assertTrue(this.service.getPositionByStoreIdAndId(STORE_ID, DEFAULT_ID).equals(position));
+    this.service.getPositionByStoreIdAndId(STORE_ID, DEFAULT_ID);
+    Mockito.verify(this.repository, Mockito.times(2)).findByStoreIdAndId(STORE_ID, DEFAULT_ID);
   }
 
   @Test
@@ -221,10 +235,19 @@ public class PositionServiceTest {
   }
 
   @Test
-  public void testUpdatePositionTitle() throws Exception {
-    this.service.updatePositionTitle(STORE_ID, this.position.getId(), "Emporio Ivankov");
-    verify(this.repository).findOne(this.position.getId());
-    verify(this.repository).save(position);
+  public void testUpdatePositionInformation() throws Exception {
+    this.service.setGdnMapper(gdnMapper);
+    Position updatedPosition = new Position();
+    updatedPosition.setId(position.getId());
+    updatedPosition.setStoreId(position.getStoreId());
+    updatedPosition.setTitle("New Title");
+    updatedPosition.setJobDivision("Job Division");
+    updatedPosition.setJobType("Job Type");
+    Mockito.when(this.repository.findOne(updatedPosition.getId())).thenReturn(this.position);
+    Mockito.when(this.repository.save(updatedPosition)).thenReturn(updatedPosition);
+    this.service.updatePositionInformation(updatedPosition);
+    verify(this.repository).findOne(updatedPosition.getId());
+    verify(this.repository, Mockito.times(2)).save(updatedPosition);
   }
 
 }

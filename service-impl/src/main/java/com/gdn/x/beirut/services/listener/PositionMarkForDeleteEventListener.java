@@ -22,7 +22,8 @@ import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
 public class PositionMarkForDeleteEventListener
     implements DomainEventListener<PositionMarkForDelete> {
 
-  private static final Logger LOG = LoggerFactory.getLogger(PositionMarkForDelete.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(PositionMarkForDeleteEventListener.class);
 
   @Resource(name = "xcandidatePositionTemplate")
   private SolrTemplate candidatePositionTemplate;
