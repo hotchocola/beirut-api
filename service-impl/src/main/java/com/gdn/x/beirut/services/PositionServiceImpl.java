@@ -66,8 +66,8 @@ public class PositionServiceImpl implements PositionService {
   }
 
   @Override
-  public List<Position> getPositionByIds(List<String> positionIds) {
-    return this.positionDAO.findAll(positionIds);
+  public Position getPositionByStoreIdAndId(String storeId, String id) {
+    return this.positionDAO.findByStoreIdAndId(storeId, id);
   }
 
   @Override

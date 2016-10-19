@@ -133,22 +133,11 @@ public class PositionServiceTest {
 
   @Test
   public void testGetPositionByIds() {
-    Position position1 = new Position();
-    position1.setId(DEFAULT_ID);
-    position1.setStoreId(STORE_ID);
-    Position position2 = new Position();
-    position2.setId(DEFAULT_ID);
-    position2.setStoreId(STORE_ID);
-    List<String> positionIds = new ArrayList<String>();
-    positionIds.add(position1.getId());
-    positionIds.add(position2.getId());
-    List<Position> positions = new ArrayList<Position>();
-    positions.add(position1);
-    positions.add(position2);
-    Mockito.when(this.repository.findAll(positionIds)).thenReturn(positions);
-    Assert.assertTrue(this.service.getPositionByIds(positionIds) == positions);
-    this.service.getPositionByIds(positionIds);
-    Mockito.verify(this.repository, Mockito.times(2)).findAll(positionIds);
+    Mockito.when(this.repository.findByStoreIdAndId(STORE_ID, DEFAULT_ID)).thenReturn(position);
+    Assert
+        .assertTrue(this.service.getPositionByStoreIdAndId(STORE_ID, DEFAULT_ID).equals(position));
+    this.service.getPositionByStoreIdAndId(STORE_ID, DEFAULT_ID);
+    Mockito.verify(this.repository, Mockito.times(2)).findByStoreIdAndId(STORE_ID, DEFAULT_ID);
   }
 
   @Test

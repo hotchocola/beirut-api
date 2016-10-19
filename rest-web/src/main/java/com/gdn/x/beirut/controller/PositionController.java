@@ -22,6 +22,7 @@ import com.gdn.common.exception.ApplicationException;
 import com.gdn.common.web.param.PageableHelper;
 import com.gdn.common.web.wrapper.response.GdnBaseRestResponse;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
+import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
@@ -104,6 +105,19 @@ public class PositionController {
 
   public ObjectMapper getObjectMapper() {
     return objectMapper;
+  }
+
+  @RequestMapping(value = "getPositionByStoreIdAndId", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "get position by ids", notes = "mengambil semua posisi dengan id-id.")
+  @ResponseBody
+  public GdnRestSingleResponse<PositionDTOResponse> getPositionByStoreIdAndId(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam String id) {
+    Position position = this.positionService.getPositionByStoreIdAndId(storeId, id);
+    PositionDTOResponse positionDTOResponse =
+        this.gdnMapper.deepCopy(position, PositionDTOResponse.class);
+    return new GdnRestSingleResponse<PositionDTOResponse>(positionDTOResponse, requestId);
   }
 
   @RequestMapping(value = "getPositionByStoreIdAndMarkForDelete", method = RequestMethod.GET,

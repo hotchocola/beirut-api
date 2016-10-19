@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdn.common.base.mapper.GdnMapper;
 import com.gdn.common.web.param.PageableHelper;
 import com.gdn.common.web.wrapper.response.GdnRestListResponse;
+import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
@@ -166,6 +167,21 @@ public class PositionControllerTest {
     Mockito.verify(this.positionService, Mockito.times(2))
         .getAllPositionByStoreIdWithPageable(STORE_ID, PageableHelper.generatePageable(0, 2));
 
+  }
+
+  @Test
+  public void testGetPositionByStoreIdAndId() throws Exception {
+    String uri = "getPositionByStoreIdAndId";
+    Mockito.when(this.positionService.getPositionByStoreIdAndId(STORE_ID, ID)).thenReturn(position);
+    this.mockMVC
+        .perform(MockMvcRequestBuilders.get(UriBasePath + uri).param("clientId", CLIENT_ID)
+            .param("storeId", STORE_ID).param("requestId", REQUEST_ID)
+            .param("channelId", CHANNEL_ID).param("username", USERNAME).param("id", ID))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+    GdnRestSingleResponse<PositionDTOResponse> res = this.positionController
+        .getPositionByStoreIdAndId(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID, USERNAME, ID);
+    Mockito.verify(this.positionService, Mockito.times(2)).getPositionByStoreIdAndId(STORE_ID, ID);
+    Assert.assertTrue(res.getValue().getId().equals(position.getId()));
   }
 
   @Test
