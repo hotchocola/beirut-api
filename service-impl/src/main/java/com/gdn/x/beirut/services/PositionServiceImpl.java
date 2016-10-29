@@ -25,6 +25,7 @@ import com.gdn.x.beirut.domain.event.model.PositionUpdateInformation;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.PositionDescription;
+import com.gdn.x.beirut.entities.StatusPosition;
 
 @Service(value = "positionService")
 @Transactional(readOnly = true)
@@ -187,6 +188,30 @@ public class PositionServiceImpl implements PositionService {
       return true;
     } else {
       return false;
+    }
+  }
+
+  @Override
+  @Transactional(readOnly = false)
+  public void updatePositionStatus(String storeId, String idPosition, StatusPosition status)
+      throws Exception {
+    Position existingPosition = getPosition(storeId, idPosition);
+    if (!existingPosition.getStoreId().equals(storeId)) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+          "data found but no store id match expected = " + existingPosition.getStoreId()
+              + " but was = " + storeId);
+    }
+    existingPosition.setJobStatus(status);
+    positionDAO.save(existingPosition);
+  }
+
+  @Override
+  @Transactional(readOnly = false)
+  public void updatePositionStatusBulk(String storeId, List<String> idPositions,
+      StatusPosition status) throws Exception {
+    // TODO Auto-generated method stub
+    for (String idPosition : idPositions) {
+      this.updatePositionStatus(storeId, idPosition, status);
     }
   }
 }

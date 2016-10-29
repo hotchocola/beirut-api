@@ -12,8 +12,14 @@ public class PositionDTOResponse extends BaseResponse {
 
   private String jobDivision;
 
+  private String jobStatus;
+
   public String getJobDivision() {
     return jobDivision;
+  }
+
+  public String getJobStatus() {
+    return jobStatus;
   }
 
   public String getJobType() {
@@ -26,6 +32,10 @@ public class PositionDTOResponse extends BaseResponse {
 
   public void setJobDivision(String jobDivision) {
     this.jobDivision = jobDivision;
+  }
+
+  public void setJobStatus(String jobStatus) {
+    this.jobStatus = jobStatus;
   }
 
   public void setJobType(String jobType) {

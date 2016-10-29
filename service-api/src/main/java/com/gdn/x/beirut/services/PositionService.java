@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.PositionDescription;
+import com.gdn.x.beirut.entities.StatusPosition;
 
 public interface PositionService {
 
@@ -32,4 +33,10 @@ public interface PositionService {
   public void markForDeletePosition(String storeId, List<String> id) throws Exception;
 
   public boolean updatePositionInformation(Position position) throws Exception;
+
+  public void updatePositionStatus(String storeId, String idPosition, StatusPosition status)
+      throws Exception;
+
+  public void updatePositionStatusBulk(String storeId, List<String> idPositions,
+      StatusPosition status) throws Exception;
 }

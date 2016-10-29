@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -23,6 +25,7 @@ public class Position extends GdnBaseEntity {
   public static final String DESCRIPTION = "description";
   public static final String JOB_TYPE = "job_type";
   public static final String JOB_DIVISION = "job_division";
+  public static final String JOB_STATUS = "job_status";
 
   @Column(name = Position.COLUMN_TITLE)
   private String title;
@@ -32,6 +35,10 @@ public class Position extends GdnBaseEntity {
 
   @Column(name = Position.JOB_DIVISION)
   private String jobDivision;
+
+  @Column(name = JOB_STATUS)
+  @Enumerated(EnumType.STRING)
+  private StatusPosition jobStatus;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "position")
   private List<CandidatePosition> candidatePositions = new ArrayList<CandidatePosition>();
@@ -85,6 +92,14 @@ public class Position extends GdnBaseEntity {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  public StatusPosition getJobStatus() {
+    return jobStatus;
+  }
+
+  public void setJobStatus(StatusPosition jobStatus) {
+    this.jobStatus = jobStatus;
   }
 
   // @Override
