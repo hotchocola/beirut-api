@@ -99,7 +99,7 @@ public class PositionController {
       res.add(positionDTOResponse);
     }
     return new GdnRestListResponse<>(res,
-        new PageMetaData(positions.getTotalPages(), page, res.size()), requestId);
+        new PageMetaData(positions.getTotalPages(), page, positions.getTotalElements()), requestId);
   }
 
   @RequestMapping(value = "getAllPositionWithPageableAndMarkForDelete", method = RequestMethod.GET,
@@ -121,7 +121,7 @@ public class PositionController {
       res.add(positionDTOResponse);
     }
     return new GdnRestListResponse<>(res,
-        new PageMetaData(positions.getTotalPages(), page, res.size()), requestId);
+        new PageMetaData(positions.getTotalPages(), page, positions.getTotalElements()), requestId);
   }
 
   public GdnMapper getGdnMapper() {

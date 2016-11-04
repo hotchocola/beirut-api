@@ -123,7 +123,8 @@ public class CandidateController {
       res.add(candidateDTOResponse);
     }
     return new GdnRestListResponse<CandidateDTOResponse>(res,
-        new PageMetaData(candidates.getTotalPages(), page, res.size()), requestId);
+        new PageMetaData(candidates.getTotalPages(), page, candidates.getTotalElements()),
+        requestId);
   }
 
   @RequestMapping(value = "findCandidateByEmailAddressAndStoreId", method = RequestMethod.GET,
@@ -158,7 +159,8 @@ public class CandidateController {
       candidateResponse.add(newCandidateDTORes);
     }
     return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
-        new PageMetaData(candidates.getTotalPages(), page, candidateResponse.size()), requestId);
+        new PageMetaData(candidates.getTotalPages(), page, candidates.getTotalElements()),
+        requestId);
   }
 
   // DEPRECATED : Udah diganti sama findCandidateByIdAndStoreIdEager / Lazy
@@ -229,7 +231,8 @@ public class CandidateController {
       candidateResponse.add(newCandidateDTORes);
     }
     return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
-        new PageMetaData(candidates.getTotalPages(), page, candidateResponse.size()), requestId);
+        new PageMetaData(candidates.getTotalPages(), page, candidates.getTotalElements()),
+        requestId);
   }
 
   // DEPRECATED : Diganti sama findCandidateByPhoneNumberContainAndStoreId
@@ -273,7 +276,8 @@ public class CandidateController {
       candidateResponse.add(newCandidateDTORes);
     }
     return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
-        new PageMetaData(candidates.getTotalPages(), page, candidateResponse.size()), requestId);
+        new PageMetaData(candidates.getTotalPages(), page, candidates.getTotalElements()),
+        requestId);
   }
 
   @RequestMapping(value = "findCandidateDetailAndStoreId", method = RequestMethod.GET,
@@ -330,7 +334,7 @@ public class CandidateController {
       toShow.add(newCandidateDTOResponse);
     }
     return new GdnRestListResponse<CandidateDTOResponseWithoutDetail>(toShow,
-        new PageMetaData(pages.getTotalPages(), page, toShow.size()), requestId);
+        new PageMetaData(pages.getTotalPages(), page, pages.getTotalElements()), requestId);
   }
 
   @RequestMapping(value = "getAllCandidatesByStoreIdWithPageable", method = RequestMethod.GET,
@@ -352,7 +356,7 @@ public class CandidateController {
       toShow.add(newCandidateDTOResponse);
     }
     return new GdnRestListResponse<CandidateDTOResponseWithoutDetail>(toShow,
-        new PageMetaData(pages.getTotalPages(), page, toShow.size()), requestId);
+        new PageMetaData(pages.getTotalPages(), page, pages.getTotalElements()), requestId);
   }
 
   @RequestMapping(value = "getCandidatePositionBySolrQuery", method = RequestMethod.GET,
@@ -373,8 +377,7 @@ public class CandidateController {
       candidatePositionSolrDTOResponses.add(candidatePositionSolrDTOResponse);
     }
     return new GdnRestListResponse<>(candidatePositionSolrDTOResponses,
-        new PageMetaData(result.getTotalPages(), page, candidatePositionSolrDTOResponses.size()),
-        requestId);
+        new PageMetaData(result.getTotalPages(), page, result.getTotalElements()), requestId);
   }
 
   @RequestMapping(value = "getCandidatePositionDetailByStoreIdWithLogs", method = RequestMethod.GET,
