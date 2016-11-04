@@ -52,6 +52,12 @@ public class PositionServiceImpl implements PositionService {
     return positionDAO.findByStoreId(storeId, pageable);
   }
 
+  @Override
+  public Page<Position> getAllPositionByStoreIdWithPageableAndMarkForDelete(String storeId,
+      Pageable generatePageable, boolean isDeleted) {
+    return positionDAO.findByStoreIdAndMarkForDelete(storeId, isDeleted, generatePageable);
+  }
+
   public GdnMapper getGdnMapper() {
     return gdnMapper;
   }
@@ -128,6 +134,8 @@ public class PositionServiceImpl implements PositionService {
   public void markForDeletePosition(String storeId, List<String> ids) throws Exception {
     // System.out.println(ids.toString());
     List<Position> positions = new ArrayList<Position>();
+    LOG.info("ID TO DELETE = " + ids.toString());
+    System.out.println("ID TO DELETE = " + ids.toString());
     for (int i = 0; i < ids.size(); i++) {
       Position position = this.positionDAO.findOne(ids.get(i));
       if (!position.getStoreId().equals(storeId)) {

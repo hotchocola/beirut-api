@@ -98,7 +98,30 @@ public class PositionController {
           this.gdnMapper.deepCopy(position, PositionDTOResponse.class);
       res.add(positionDTOResponse);
     }
-    return new GdnRestListResponse<>(res, new PageMetaData(50, 0, res.size()), requestId);
+    return new GdnRestListResponse<>(res,
+        new PageMetaData(positions.getTotalPages(), page, res.size()), requestId);
+  }
+
+  @RequestMapping(value = "getAllPositionWithPageableAndMarkForDelete", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "get all Candidate restricted with Pagination",
+      notes = "mengambil semua posisi with pagination")
+  @ResponseBody
+  public GdnRestListResponse<PositionDTOResponse> getAllPositionWithPageableAndMarkForDelete(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam int page,
+      @RequestParam int size, @RequestParam boolean isDeleted) {
+    Page<Position> positions =
+        this.positionService.getAllPositionByStoreIdWithPageableAndMarkForDelete(storeId,
+            PageableHelper.generatePageable(page, size), isDeleted);
+    List<PositionDTOResponse> res = new ArrayList<>();
+    for (Position position : positions) {
+      PositionDTOResponse positionDTOResponse =
+          this.gdnMapper.deepCopy(position, PositionDTOResponse.class);
+      res.add(positionDTOResponse);
+    }
+    return new GdnRestListResponse<>(res,
+        new PageMetaData(positions.getTotalPages(), page, res.size()), requestId);
   }
 
   public GdnMapper getGdnMapper() {
@@ -241,7 +264,7 @@ public class PositionController {
     this.objectMapper = objectMapper;
   }
 
-  @RequestMapping(value = "updatePositionStatus", method = RequestMethod.POST,
+  @RequestMapping(value = "updatePositionsStatus", method = RequestMethod.POST,
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   @ApiOperation(value = "update position status", notes = "Update satu atau lebih Status Position")

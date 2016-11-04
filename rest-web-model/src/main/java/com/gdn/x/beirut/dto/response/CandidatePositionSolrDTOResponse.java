@@ -54,11 +54,11 @@ public class CandidatePositionSolrDTOResponse extends BaseResponse {
     return idPosition;
   }
 
-  private String getJobDivision() {
+  public String getJobDivision() {
     return jobDivision;
   }
 
-  private String getJobType() {
+  public String getJobType() {
     return jobType;
   }
 
@@ -99,11 +99,11 @@ public class CandidatePositionSolrDTOResponse extends BaseResponse {
     this.idPosition = idPosition;
   }
 
-  private void setJobDivision(String jobDivision) {
+  public void setJobDivision(String jobDivision) {
     this.jobDivision = jobDivision;
   }
 
-  private void setJobType(String jobType) {
+  public void setJobType(String jobType) {
     this.jobType = jobType;
   }
 

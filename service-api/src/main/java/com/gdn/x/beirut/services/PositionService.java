@@ -15,6 +15,9 @@ public interface PositionService {
 
   public Page<Position> getAllPositionByStoreIdWithPageable(String storeId, Pageable pageable);
 
+  public Page<Position> getAllPositionByStoreIdWithPageableAndMarkForDelete(String storeId,
+      Pageable generatePageable, boolean isDeleted);
+
   public Position getPosition(String storeId, String positionId) throws Exception;
 
   public Position getPositionByStoreIdAndId(String storeId, String id);

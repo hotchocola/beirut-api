@@ -10,28 +10,19 @@ public class UpdateCandidateStatusModelDTORequest extends BaseRequest {
 
   private String statusDTORequest;
 
-  private String idPosition;
+  private List<CandidatePositionBindRequest> listBind;
 
-  private List<String> idCandidates;
 
-  public List<String> getIdCandidates() {
-    return idCandidates;
-  }
-
-  public String getIdPosition() {
-    return idPosition;
+  public List<CandidatePositionBindRequest> getListBind() {
+    return listBind;
   }
 
   public String getStatusDTORequest() {
     return statusDTORequest;
   }
 
-  public void setIdCandidates(List<String> idCandidates) {
-    this.idCandidates = idCandidates;
-  }
-
-  public void setIdPosition(String idPosition) {
-    this.idPosition = idPosition;
+  public void setListBind(List<CandidatePositionBindRequest> listBind) {
+    this.listBind = listBind;
   }
 
   public void setStatusDTORequest(String statusDTORequest) {

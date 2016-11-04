@@ -11,6 +11,7 @@ import com.gdn.common.exception.ApplicationException;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.CandidatePosition;
+import com.gdn.x.beirut.entities.CandidatePositionBind;
 import com.gdn.x.beirut.entities.Status;
 
 public interface CandidateService {
@@ -68,6 +69,6 @@ public interface CandidateService {
   public void updateCandidateStatus(String storeid, String candidateId, String idPosition,
       Status status) throws Exception;
 
-  public void updateCandidateStatusBulk(String storeId, List<String> idCandidates,
-      String idPosition, Status status) throws Exception;
+  public void updateCandidateStatusBulk(String storeId, List<CandidatePositionBind> listBind,
+      Status status) throws Exception;
 }
