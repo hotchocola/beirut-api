@@ -244,9 +244,30 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     return invokeGetSummary(uri, PositionDTOResponse.class, MediaType.APPLICATION_JSON_VALUE);
   }
 
+  public byte[] getCandidateDetail(String requestId, String username, String id) throws Exception {
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put("id", id);
+    HttpGet httpget = this.generateMultipartHttpGet("/candidate/findCandidateDetailAndStoreId",
+        requestId, username, map);
+    CloseableHttpResponse response = getHttpClient().execute(httpget);
+    if (response.getStatusLine().getStatusCode() == 200) {
+      return EntityUtils.toByteArray(response.getEntity());
+    } else {
+      String responseText = null;
+      if (response.getEntity() != null) {
+        responseText = EntityUtils.toString(response.getEntity());
+      }
+      LOG.error("server give bad response code, code : {}, message : {}, body: {}",
+          new Object[] {response.getStatusLine().getStatusCode(),
+              response.getStatusLine().getReasonPhrase(), responseText});
+      throw new ApplicationException(ErrorCategory.UNSPECIFIED, "check the log");
+    }
+  }
+
   public GdnRestListResponse<CandidatePositionSolrDTOResponse> getCandidatePositionBySolrQuery(
       String requestId, String username, String query, int page, int size) throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
+    LOG.info("QUERY DEBUG = " + query);
     map.put("query", query);
     map.put("page", String.valueOf(page));
     map.put("size", String.valueOf(size));
@@ -293,33 +314,12 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     return invokeGetSummary(uri, PositionDTOResponse.class, MediaType.APPLICATION_JSON_VALUE);
   }
 
+
   public byte[] getPositionDescription(String requestId, String username, String id)
       throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("id", id);
     HttpGet httpget = this.generateMultipartHttpGet("/position/getPositionDescriptionAndStoreId",
-        requestId, username, map);
-    CloseableHttpResponse response = getHttpClient().execute(httpget);
-    if (response.getStatusLine().getStatusCode() == 200) {
-      return EntityUtils.toByteArray(response.getEntity());
-    } else {
-      String responseText = null;
-      if (response.getEntity() != null) {
-        responseText = EntityUtils.toString(response.getEntity());
-      }
-      LOG.error("server give bad response code, code : {}, message : {}, body: {}",
-          new Object[] {response.getStatusLine().getStatusCode(),
-              response.getStatusLine().getReasonPhrase(), responseText});
-      throw new ApplicationException(ErrorCategory.UNSPECIFIED, "check the log");
-    }
-  }
-  
-
-  public byte[] getCandidateDetail(String requestId, String username, String id)
-      throws Exception {
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put("id", id);
-    HttpGet httpget = this.generateMultipartHttpGet("/candidate/findCandidateDetailAndStoreId",
         requestId, username, map);
     CloseableHttpResponse response = getHttpClient().execute(httpget);
     if (response.getStatusLine().getStatusCode() == 200) {
