@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdn.client_sdk.shade.org.apache.http.client.methods.CloseableHttpResponse;
+import com.gdn.client_sdk.shade.org.apache.http.client.methods.HttpGet;
 import com.gdn.client_sdk.shade.org.apache.http.client.methods.HttpPost;
 import com.gdn.client_sdk.shade.org.apache.http.entity.mime.HttpMultipartMode;
 import com.gdn.client_sdk.shade.org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -30,6 +31,7 @@ import com.gdn.x.beirut.dto.request.CandidateDTORequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
+import com.gdn.x.beirut.dto.request.UpdatePositionStatusModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.dto.response.CandidatePositionDTOResponse;
@@ -70,8 +72,14 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
   public GdnBaseRestResponse deletePosition(String requestId, String username,
       ListStringRequest idsToDelete) throws Exception {
     URI uri = generateURI("/position/deletePosition", requestId, username, null);
-    return invokePostType(uri, idsToDelete, ListStringRequest.class,
+    GdnBaseRestResponse result = invokePostType(uri, idsToDelete, ListStringRequest.class,
         MediaType.APPLICATION_JSON_VALUE, typeRef);
+    LOG.info("DEBUGGING deletePosition = " + result + " | " + result.isSuccess() + " | input = "
+        + idsToDelete.getValues().get(0) + " | size = " + idsToDelete.getValues().size());
+    System.out
+        .println("DEBUGGING deletePosition = " + result + " | " + result.isSuccess() + " | input = "
+            + idsToDelete.getValues().get(0) + " | size = " + idsToDelete.getValues().size());
+    return result;
   }
 
   public GdnRestListResponse<CandidateDTOResponse> findCandidateByCreatedDateBetweenAndStoreId(
@@ -147,6 +155,15 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
   }
 
   @SuppressWarnings("deprecation")
+  private HttpGet generateMultipartHttpGet(String path, String requestId, String username,
+      Map<String, String> additionalParameterMap) throws Exception {
+    HttpGet httpGet = getHttpClientHelper().createNewHttpGet(
+        generateURI(path, requestId, username, additionalParameterMap),
+        getClientConfig().getConnectionTimeoutInMs());
+    return httpGet;
+  }
+
+  @SuppressWarnings("deprecation")
   private HttpPost generateMultipartHttpPost(String path, byte[] content, String requestId,
       String filename, String username, Map<String, String> additionalParameterMap)
           throws Exception {
@@ -215,9 +232,42 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     return invokeGetSummary(uri, PositionDTOResponse.class, MediaType.APPLICATION_JSON_VALUE);
   }
 
+  public GdnRestListResponse<PositionDTOResponse> getAllPositionWithPageableAndMarkForDelete(
+      String requestId, String username, Integer page, Integer size, boolean isDeleted)
+          throws Exception {
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put("page", String.valueOf(page));
+    map.put("size", String.valueOf(size));
+    map.put("isDeleted", String.valueOf(isDeleted));
+    URI uri = generateURI("/position/getAllPositionWithPageableAndMarkForDelete", requestId,
+        username, map);
+    return invokeGetSummary(uri, PositionDTOResponse.class, MediaType.APPLICATION_JSON_VALUE);
+  }
+
+  public byte[] getCandidateDetail(String requestId, String username, String id) throws Exception {
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put("id", id);
+    HttpGet httpget = this.generateMultipartHttpGet("/candidate/findCandidateDetailAndStoreId",
+        requestId, username, map);
+    CloseableHttpResponse response = getHttpClient().execute(httpget);
+    if (response.getStatusLine().getStatusCode() == 200) {
+      return EntityUtils.toByteArray(response.getEntity());
+    } else {
+      String responseText = null;
+      if (response.getEntity() != null) {
+        responseText = EntityUtils.toString(response.getEntity());
+      }
+      LOG.error("server give bad response code, code : {}, message : {}, body: {}",
+          new Object[] {response.getStatusLine().getStatusCode(),
+              response.getStatusLine().getReasonPhrase(), responseText});
+      throw new ApplicationException(ErrorCategory.UNSPECIFIED, "check the log");
+    }
+  }
+
   public GdnRestListResponse<CandidatePositionSolrDTOResponse> getCandidatePositionBySolrQuery(
       String requestId, String username, String query, int page, int size) throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
+    LOG.info("QUERY DEBUG = " + query);
     map.put("query", query);
     map.put("page", String.valueOf(page));
     map.put("size", String.valueOf(size));
@@ -264,12 +314,44 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     return invokeGetSummary(uri, PositionDTOResponse.class, MediaType.APPLICATION_JSON_VALUE);
   }
 
+
+  public byte[] getPositionDescription(String requestId, String username, String id)
+      throws Exception {
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put("id", id);
+    HttpGet httpget = this.generateMultipartHttpGet("/position/getPositionDescriptionAndStoreId",
+        requestId, username, map);
+    CloseableHttpResponse response = getHttpClient().execute(httpget);
+    if (response.getStatusLine().getStatusCode() == 200) {
+      return EntityUtils.toByteArray(response.getEntity());
+    } else {
+      String responseText = null;
+      if (response.getEntity() != null) {
+        responseText = EntityUtils.toString(response.getEntity());
+      }
+      LOG.error("server give bad response code, code : {}, message : {}, body: {}",
+          new Object[] {response.getStatusLine().getStatusCode(),
+              response.getStatusLine().getReasonPhrase(), responseText});
+      throw new ApplicationException(ErrorCategory.UNSPECIFIED, "check the log");
+    }
+  }
+
+  @Deprecated
   public GdnRestListResponse<PositionDetailDTOResponse> getPositionDetailById(String requestId,
       String username, String id) throws Exception {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("id", id);
     URI uri = generateURI("/position/getPositionDetail", requestId, username, map);
     return invokeGetSummary(uri, PositionDetailDTOResponse.class, MediaType.APPLICATION_JSON_VALUE);
+  }
+
+  public GdnRestSingleResponse<PositionDTOResponse> getPositionId(String requestId, String username,
+      String id) throws Exception {
+    // TODO Auto-generated method stub
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put("id", String.valueOf(id));
+    URI uri = generateURI("/position/getPositionByStoreIdAndId", requestId, username, map);
+    return invokeGetSingle(uri, PositionDTOResponse.class, MediaType.APPLICATION_JSON_VALUE);
   }
 
   public TypeReference<GdnBaseRestResponse> getTypeRef() {
@@ -364,5 +446,12 @@ public class BeirutApiClient extends GdnBaseRestCrudClient {
     URI uri = generateURI("/position/updatePositionInformation", requestId, username, null);
     return invokePostType(uri, positionDTORequest, PositionDTORequest.class,
         MediaType.APPLICATION_JSON_VALUE, typeRef);
+  }
+
+  public GdnBaseRestResponse updatePositionStatus(String requestId, String username,
+      UpdatePositionStatusModelDTORequest updatePositionStatusModelDTORequest) throws Exception {
+    URI uri = generateURI("/position/updatePositionsStatus", requestId, username, null);
+    return invokePostType(uri, updatePositionStatusModelDTORequest,
+        UpdatePositionStatusModelDTORequest.class, MediaType.APPLICATION_JSON_VALUE, typeRef);
   }
 }

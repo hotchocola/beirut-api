@@ -30,6 +30,7 @@ import com.gdn.x.beirut.domain.event.model.DomainEventName;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.CandidatePosition;
+import com.gdn.x.beirut.entities.CandidatePositionBind;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.entities.StatusLog;
@@ -415,10 +416,11 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   @Transactional(readOnly = false)
-  public void updateCandidateStatusBulk(String storeId, List<String> idCandidates,
-      String idPosition, Status status) throws Exception {
-    for (String id : idCandidates) {
-      this.updateCandidateStatus(storeId, id, idPosition, status);
+  public void updateCandidateStatusBulk(String storeId, List<CandidatePositionBind> listBind,
+      Status status) throws Exception {
+    for (CandidatePositionBind candidatePositionBind : listBind) {
+      this.updateCandidateStatus(storeId, candidatePositionBind.getIdCandidate(),
+          candidatePositionBind.getIdPosition(), status);
     }
   }
 

@@ -38,6 +38,7 @@ import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
+import com.gdn.x.beirut.dto.request.CandidatePositionBindRequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
@@ -45,6 +46,7 @@ import com.gdn.x.beirut.dto.response.CandidateDTOResponseWithoutDetail;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.CandidatePosition;
+import com.gdn.x.beirut.entities.CandidatePositionBind;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.entities.StatusLog;
@@ -635,10 +637,20 @@ public class CandidateControllerTest {
         new File("src/test/resources/JSON/updateCandidateStatusRequestJson.json"));
     UpdateCandidateStatusModelDTORequest updateCandidateStatusModelDTORequest = objectMapper
         .readValue(updateCandidateStatusStringJson, UpdateCandidateStatusModelDTORequest.class);
+
+    List<CandidatePositionBindRequest> candidatePositionBindRequests =
+        updateCandidateStatusModelDTORequest.getListBind();
+    List<CandidatePositionBind> candidatePositionBinds = new ArrayList<>();
+    for (CandidatePositionBindRequest candidatePositionBindRequest : candidatePositionBindRequests) {
+      CandidatePositionBind newBind = new CandidatePositionBind();
+      newBind.setIdCandidate(candidatePositionBindRequest.getIdCandidate());
+      newBind.setIdPosition(candidatePositionBindRequest.getIdPosition());
+      candidatePositionBinds.add(newBind);
+    }
+
     Status status = Status.valueOf(updateCandidateStatusModelDTORequest.getStatusDTORequest());
     Mockito.doNothing().when(this.candidateService).updateCandidateStatusBulk(STORE_ID,
-        updateCandidateStatusModelDTORequest.getIdCandidates(),
-        updateCandidateStatusModelDTORequest.getIdPosition(), status);
+        candidatePositionBinds, status);
 
     this.mockMVC
         .perform(MockMvcRequestBuilders.post(uri).accept(MediaType.APPLICATION_JSON)
@@ -651,8 +663,8 @@ public class CandidateControllerTest {
     this.candidateController.updateCandidatesStatus(CLIENT_ID, STORE_ID, REQUEST_ID, CHANNEL_ID,
         USERNAME, updateCandidateStatusModelDTORequest);
 
-    Mockito.verify(this.candidateService, Mockito.times(2)).updateCandidateStatusBulk(STORE_ID,
-        updateCandidateStatusModelDTORequest.getIdCandidates(),
-        updateCandidateStatusModelDTORequest.getIdPosition(), status);
+    Mockito.verify(this.candidateService, Mockito.times(2)).updateCandidateStatusBulk(
+        Mockito.eq(STORE_ID), Mockito.anyListOf(CandidatePositionBind.class), Mockito.eq(status));
+
   }
 }

@@ -19,6 +19,8 @@ public interface PositionDAO extends JpaRepository<Position, String> {
 
   List<Position> findByStoreIdAndMarkForDelete(String storeId, boolean bool);
 
+  Page<Position> findByStoreIdAndMarkForDelete(String storeId, boolean bool, Pageable pageable);
+
   List<Position> findByTitleContainingAndStoreIdAndMarkForDelete(String title, String storeId,
       boolean bool);
 

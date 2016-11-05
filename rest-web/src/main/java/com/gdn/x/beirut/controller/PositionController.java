@@ -26,10 +26,12 @@ import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.PositionDTORequest;
+import com.gdn.x.beirut.dto.request.UpdatePositionStatusModelDTORequest;
 import com.gdn.x.beirut.dto.response.PositionDTOResponse;
 import com.gdn.x.beirut.dto.response.PositionDetailDTOResponse;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.PositionDescription;
+import com.gdn.x.beirut.entities.StatusPosition;
 import com.gdn.x.beirut.services.PositionService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -96,7 +98,30 @@ public class PositionController {
           this.gdnMapper.deepCopy(position, PositionDTOResponse.class);
       res.add(positionDTOResponse);
     }
-    return new GdnRestListResponse<>(res, new PageMetaData(50, 0, res.size()), requestId);
+    return new GdnRestListResponse<>(res,
+        new PageMetaData(positions.getTotalPages(), page, positions.getTotalElements()), requestId);
+  }
+
+  @RequestMapping(value = "getAllPositionWithPageableAndMarkForDelete", method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "get all Candidate restricted with Pagination",
+      notes = "mengambil semua posisi with pagination")
+  @ResponseBody
+  public GdnRestListResponse<PositionDTOResponse> getAllPositionWithPageableAndMarkForDelete(
+      @RequestParam String clientId, @RequestParam String storeId, @RequestParam String requestId,
+      @RequestParam String channelId, @RequestParam String username, @RequestParam int page,
+      @RequestParam int size, @RequestParam boolean isDeleted) {
+    Page<Position> positions =
+        this.positionService.getAllPositionByStoreIdWithPageableAndMarkForDelete(storeId,
+            PageableHelper.generatePageable(page, size), isDeleted);
+    List<PositionDTOResponse> res = new ArrayList<>();
+    for (Position position : positions) {
+      PositionDTOResponse positionDTOResponse =
+          this.gdnMapper.deepCopy(position, PositionDTOResponse.class);
+      res.add(positionDTOResponse);
+    }
+    return new GdnRestListResponse<>(res,
+        new PageMetaData(positions.getTotalPages(), page, positions.getTotalElements()), requestId);
   }
 
   public GdnMapper getGdnMapper() {
@@ -217,6 +242,7 @@ public class PositionController {
     positionDescription.setMediaType(file.getContentType());
     newPosition.setPositionDescription(positionDescription);
     newPosition.setStoreId(storeId);
+    newPosition.setJobStatus(StatusPosition.CLOSE);
     Position existingPosition = this.positionService.insertNewPosition(newPosition);
     if (existingPosition.getId() == null) {
       return new GdnBaseRestResponse(false);
@@ -236,6 +262,21 @@ public class PositionController {
 
   public void setObjectMapper(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
+  }
+
+  @RequestMapping(value = "updatePositionsStatus", method = RequestMethod.POST,
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @ApiOperation(value = "update position status", notes = "Update satu atau lebih Status Position")
+  @ResponseBody
+  public GdnBaseRestResponse updateCandidatesStatus(@RequestParam String clientId,
+      @RequestParam String storeId, @RequestParam String requestId, @RequestParam String channelId,
+      @RequestParam String username, @RequestBody UpdatePositionStatusModelDTORequest content)
+          throws Exception {
+    StatusPosition status = StatusPosition.valueOf(content.getStatusDTORequest());
+    // CandidateMapper.statusEnumMap(status, _status);
+    this.positionService.updatePositionStatusBulk(storeId, content.getIdPositions(), status);
+    return new GdnBaseRestResponse(true);
   }
 
   @RequestMapping(value = "updatePositionInformation", method = RequestMethod.POST,

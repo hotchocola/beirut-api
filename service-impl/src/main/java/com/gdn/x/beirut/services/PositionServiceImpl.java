@@ -25,6 +25,7 @@ import com.gdn.x.beirut.domain.event.model.PositionUpdateInformation;
 import com.gdn.x.beirut.entities.CandidatePosition;
 import com.gdn.x.beirut.entities.Position;
 import com.gdn.x.beirut.entities.PositionDescription;
+import com.gdn.x.beirut.entities.StatusPosition;
 
 @Service(value = "positionService")
 @Transactional(readOnly = true)
@@ -49,6 +50,12 @@ public class PositionServiceImpl implements PositionService {
   @Override
   public Page<Position> getAllPositionByStoreIdWithPageable(String storeId, Pageable pageable) {
     return positionDAO.findByStoreId(storeId, pageable);
+  }
+
+  @Override
+  public Page<Position> getAllPositionByStoreIdWithPageableAndMarkForDelete(String storeId,
+      Pageable generatePageable, boolean isDeleted) {
+    return positionDAO.findByStoreIdAndMarkForDelete(storeId, isDeleted, generatePageable);
   }
 
   public GdnMapper getGdnMapper() {
@@ -127,6 +134,8 @@ public class PositionServiceImpl implements PositionService {
   public void markForDeletePosition(String storeId, List<String> ids) throws Exception {
     // System.out.println(ids.toString());
     List<Position> positions = new ArrayList<Position>();
+    LOG.info("ID TO DELETE = " + ids.toString());
+    System.out.println("ID TO DELETE = " + ids.toString());
     for (int i = 0; i < ids.size(); i++) {
       Position position = this.positionDAO.findOne(ids.get(i));
       if (!position.getStoreId().equals(storeId)) {
@@ -187,6 +196,30 @@ public class PositionServiceImpl implements PositionService {
       return true;
     } else {
       return false;
+    }
+  }
+
+  @Override
+  @Transactional(readOnly = false)
+  public void updatePositionStatus(String storeId, String idPosition, StatusPosition status)
+      throws Exception {
+    Position existingPosition = getPosition(storeId, idPosition);
+    if (!existingPosition.getStoreId().equals(storeId)) {
+      throw new ApplicationException(ErrorCategory.DATA_NOT_FOUND,
+          "data found but no store id match expected = " + existingPosition.getStoreId()
+              + " but was = " + storeId);
+    }
+    existingPosition.setJobStatus(status);
+    positionDAO.save(existingPosition);
+  }
+
+  @Override
+  @Transactional(readOnly = false)
+  public void updatePositionStatusBulk(String storeId, List<String> idPositions,
+      StatusPosition status) throws Exception {
+    // TODO Auto-generated method stub
+    for (String idPosition : idPositions) {
+      this.updatePositionStatus(storeId, idPosition, status);
     }
   }
 }

@@ -31,6 +31,7 @@ import com.gdn.common.web.wrapper.response.GdnRestSingleResponse;
 import com.gdn.common.web.wrapper.response.PageMetaData;
 import com.gdn.x.beirut.dto.request.ApplyNewPositionModelDTORequest;
 import com.gdn.x.beirut.dto.request.CandidateDTORequest;
+import com.gdn.x.beirut.dto.request.CandidatePositionBindRequest;
 import com.gdn.x.beirut.dto.request.ListStringRequest;
 import com.gdn.x.beirut.dto.request.UpdateCandidateStatusModelDTORequest;
 import com.gdn.x.beirut.dto.response.CandidateDTOResponse;
@@ -41,6 +42,7 @@ import com.gdn.x.beirut.dto.response.CandidateWithPositionsDTOResponse;
 import com.gdn.x.beirut.entities.Candidate;
 import com.gdn.x.beirut.entities.CandidateDetail;
 import com.gdn.x.beirut.entities.CandidatePosition;
+import com.gdn.x.beirut.entities.CandidatePositionBind;
 import com.gdn.x.beirut.entities.Status;
 import com.gdn.x.beirut.services.CandidateService;
 import com.gdn.x.beirut.solr.entities.CandidatePositionSolr;
@@ -120,7 +122,8 @@ public class CandidateController {
           getGdnMapper().deepCopy(candidate, CandidateDTOResponse.class);
       res.add(candidateDTOResponse);
     }
-    return new GdnRestListResponse<CandidateDTOResponse>(res, new PageMetaData(50, 0, res.size()),
+    return new GdnRestListResponse<CandidateDTOResponse>(res,
+        new PageMetaData(candidates.getTotalPages(), page, candidates.getTotalElements()),
         requestId);
   }
 
@@ -156,7 +159,8 @@ public class CandidateController {
       candidateResponse.add(newCandidateDTORes);
     }
     return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
-        new PageMetaData(50, 0, candidateResponse.size()), requestId);
+        new PageMetaData(candidates.getTotalPages(), page, candidates.getTotalElements()),
+        requestId);
   }
 
   // DEPRECATED : Udah diganti sama findCandidateByIdAndStoreIdEager / Lazy
@@ -227,7 +231,8 @@ public class CandidateController {
       candidateResponse.add(newCandidateDTORes);
     }
     return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
-        new PageMetaData(50, 0, candidateResponse.size()), requestId);
+        new PageMetaData(candidates.getTotalPages(), page, candidates.getTotalElements()),
+        requestId);
   }
 
   // DEPRECATED : Diganti sama findCandidateByPhoneNumberContainAndStoreId
@@ -271,7 +276,8 @@ public class CandidateController {
       candidateResponse.add(newCandidateDTORes);
     }
     return new GdnRestListResponse<CandidateDTOResponse>(candidateResponse,
-        new PageMetaData(50, 0, candidateResponse.size()), requestId);
+        new PageMetaData(candidates.getTotalPages(), page, candidates.getTotalElements()),
+        requestId);
   }
 
   @RequestMapping(value = "findCandidateDetailAndStoreId", method = RequestMethod.GET,
@@ -328,7 +334,7 @@ public class CandidateController {
       toShow.add(newCandidateDTOResponse);
     }
     return new GdnRestListResponse<CandidateDTOResponseWithoutDetail>(toShow,
-        new PageMetaData(50, 0, toShow.size()), requestId);
+        new PageMetaData(pages.getTotalPages(), page, pages.getTotalElements()), requestId);
   }
 
   @RequestMapping(value = "getAllCandidatesByStoreIdWithPageable", method = RequestMethod.GET,
@@ -350,7 +356,7 @@ public class CandidateController {
       toShow.add(newCandidateDTOResponse);
     }
     return new GdnRestListResponse<CandidateDTOResponseWithoutDetail>(toShow,
-        new PageMetaData(50, 0, toShow.size()), requestId);
+        new PageMetaData(pages.getTotalPages(), page, pages.getTotalElements()), requestId);
   }
 
   @RequestMapping(value = "getCandidatePositionBySolrQuery", method = RequestMethod.GET,
@@ -371,7 +377,7 @@ public class CandidateController {
       candidatePositionSolrDTOResponses.add(candidatePositionSolrDTOResponse);
     }
     return new GdnRestListResponse<>(candidatePositionSolrDTOResponses,
-        new PageMetaData(50, 0, candidatePositionSolrDTOResponses.size()), requestId);
+        new PageMetaData(result.getTotalPages(), page, result.getTotalElements()), requestId);
   }
 
   @RequestMapping(value = "getCandidatePositionDetailByStoreIdWithLogs", method = RequestMethod.GET,
@@ -496,8 +502,16 @@ public class CandidateController {
           throws Exception {
     Status status = Status.valueOf(content.getStatusDTORequest());
     // CandidateMapper.statusEnumMap(status, _status);
-    this.candidateService.updateCandidateStatusBulk(storeId, content.getIdCandidates(),
-        content.getIdPosition(), status);
+    List<CandidatePositionBindRequest> candidatePositionBindRequests = content.getListBind();
+    List<CandidatePositionBind> candidatePositionBinds = new ArrayList<>();
+    for (CandidatePositionBindRequest candidatePositionBindRequest : candidatePositionBindRequests) {
+      CandidatePositionBind newBind = new CandidatePositionBind();
+      newBind.setIdCandidate(candidatePositionBindRequest.getIdCandidate());
+      newBind.setIdPosition(candidatePositionBindRequest.getIdPosition());
+      candidatePositionBinds.add(newBind);
+    }
+
+    this.candidateService.updateCandidateStatusBulk(storeId, candidatePositionBinds, status);
     return new GdnBaseRestResponse(true);
   }
 }
